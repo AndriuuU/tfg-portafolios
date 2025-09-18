@@ -30,3 +30,7 @@ app.listen(PORT, () => console.log(`Servidor corriendo en puerto ${PORT}`));
 // Rutas de autenticación
 const authRoutes = require('./routes/authRoutes');
 app.use('/api/auth', authRoutes);
+
+// Rutas de proyectos
+const projectRoutes = require('./routes/projectRoutes');
+app.use('/api/projects', projectRoutes);
