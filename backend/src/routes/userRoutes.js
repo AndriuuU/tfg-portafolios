@@ -18,4 +18,18 @@ router.get('/', async (req, res) => {
   res.json(users);
 });
 
+// Obtener perfil público por username
+router.get("/:u", async (req, res) => {
+  try {
+    const user = await User.findOne({ username: req.params.username }).select("-password");
+    if (!user) return res.status(404).json({ error: "Usuario no encontrado" });
+
+    const projects = await Project.find({ owner: user._id });
+
+    res.json({ user, projects });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 module.exports = router;
