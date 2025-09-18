@@ -26,3 +26,7 @@ app.get('/', (req, res) => {
 // Arrancar servidor
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Servidor corriendo en puerto ${PORT}`));
+
+// Rutas de autenticación
+const authRoutes = require('./routes/authRoutes');
+app.use('/api/auth', authRoutes);
