@@ -1,10 +1,11 @@
 import { useEffect, useState } from "react";
 import API from "../api/api";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 export default function Dashboard() {
   const [projects, setProjects] = useState([]);
-
+  const navigate = useNavigate();
+  
   const fetchProjects = async () => {
     try {
       const res = await API.get("/projects");
@@ -40,6 +41,13 @@ export default function Dashboard() {
             )}
             <p>{p.description}</p>
             <div className="mt-2 flex gap-2">
+              <button
+                onClick={() => navigate(`/projects/${p._id}/edit`)}
+                className="px-3 py-1 bg-yellow-500 text-white rounded"
+              >
+                Editar
+              </button>
+
               <button
                 onClick={() => handleDelete(p._id)}
                 className="px-2 py-1 bg-red-600 text-white rounded"
