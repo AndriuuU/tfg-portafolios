@@ -1,3 +1,4 @@
+
 const Project = require('../models/Project');
 const cloudinary = require('../utils/cloudinary');
 
@@ -29,8 +30,12 @@ exports.createProject = async (req, res) => {
 
     res.status(201).json(newProject);
   } catch (error) {
+    if (error.code === 11000) {
+      return res.status(400).json({ error: 'El proyecto ya existe' });
+    }
     console.error('Error createProject:', error);
     res.status(500).json({ error: error.message });
+
   }
 };
 

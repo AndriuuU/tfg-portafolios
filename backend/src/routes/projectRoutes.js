@@ -24,6 +24,8 @@ router.get('/:id', authMiddleware, getProjectById);
 // Editar proyecto
 router.put('/:id', authMiddleware, upload.single('image'), updateProject);
 
+router.post('/:id/upload', authMiddleware, upload.single('image'), updateProject);
+
 // Eliminar proyecto
 router.delete('/:id', authMiddleware, deleteProject);
 
