@@ -7,7 +7,9 @@ const {
   getUserProjects,
   getProjectById,
   updateProject,
-  deleteProject
+  deleteProject,
+    addComment,
+  deleteComment
 } = require('../controllers/projectController');
 
 // Crear proyecto
@@ -25,4 +27,9 @@ router.put('/:id', authMiddleware, upload.single('image'), updateProject);
 // Eliminar proyecto
 router.delete('/:id', authMiddleware, deleteProject);
 
+// Añadir comentario
+router.post('/:id/comments', authMiddleware, addComment);
+
+// Eliminar comentario
+router.delete('/:id/comments/:commentId', authMiddleware, deleteComment);
 module.exports = router;

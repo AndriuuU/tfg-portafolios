@@ -7,7 +7,7 @@ import ProjectForm from "./pages/ProjectForm";
 import NewProject from "./pages/NewProject";
 import Portfolio from "./pages/Portfolio";
 import EditProject from "./pages/EditProject";
-
+import ProjectDetail from "./pages/ProjectDetail";
 function App() {
   return (
     <Router>
@@ -20,7 +20,7 @@ function App() {
         <Route path="/projects/new" element={<NewProject />} />
         <Route path="/u/:username" element={<Portfolio />} />
         <Route path="/projects/:id/edit" element={<EditProject />} />
-
+        <Route path="/projects/:id" element={<ProjectDetail />} />
       </Routes>
     </Router>
   );
