@@ -42,31 +42,6 @@ router.post('/:id/upload', authMiddleware, upload.single('image'), async (req, r
   }
 });
 
-// Editar un proyecto (solo dueño)
-router.put("/:id", authMiddleware, async (req, res) => {
-  try {
-    const project = await Project.findById(req.params.id);
-
-    if (!project) {
-      return res.status(404).json({ error: "Proyecto no encontrado" });
-    }
-
-    if (project.owner.toString() !== req.user.id) {
-      return res.status(403).json({ error: "No autorizado" });
-    }
-
-    const updatedProject = await Project.findByIdAndUpdate(
-      req.params.id,
-      req.body,
-      { new: true }
-    );
-
-    res.json(updatedProject);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-});
-
 // Eliminar un proyecto (solo dueño)
 router.delete("/:id", authMiddleware, async (req, res) => {
   try {
@@ -104,28 +79,34 @@ router.get("/:id", authMiddleware, async (req, res) => {
   }
 });
 
-// Actualizar proyecto (título, descripción, imágenes)
+// Editar proyecto (todos los campos + imagen)
 router.put("/:id", authMiddleware, upload.single("image"), async (req, res) => {
   try {
     const project = await Project.findById(req.params.id);
     if (!project) return res.status(404).json({ error: "Proyecto no encontrado" });
+    if (project.owner.toString() !== req.user.id) return res.status(403).json({ error: "No autorizado" });
 
-    if (project.owner.toString() !== req.user.id) {
-      return res.status(403).json({ error: "No autorizado" });
-    }
+    // Actualizar campos si vienen en body
+    const fields = ["title", "slug", "description", "tags", "liveUrl", "repoUrl"];
+    fields.forEach((f) => {
+      if (req.body[f] !== undefined) project[f] = f === "tags" ? req.body[f].split(",").map(t => t.trim()) : req.body[f];
+    });
 
-    // Actualizar campos
-    project.title = req.body.title || project.title;
-    project.description = req.body.description || project.description;
+    // Eliminar imagen si removeImage === "true"
+    if (req.body.removeImage === "true") project.images = [];
 
-    // Si se sube nueva imagen → sustituye
+    // Subir nueva imagen a Cloudinary si existe
     if (req.file) {
-      project.images = [`/uploads/${req.file.filename}`];
-    }
-
-    // Si se marca eliminar imagen
-    if (req.body.removeImage === "true") {
-      project.images = [];
+      const stream = cloudinary.uploader.upload_stream(
+        { folder: "tfg-portafolios" },
+        async (error, result) => {
+          if (error) return res.status(500).json({ error });
+          project.images = [result.secure_url];
+          await project.save();
+          return res.json(project);
+        }
+      );
+      return stream.end(req.file.buffer);
     }
 
     await project.save();
@@ -134,5 +115,6 @@ router.put("/:id", authMiddleware, upload.single("image"), async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 });
+
 
 module.exports = router;

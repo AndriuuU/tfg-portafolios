@@ -5,7 +5,7 @@ import { Link, useNavigate } from "react-router-dom";
 export default function Dashboard() {
   const [projects, setProjects] = useState([]);
   const navigate = useNavigate();
-  
+
   const fetchProjects = async () => {
     try {
       const res = await API.get("/projects");
@@ -19,6 +19,14 @@ export default function Dashboard() {
     if (confirm("¿Seguro que quieres eliminar este proyecto?")) {
       await API.delete(`/projects/${id}`);
       fetchProjects();
+
+      try {
+        await API.delete(`/projects/${id}`);
+        fetchProjects();
+      } catch (err) {
+        console.error(err.response?.data || err);
+        alert("❌ No se pudo eliminar el proyecto");
+      }
     }
   };
 
