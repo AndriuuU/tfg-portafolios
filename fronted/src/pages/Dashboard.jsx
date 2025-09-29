@@ -58,6 +58,8 @@ export default function Dashboard() {
             <p className="text-sm text-gray-600 mt-1">
               {p.comments?.length || 0} comentarios
             </p>
+                        <Comments projectId={p._id} token={localStorage.getItem("token")} />
+
             <div className="mt-2 flex gap-2">
               <Link
                 to={`/projects/${p._id}/edit`}
@@ -71,21 +73,8 @@ export default function Dashboard() {
               >
                 Eliminar
               </button>
-              <button
-                onClick={() =>
-                  setOpenComments(openComments === p._id ? null : p._id)
-                }
-                className="px-2 py-1 bg-blue-600 text-white rounded"
-              >
-                {openComments === p._id ? "Ocultar" : "Ver"} comentarios
-              </button>
+             
             </div>
-
-            {openComments === p._id && (
-              <div className="mt-3 border-t pt-3">
-                <Comments projectId={p._id} token={token} />
-              </div>
-            )}
           </li>
         ))}
       </ul>
