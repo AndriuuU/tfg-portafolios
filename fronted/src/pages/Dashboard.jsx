@@ -34,12 +34,26 @@ export default function Dashboard() {
 
   return (
     <div className="p-4">
-      <h2 className="text-xl font-bold mb-4">Mis proyectos</h2>
+      <div className="flex justify-between items-center mb-4">
+        <h2 className="text-xl font-bold">Mis proyectos</h2>
+        {(() => {
+          const user = JSON.parse(localStorage.getItem("user") || "{}");
+          return user.username ? (
+            <Link
+              to={`/u/${user.username}`}
+              className="px-4 py-2 bg-purple-600 text-white rounded hover:bg-purple-700 transition"
+            >
+              👁️ Ver mi portfolio público
+            </Link>
+          ) : null;
+        })()}
+      </div>
+      
       <Link
         to="/projects/new"
-        className="px-3 py-2 bg-green-600 text-white rounded"
+        className="inline-block px-3 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition"
       >
-        + Nuevo proyecto
+        ➕ Nuevo proyecto
       </Link>
 
       <ul className="mt-4 space-y-3">
@@ -55,25 +69,35 @@ export default function Dashboard() {
               />
             )}
             <p>{p.description}</p>
-            <p className="text-sm text-gray-600 mt-1">
-              {p.comments?.length || 0} comentarios
-            </p>
-                        <Comments projectId={p._id} token={localStorage.getItem("token")} />
+            
+            {/* Info y enlaces */}
+            <div className="mt-2 flex items-center justify-between">
+              <p className="text-sm text-gray-600">
+                💬 {p.comments?.length || 0} comentario{p.comments?.length !== 1 ? 's' : ''}
+              </p>
+              <Link
+                to={`/projects/${p._id}`}
+                className="text-blue-600 hover:text-blue-800 hover:underline font-medium transition"
+              >
+                Ver detalles →
+              </Link>
+            </div>
 
-            <div className="mt-2 flex gap-2">
+            <Comments projectId={p._id} token={localStorage.getItem("token")} />
+
+            <div className="mt-3 flex gap-2">
               <Link
                 to={`/projects/${p._id}/edit`}
-                className="px-3 py-1 bg-yellow-500 text-white rounded"
+                className="px-3 py-1 bg-yellow-500 text-white rounded hover:bg-yellow-600 transition"
               >
-                Editar
+                ✏️ Editar
               </Link>
               <button
                 onClick={() => handleDelete(p._id)}
-                className="px-2 py-1 bg-red-600 text-white rounded"
+                className="px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700 transition"
               >
-                Eliminar
+                🗑️ Eliminar
               </button>
-             
             </div>
           </li>
         ))}

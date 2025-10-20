@@ -87,22 +87,30 @@ exports.updateProject = async (req, res) => {
     }
 
     // Eliminar imágenes
-    if (req.body.removeImage === 'true') project.images = [];
+    if (req.body.removeImage === 'true') {
+      project.images = [];
+    }
 
     // Subir nueva imagen
     if (req.file) {
-      const stream = cloudinary.uploader.upload_stream(
-        { folder: 'tfg-portafolios' },
-        async (error, result) => {
-          if (error) return res.status(500).json({ error });
-          project.images = [result.secure_url];
-          await project.save();
-          return res.json(project);
-        }
-      );
-      return stream.end(req.file.buffer);
+      return new Promise((resolve, reject) => {
+        const stream = cloudinary.uploader.upload_stream(
+          { folder: 'tfg-portafolios' },
+          async (error, result) => {
+            if (error) {
+              console.error('Error uploading to Cloudinary:', error);
+              return res.status(500).json({ error: 'Error al subir imagen' });
+            }
+            project.images = [result.secure_url];
+            await project.save();
+            return res.json(project);
+          }
+        );
+        stream.end(req.file.buffer);
+      });
     }
 
+    // Si no hay imagen, solo guardar cambios
     await project.save();
     res.json(project);
 

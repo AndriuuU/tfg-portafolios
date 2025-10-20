@@ -8,12 +8,12 @@ const {
   getProjectById,
   updateProject,
   deleteProject,
-    addComment,
+  addComment,
   deleteComment
 } = require('../controllers/projectController');
 
 // Crear proyecto
-router.post('/', authMiddleware, createProject);
+router.post('/', authMiddleware, upload.single('image'), createProject);
 
 // Obtener todos los proyectos del usuario
 router.get('/', authMiddleware, getUserProjects);
@@ -24,6 +24,7 @@ router.get('/:id', authMiddleware, getProjectById);
 // Editar proyecto
 router.put('/:id', authMiddleware, upload.single('image'), updateProject);
 
+// Subir imagen a proyecto existente
 router.post('/:id/upload', authMiddleware, upload.single('image'), updateProject);
 
 // Eliminar proyecto
@@ -34,4 +35,5 @@ router.post('/:id/comments', authMiddleware, addComment);
 
 // Eliminar comentario
 router.delete('/:id/comments/:commentId', authMiddleware, deleteComment);
+
 module.exports = router;

@@ -34,3 +34,7 @@ app.use('/api/auth', authRoutes);
 // Rutas de proyectos
 const projectRoutes = require('./routes/projectRoutes');
 app.use('/api/projects', projectRoutes);
+
+// Rutas de seguidores
+const followRoutes = require('./routes/followRoutes');
+app.use('/api/follow', followRoutes);
