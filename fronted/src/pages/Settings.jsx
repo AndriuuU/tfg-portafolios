@@ -22,6 +22,9 @@ export default function Settings() {
     showFollowing: true,
     allowFollowRequests: true,
   });
+  const [avatarFile, setAvatarFile] = useState(null);
+  const [avatarPreview, setAvatarPreview] = useState(null);
+  const [uploadingAvatar, setUploadingAvatar] = useState(false);
   const [loading, setLoading] = useState(false);
   const [msg, setMsg] = useState({ text: "", type: "" });
 
@@ -168,6 +171,94 @@ export default function Settings() {
     }
   };
 
+  const handleAvatarChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      // Validar tipo de archivo
+      if (!file.type.startsWith('image/')) {
+        setMsg({ text: "❌ Solo se permiten imágenes", type: "error" });
+        return;
+      }
+
+      // Validar tamaño (max 5MB)
+      if (file.size > 5 * 1024 * 1024) {
+        setMsg({ text: "❌ La imagen no debe superar 5MB", type: "error" });
+        return;
+      }
+
+      setAvatarFile(file);
+      
+      // Crear preview
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setAvatarPreview(reader.result);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleUploadAvatar = async () => {
+    if (!avatarFile) {
+      setMsg({ text: "❌ Selecciona una imagen primero", type: "error" });
+      return;
+    }
+
+    setUploadingAvatar(true);
+    setMsg({ text: "", type: "" });
+
+    try {
+      const formData = new FormData();
+      formData.append('avatar', avatarFile);
+
+      const res = await API.post('/auth/avatar', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+
+      // Actualizar localStorage y estado
+      const updatedUser = { ...user, avatarUrl: res.data.avatarUrl };
+      localStorage.setItem("user", JSON.stringify(updatedUser));
+      setUser(updatedUser);
+
+      setMsg({ text: "✅ Foto de perfil actualizada", type: "success" });
+      setAvatarFile(null);
+      setAvatarPreview(null);
+    } catch (err) {
+      setMsg({
+        text: err.response?.data?.error || "❌ Error al subir foto",
+        type: "error",
+      });
+    } finally {
+      setUploadingAvatar(false);
+    }
+  };
+
+  const handleDeleteAvatar = async () => {
+    if (!confirm('¿Estás seguro de eliminar tu foto de perfil?')) return;
+
+    setUploadingAvatar(true);
+    setMsg({ text: "", type: "" });
+
+    try {
+      await API.delete('/auth/avatar');
+
+      // Actualizar localStorage y estado
+      const updatedUser = { ...user, avatarUrl: null };
+      localStorage.setItem("user", JSON.stringify(updatedUser));
+      setUser(updatedUser);
+
+      setMsg({ text: "✅ Foto de perfil eliminada", type: "success" });
+    } catch (err) {
+      setMsg({
+        text: err.response?.data?.error || "❌ Error al eliminar foto",
+        type: "error",
+      });
+    } finally {
+      setUploadingAvatar(false);
+    }
+  };
+
   if (!user) return <p className="text-center mt-8">Cargando...</p>;
 
   return (
@@ -197,9 +288,18 @@ export default function Settings() {
           <div className="lg:col-span-1">
             <div className="bg-white rounded-lg shadow p-6">
               <div className="flex flex-col items-center">
-                <div className="w-24 h-24 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-4xl font-bold text-white mb-4">
-                  {user.name?.charAt(0).toUpperCase() || user.username?.charAt(0).toUpperCase()}
-                </div>
+                {/* Avatar */}
+                {user.avatarUrl ? (
+                  <img 
+                    src={user.avatarUrl} 
+                    alt={user.username}
+                    className="w-24 h-24 rounded-full object-cover mb-4"
+                  />
+                ) : (
+                  <div className="w-24 h-24 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-4xl font-bold text-white mb-4">
+                    {user.name?.charAt(0).toUpperCase() || user.username?.charAt(0).toUpperCase()}
+                  </div>
+                )}
                 <h2 className="text-xl font-bold text-gray-800">{user.name || user.username}</h2>
                 <p className="text-gray-600">@{user.username}</p>
                 <Link
@@ -214,6 +314,56 @@ export default function Settings() {
 
           {/* Main Content */}
           <div className="lg:col-span-2 space-y-6">
+            {/* Foto de perfil */}
+            <div className="bg-white rounded-lg shadow p-6">
+              <h3 className="text-xl font-bold text-gray-800 mb-4">📸 Foto de perfil</h3>
+              
+              <div className="flex items-center gap-4 mb-4">
+                {avatarPreview || user.avatarUrl ? (
+                  <img 
+                    src={avatarPreview || user.avatarUrl} 
+                    alt="Preview"
+                    className="w-20 h-20 rounded-full object-cover"
+                  />
+                ) : (
+                  <div className="w-20 h-20 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-2xl font-bold text-white">
+                    {user.name?.charAt(0).toUpperCase() || user.username?.charAt(0).toUpperCase()}
+                  </div>
+                )}
+                <div className="flex-1">
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleAvatarChange}
+                    className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+                    disabled={uploadingAvatar}
+                  />
+                  <p className="text-xs text-gray-500 mt-1">JPG, PNG o GIF. Máximo 5MB.</p>
+                </div>
+              </div>
+
+              <div className="flex gap-2">
+                {avatarFile && (
+                  <button
+                    onClick={handleUploadAvatar}
+                    disabled={uploadingAvatar}
+                    className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-blue-400 transition"
+                  >
+                    {uploadingAvatar ? 'Subiendo...' : '💾 Guardar foto'}
+                  </button>
+                )}
+                {user.avatarUrl && (
+                  <button
+                    onClick={handleDeleteAvatar}
+                    disabled={uploadingAvatar}
+                    className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 disabled:bg-red-400 transition"
+                  >
+                    🗑️ Eliminar foto
+                  </button>
+                )}
+              </div>
+            </div>
+
             {/* Información del perfil */}
             <div className="bg-white rounded-lg shadow p-6">
               <h3 className="text-xl font-bold text-gray-800 mb-4">👤 Información del perfil</h3>

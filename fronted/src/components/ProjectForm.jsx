@@ -32,7 +32,7 @@ export default function ProjectForm({ project }) {
     setMsg("");
 
     try {
-      // 1️⃣ Crear proyecto (o actualizar si existe)
+      // Crear proyecto (o actualizar si existe)
       let res;
       if (project) {
         res = await API.put(`/projects/${project._id}`, {
@@ -48,7 +48,7 @@ export default function ProjectForm({ project }) {
 
       const projectId = res.data._id;
 
-      // 2️⃣ Subir imagen si se seleccionó
+      // Subir imagen si hay
       if (image) {
         const formData = new FormData();
         formData.append("image", image);
@@ -58,7 +58,7 @@ export default function ProjectForm({ project }) {
         });
       }
 
-      setMsg("✅ Proyecto guardado con éxito");
+      setMsg("Proyecto guardado con éxito");
       setTimeout(() => navigate("/dashboard"), 1200);
     } catch (err) {
       console.error(err);

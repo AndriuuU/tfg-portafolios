@@ -45,9 +45,17 @@ const UserHeader = ({ user, currentUserId, onFollowUpdate, relationship }) => {
     <div className="bg-gradient-to-r from-blue-500 to-purple-600 text-white p-8 rounded-lg shadow-lg mb-6">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-4">
-          <div className="w-20 h-20 bg-white rounded-full flex items-center justify-center text-3xl font-bold text-blue-600">
-            {user.name?.charAt(0).toUpperCase() || user.username?.charAt(0).toUpperCase()}
-          </div>
+          {user.avatarUrl ? (
+            <img 
+              src={user.avatarUrl} 
+              alt={user.username}
+              className="w-20 h-20 rounded-full object-cover border-4 border-white"
+            />
+          ) : (
+            <div className="w-20 h-20 bg-white rounded-full flex items-center justify-center text-3xl font-bold text-blue-600">
+              {user.name?.charAt(0).toUpperCase() || user.username?.charAt(0).toUpperCase()}
+            </div>
+          )}
           <div>
             <h1 className="text-3xl font-bold">{user.name || user.username}</h1>
             <p className="text-lg opacity-90">@{user.username}</p>
@@ -84,7 +92,6 @@ const UserHeader = ({ user, currentUserId, onFollowUpdate, relationship }) => {
 // Componente para una tarjeta de proyecto
 const ProjectCard = ({ project }) => (
   <div className="border border-gray-200 rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300 overflow-hidden bg-white">
-    {/* Imagen del proyecto */}
     {project.images?.length > 0 ? (
       <img
         src={project.images[0]}
@@ -97,7 +104,6 @@ const ProjectCard = ({ project }) => (
       </div>
     )}
 
-    {/* Contenido */}
     <div className="p-4">
       <h3 className="font-bold text-lg mb-2 text-gray-800 line-clamp-1">
         {project.title}
@@ -107,7 +113,6 @@ const ProjectCard = ({ project }) => (
         {project.description || 'Sin descripción'}
       </p>
 
-      {/* Tags */}
       {project.tags?.length > 0 && (
         <div className="flex flex-wrap gap-1 mb-3">
           {project.tags.slice(0, 3).map((tag, idx) => (
@@ -126,7 +131,6 @@ const ProjectCard = ({ project }) => (
         </div>
       )}
 
-      {/* Enlaces */}
       <div className="flex gap-2 mt-4">
         {project.liveUrl && (
           <a
@@ -150,7 +154,6 @@ const ProjectCard = ({ project }) => (
         )}
       </div>
 
-      {/* Link a detalles */}
       <Link
         to={`/projects/${project._id}`}
         className="block mt-3 text-center text-blue-600 hover:text-blue-800 text-sm font-medium hover:underline"
@@ -218,7 +221,6 @@ export default function Portfolio() {
   return (
     <div className="min-h-screen bg-gray-50 py-8 px-4">
       <div className="max-w-7xl mx-auto">
-        {/* Cabecera del usuario */}
         <UserHeader 
           user={user} 
           currentUserId={currentUserId}
@@ -226,7 +228,6 @@ export default function Portfolio() {
           relationship={relationship}
         />
 
-        {/* Botones para ver seguidores/siguiendo */}
         <div className="flex gap-4 mb-6">
           <button
             onClick={() => setShowFollowers(!showFollowers)}
@@ -242,7 +243,6 @@ export default function Portfolio() {
           </button>
         </div>
 
-        {/* Listas de seguidores/siguiendo */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
           {showFollowers && (
             <div className="bg-white rounded-lg shadow p-6">
@@ -264,7 +264,6 @@ export default function Portfolio() {
           )}
         </div>
 
-        {/* Sección de proyectos */}
         <div className="mb-4">
           <h2 className="text-2xl font-bold text-gray-800 mb-2">
             📂 Proyectos
@@ -274,7 +273,6 @@ export default function Portfolio() {
           </h2>
         </div>
 
-        {/* Grid de proyectos */}
         {projects?.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {projects.map((project) => (

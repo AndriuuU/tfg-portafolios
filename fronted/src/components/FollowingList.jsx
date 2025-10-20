@@ -12,6 +12,7 @@ export default function FollowingList({ userId, isOwnProfile }) {
     loadFollowing();
   }, [userId]);
 
+  // Cargar seguidos
   const loadFollowing = async () => {
     setLoading(true);
     setError(null);
@@ -27,6 +28,7 @@ export default function FollowingList({ userId, isOwnProfile }) {
     }
   };
 
+  // Dejar de seguir usuario
   const handleUnfollow = async (userId) => {
     if (!confirm('¿Estás seguro de dejar de seguir a este usuario?')) return;
     
@@ -54,12 +56,23 @@ export default function FollowingList({ userId, isOwnProfile }) {
       ) : (
         <ul>
           {following.map((user) => (
-            <li key={user._id}>
-              <div onClick={() => goToProfile(user.username)}>
+            <li key={user._id} style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1rem', padding: '0.5rem', borderRadius: '0.5rem', cursor: 'pointer' }}>
+              {user.avatarUrl ? (
+                <img 
+                  src={user.avatarUrl} 
+                  alt={user.username}
+                  style={{ width: '40px', height: '40px', borderRadius: '50%', objectFit: 'cover' }}
+                />
+              ) : (
+                <div style={{ width: '40px', height: '40px', borderRadius: '50%', background: 'linear-gradient(135deg, #3b82f6, #8b5cf6)', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold' }}>
+                  {user.name?.charAt(0).toUpperCase() || user.username?.charAt(0).toUpperCase()}
+                </div>
+              )}
+              <div onClick={() => goToProfile(user.username)} style={{ flex: 1 }}>
                 <strong>{user.name}</strong> (@{user.username})
               </div>
               {isOwnProfile && (
-                <button onClick={() => handleUnfollow(user._id)}>
+                <button onClick={() => handleUnfollow(user._id)} style={{ padding: '0.25rem 0.75rem', background: '#dc2626', color: 'white', border: 'none', borderRadius: '0.375rem', cursor: 'pointer' }}>
                   Dejar de seguir
                 </button>
               )}

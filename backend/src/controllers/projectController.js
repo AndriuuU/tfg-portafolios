@@ -1,6 +1,6 @@
 
 const Project = require('../models/Project');
-const cloudinary = require('../utils/cloudinary');
+const { cloudinary } = require('../utils/cloudinary');
 
 // Crear proyecto
 exports.createProject = async (req, res) => {

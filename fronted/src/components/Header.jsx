@@ -1,6 +1,7 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { getFollowRequests } from "../api/followApi";
+import "../styles/components/_header.scss";
 
 const Header = ({ user, setUser }) => {
   const navigate = useNavigate();
@@ -11,8 +12,8 @@ const Header = ({ user, setUser }) => {
   useEffect(() => {
     if (user) {
       loadPendingRequests();
-      // Actualizar cada 30 segundos
-      const interval = setInterval(loadPendingRequests, 30000);
+      // Actualizar cada 20 segundos
+      const interval = setInterval(loadPendingRequests, 20000);
       return () => clearInterval(interval);
     }
   }, [user]);
@@ -35,85 +36,67 @@ const Header = ({ user, setUser }) => {
   };
 
   return (
-    <header>
-      <div>
+    <header className="header">
+      <div className="header__container">
         {/* Logo */}
-        <Link to="/">TFG Portafolios</Link>
+        <Link to="/" className="header__logo">
+          TFG Portafolios
+        </Link>
 
         {/* Navegación */}
-        <nav>
-          <Link to="/">Inicio</Link>
+        <nav className="header__nav">
+          <Link to="/" className="header__link">Inicio</Link>
           {user && (
             <>
-              <Link to="/dashboard">Dashboard</Link>
-              <Link to={`/u/${user.username}`}>Mi Portfolio</Link>
+              <Link to="/dashboard" className="header__link">Dashboard</Link>
+              <Link to={`/u/${user.username}`} className="header__link">Mi Portfolio</Link>
             </>
           )}
         </nav>
 
         {/* Usuario */}
-        <div>
+        <div className="header__user">
           {user ? (
-            <div>
-              {/* Avatar clickeable */}
-              <button onClick={() => setDropdownOpen(!dropdownOpen)}>
-                <div>
-                  {user.name?.charAt(0).toUpperCase() || user.username?.charAt(0).toUpperCase()}
-                </div>
-                <span>{user.username}</span>
-                <svg>
-                  <path d="M19 9l-7 7-7-7" />
-                </svg>
+            <div className="user-menu">
+              {/* Botón de usuario */}
+              <button onClick={() => setDropdownOpen(!dropdownOpen)} className="user-menu__button">
+                {user.avatarUrl ? (
+                  <img 
+                    src={user.avatarUrl} 
+                    alt={user.username}
+                    className="user-menu__avatar"
+                    style={{ objectFit: 'cover' }}
+                  />
+                ) : (
+                  <div className="user-menu__avatar">
+                    {user.name?.charAt(0).toUpperCase() || user.username?.charAt(0).toUpperCase()}
+                  </div>
+                )}
+                <span className="user-menu__name">{user.username}</span>
               </button>
 
-              {/* Dropdown Menu */}
+              {/* Dropdown */}
               {dropdownOpen && (
                 <>
-                  {/* Backdrop para cerrar al hacer clic fuera */}
-                  <div onClick={() => setDropdownOpen(false)} />
+                  <div className="user-menu__backdrop" onClick={() => setDropdownOpen(false)} />
                   
-                  <div>
-                    <div>
-                      <p>{user.name || user.username}</p>
-                      <p>@{user.username}</p>
-                    </div>
-                    
-                    <Link
-                      to={`/u/${user.username}`}
-                      onClick={() => setDropdownOpen(false)}
-                    >
+                  <div className="user-menu__dropdown">
+                    <Link to={`/u/${user.username}`} onClick={() => setDropdownOpen(false)} className="user-menu__item">
                       <span>👁️</span>
-                      <span>Ver mi portfolio</span>
+                      <span>Ver perfil</span>
                     </Link>
                     
-                    <Link
-                      to="/settings"
-                      onClick={() => setDropdownOpen(false)}
-                    >
+                    <Link to="/settings" onClick={() => setDropdownOpen(false)} className="user-menu__item">
                       <span>⚙️</span>
                       <span>Configuración</span>
                       {pendingRequests > 0 && (
-                        <span style={{ 
-                          background: 'red', 
-                          color: 'white', 
-                          borderRadius: '10px', 
-                          padding: '2px 6px', 
-                          fontSize: '12px',
-                          marginLeft: '8px'
-                        }}>
-                          {pendingRequests}
-                        </span>
+                        <span className="user-menu__badge">{pendingRequests}</span>
                       )}
                     </Link>
                     
-                    <hr />
+                    <hr className="user-menu__divider" />
                     
-                    <button
-                      onClick={() => {
-                        setDropdownOpen(false);
-                        handleLogout();
-                      }}
-                    >
+                    <button onClick={() => { setDropdownOpen(false); handleLogout(); }} className="user-menu__item user-menu__item--danger">
                       <span>🚪</span>
                       <span>Cerrar sesión</span>
                     </button>
@@ -122,10 +105,10 @@ const Header = ({ user, setUser }) => {
               )}
             </div>
           ) : (
-            <div>
-              <Link to="/login">Login</Link>
-              <Link to="/register">Register</Link>
-            </div>
+            <>
+              <Link to="/login" className="header__auth-btn header__auth-btn--login">Login</Link>
+              <Link to="/register" className="header__auth-btn header__auth-btn--register">Register</Link>
+            </>
           )}
         </div>
       </div>

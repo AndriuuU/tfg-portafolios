@@ -12,7 +12,6 @@ export default function Comments({ projectId, token }) {
       const res = await API.get(`/projects/${projectId}`, {
         headers: token ? { Authorization: `Bearer ${token}` } : {},
       });
-      // Puede que res.data.comments sea undefined → asegurarse
       const comm = res.data.comments;
       if (Array.isArray(comm)) {
         setComments(comm);
@@ -43,8 +42,6 @@ export default function Comments({ projectId, token }) {
       setNewComment("");
       fetchComments();
     } catch (err) {
-      console.error("Error al añadir comentario:", err);
-      // Mostrar mensaje específico
       setErrorMsg(err.response?.data?.error || "Error al añadir comentario");
     }
   };
@@ -56,7 +53,8 @@ export default function Comments({ projectId, token }) {
       setErrorMsg("No tienes permisos");
       return;
     }
-    // Aquí, para saber si puedes eliminar, necesitas comparar tu user id local con commentUserId
+
+    // Obtener id usuario local
     const userData = localStorage.getItem("user");
     let localUserId = null;
     try {
@@ -109,7 +107,7 @@ export default function Comments({ projectId, token }) {
       <ul className="space-y-2">
         {comments.length === 0 && <p className="text-gray-500">No hay comentarios aún.</p>}
         {comments.map((c) => {
-          const commentUser = c.user; // puede ser null
+          const commentUser = c.user;
           const commentUserId = commentUser ? commentUser._id || commentUser.id : null;
           const username = commentUser ? commentUser.username || commentUser.name || "Usuario" : "Usuario eliminado";
 
@@ -127,8 +125,8 @@ export default function Comments({ projectId, token }) {
                 // comparar con user local guardado
                 let localUserId = null;
                 try {
-                  localUserId = localStorage.getItem("user") 
-                    ? JSON.parse(localStorage.getItem("user")).id 
+                  localUserId = localStorage.getItem("user")
+                    ? JSON.parse(localStorage.getItem("user")).id
                     : null;
                 } catch (e) { localUserId = null; }
                 if (localUserId && localUserId === commentUserId) {
