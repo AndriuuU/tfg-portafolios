@@ -1,6 +1,6 @@
 // Abstracts
-@import './abstracts/variables';
-@import './abstracts/mixins';
+@use './abstracts/variables';
+@use './abstracts/mixins';
 
 // Components
-@import './components/header';
+@use './components/header';
