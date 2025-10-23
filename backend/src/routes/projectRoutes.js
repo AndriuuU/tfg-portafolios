@@ -27,7 +27,7 @@ router.get('/feed/following', authMiddleware, getFollowingProjects);
 router.get('/saved', authMiddleware, getSavedProjects);
 
 // Crear proyecto
-router.post('/', authMiddleware, upload.single('image'), createProject);
+router.post('/', authMiddleware, upload.array('images', 10), createProject);
 
 // Obtener todos los proyectos del usuario
 router.get('/', authMiddleware, getUserProjects);
@@ -36,10 +36,10 @@ router.get('/', authMiddleware, getUserProjects);
 router.get('/:id', authMiddleware, getProjectById);
 
 // Editar proyecto
-router.put('/:id', authMiddleware, upload.single('image'), updateProject);
+router.put('/:id', authMiddleware, upload.array('images', 10), updateProject);
 
-// Subir imagen a proyecto existente
-router.post('/:id/upload', authMiddleware, upload.single('image'), updateProject);
+// Subir imagen(es) a proyecto existente
+router.post('/:id/upload', authMiddleware, upload.array('images', 10), updateProject);
 
 // Eliminar proyecto
 router.delete('/:id', authMiddleware, deleteProject);
