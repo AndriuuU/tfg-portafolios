@@ -20,6 +20,7 @@ export default function FollowButton({ userId, onUpdate }) {
         }
     };
 
+    // Seguir usuario
     const handleFollow = async () => {
         setLoading(true);
         setError(null);
@@ -38,7 +39,8 @@ export default function FollowButton({ userId, onUpdate }) {
             setLoading(false);
         }
     };
-
+    
+    // Dejar de seguir usuario
     const handleUnfollow = async () => {
         setLoading(true);
         setError(null);

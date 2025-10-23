@@ -146,6 +146,7 @@ exports.updateProject = async (req, res) => {
   }
 };
 
+// TODO: Implementar soft delete para proyectos (funcionalidad archivado) y delete completa con confirmación si el usuario lo desea
 // Eliminar proyecto
 exports.deleteProject = async (req, res) => {
   try {
