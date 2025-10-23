@@ -9,8 +9,22 @@ const {
   updateProject,
   deleteProject,
   addComment,
-  deleteComment
+  deleteComment,
+  getFollowingProjects,
+  likeProject,
+  unlikeProject,
+  likeComment,
+  unlikeComment,
+  saveProject,
+  unsaveProject,
+  getSavedProjects
 } = require('../controllers/projectController');
+
+// Obtener proyectos de usuarios que sigues (feed)
+router.get('/feed/following', authMiddleware, getFollowingProjects);
+
+// Obtener proyectos guardados
+router.get('/saved', authMiddleware, getSavedProjects);
 
 // Crear proyecto
 router.post('/', authMiddleware, upload.single('image'), createProject);
@@ -30,10 +44,22 @@ router.post('/:id/upload', authMiddleware, upload.single('image'), updateProject
 // Eliminar proyecto
 router.delete('/:id', authMiddleware, deleteProject);
 
+// Likes en proyectos
+router.post('/:id/like', authMiddleware, likeProject);
+router.delete('/:id/like', authMiddleware, unlikeProject);
+
+// Guardar en marcadores
+router.post('/:id/save', authMiddleware, saveProject);
+router.delete('/:id/save', authMiddleware, unsaveProject);
+
 // Añadir comentario
 router.post('/:id/comments', authMiddleware, addComment);
 
 // Eliminar comentario
 router.delete('/:id/comments/:commentId', authMiddleware, deleteComment);
+
+// Likes en comentarios
+router.post('/:id/comments/:commentId/like', authMiddleware, likeComment);
+router.delete('/:id/comments/:commentId/like', authMiddleware, unlikeComment);
 
 module.exports = router;

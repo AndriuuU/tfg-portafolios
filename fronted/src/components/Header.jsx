@@ -40,7 +40,7 @@ const Header = ({ user, setUser }) => {
       <div className="header__container">
         {/* Logo */}
         <Link to="/" className="header__logo">
-          TFG Portafolios
+          PortafoliosHub
         </Link>
 
         {/* Navegación */}

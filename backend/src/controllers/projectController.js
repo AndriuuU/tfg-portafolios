@@ -52,6 +52,32 @@ exports.getUserProjects = async (req, res) => {
   }
 };
 
+// Obtener proyectos de usuarios que sigues (feed)
+exports.getFollowingProjects = async (req, res) => {
+  try {
+    const User = require('../models/User');
+    const currentUser = await User.findById(req.user.id);
+    
+    if (!currentUser) {
+      return res.status(404).json({ error: 'Usuario no encontrado' });
+    }
+
+    // Obtener proyectos de usuarios que sigue
+    const projects = await Project.find({
+      owner: { $in: currentUser.following }
+    })
+      .populate('owner', 'username name email avatarUrl')
+      .populate('comments.user', 'username email avatarUrl')
+      .sort({ createdAt: -1 }) // Más recientes primero
+      .limit(50);
+
+    res.json({ projects });
+  } catch (error) {
+    console.error('Error getFollowingProjects:', error);
+    res.status(500).json({ error: error.message });
+  }
+};
+
 // Obtener proyecto por ID
 exports.getProjectById = async (req, res) => {
   try {
@@ -120,6 +146,7 @@ exports.updateProject = async (req, res) => {
   }
 };
 
+// TODO: Implementar soft delete para proyectos (funcionalidad archivado) y delete completa con confirmación si el usuario lo desea
 // Eliminar proyecto
 exports.deleteProject = async (req, res) => {
   try {
@@ -182,3 +209,161 @@ exports.deleteComment = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
+
+// Dar like a un proyecto
+exports.likeProject = async (req, res) => {
+  try {
+    const project = await Project.findById(req.params.id);
+    if (!project) return res.status(404).json({ error: "Proyecto no encontrado" });
+
+    // Verificar si ya dio like
+    if (project.likes.includes(req.user.id)) {
+      return res.status(400).json({ error: "Ya diste like a este proyecto" });
+    }
+
+    project.likes.push(req.user.id);
+    await project.save();
+
+    res.json({ message: "Like añadido", likesCount: project.likes.length });
+  } catch (error) {
+    console.error("Error likeProject:", error);
+    res.status(500).json({ error: error.message });
+  }
+};
+
+// Quitar like a un proyecto
+exports.unlikeProject = async (req, res) => {
+  try {
+    const project = await Project.findById(req.params.id);
+    if (!project) return res.status(404).json({ error: "Proyecto no encontrado" });
+
+    project.likes = project.likes.filter(id => id.toString() !== req.user.id);
+    await project.save();
+
+    res.json({ message: "Like eliminado", likesCount: project.likes.length });
+  } catch (error) {
+    console.error("Error unlikeProject:", error);
+    res.status(500).json({ error: error.message });
+  }
+};
+
+// Dar like a un comentario
+exports.likeComment = async (req, res) => {
+  try {
+    const project = await Project.findById(req.params.id);
+    if (!project) return res.status(404).json({ error: "Proyecto no encontrado" });
+
+    const comment = project.comments.id(req.params.commentId);
+    if (!comment) return res.status(404).json({ error: "Comentario no encontrado" });
+
+    // Inicializar likes si no existe
+    if (!comment.likes) {
+      comment.likes = [];
+    }
+
+    // Verificar si ya dio like
+    const hasLiked = comment.likes.some(id => id.toString() === req.user.id);
+    if (hasLiked) {
+      return res.status(400).json({ error: "Ya diste like a este comentario" });
+    }
+
+    comment.likes.push(req.user.id);
+    await project.save();
+
+    res.json({ message: "Like añadido al comentario", likesCount: comment.likes.length });
+  } catch (error) {
+    console.error("Error likeComment:", error);
+    res.status(500).json({ error: error.message });
+  }
+};
+
+// Quitar like a un comentario
+exports.unlikeComment = async (req, res) => {
+  try {
+    const project = await Project.findById(req.params.id);
+    if (!project) return res.status(404).json({ error: "Proyecto no encontrado" });
+
+    const comment = project.comments.id(req.params.commentId);
+    if (!comment) return res.status(404).json({ error: "Comentario no encontrado" });
+
+    // Inicializar likes si no existe
+    if (!comment.likes) {
+      comment.likes = [];
+    }
+
+    comment.likes = comment.likes.filter(id => id.toString() !== req.user.id);
+    await project.save();
+
+    res.json({ message: "Like eliminado del comentario", likesCount: comment.likes.length });
+  } catch (error) {
+    console.error("Error unlikeComment:", error);
+    res.status(500).json({ error: error.message });
+  }
+};
+
+// Guardar proyecto en marcadores
+exports.saveProject = async (req, res) => {
+  try {
+    const User = require('../models/User');
+    const user = await User.findById(req.user.id);
+    
+    if (!user) return res.status(404).json({ error: "Usuario no encontrado" });
+
+    const project = await Project.findById(req.params.id);
+    if (!project) return res.status(404).json({ error: "Proyecto no encontrado" });
+
+    // Verificar si ya está guardado
+    if (user.savedProjects.includes(req.params.id)) {
+      return res.status(400).json({ error: "Proyecto ya guardado en marcadores" });
+    }
+
+    user.savedProjects.push(req.params.id);
+    await user.save();
+
+    res.json({ message: "Proyecto guardado en marcadores" });
+  } catch (error) {
+    console.error("Error saveProject:", error);
+    res.status(500).json({ error: error.message });
+  }
+};
+
+// Quitar proyecto de marcadores
+exports.unsaveProject = async (req, res) => {
+  try {
+    const User = require('../models/User');
+    const user = await User.findById(req.user.id);
+    
+    if (!user) return res.status(404).json({ error: "Usuario no encontrado" });
+
+    user.savedProjects = user.savedProjects.filter(id => id.toString() !== req.params.id);
+    await user.save();
+
+    res.json({ message: "Proyecto eliminado de marcadores" });
+  } catch (error) {
+    console.error("Error unsaveProject:", error);
+    res.status(500).json({ error: error.message });
+  }
+};
+
+// Obtener proyectos guardados del usuario
+exports.getSavedProjects = async (req, res) => {
+  try {
+    const User = require('../models/User');
+    const user = await User.findById(req.user.id)
+      .populate({
+        path: 'savedProjects',
+        populate: {
+          path: 'owner',
+          select: 'username name email avatarUrl'
+        }
+      });
+    
+    if (!user) return res.status(404).json({ error: "Usuario no encontrado" });
+
+    res.json({ projects: user.savedProjects });
+  } catch (error) {
+    console.error("Error getSavedProjects:", error);
+    res.status(500).json({ error: error.message });
+  }
+};
+
