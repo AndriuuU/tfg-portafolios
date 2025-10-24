@@ -9,6 +9,15 @@ const UserSchema = new mongoose.Schema({
   bio: { type: String },
   links: [{ name: String, url: String }],
   
+  // Verificación de email
+  isEmailVerified: { type: Boolean, default: false },
+  emailVerificationToken: { type: String },
+  emailVerificationExpires: { type: Date },
+  
+  // Recuperación de contraseña
+  resetPasswordToken: { type: String },
+  resetPasswordExpires: { type: Date },
+  
   // Sistema de seguidores
   followers: [{ 
     type: mongoose.Schema.Types.ObjectId, 
