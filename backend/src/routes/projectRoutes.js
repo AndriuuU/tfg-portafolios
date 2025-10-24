@@ -2,23 +2,35 @@ const express = require('express');
 const router = express.Router();
 const upload = require('../middleware/upload');
 const authMiddleware = require('../middleware/authMiddleware');
+
+// Importar controladores modulares
 const {
   createProject,
   getUserProjects,
   getProjectById,
   updateProject,
   deleteProject,
+  getFollowingProjects
+} = require('../controllers/project/projectCrudController');
+
+const {
   addComment,
   deleteComment,
-  getFollowingProjects,
-  likeProject,
-  unlikeProject,
   likeComment,
-  unlikeComment,
+  unlikeComment
+} = require('../controllers/project/commentController');
+
+const {
+  likeProject,
+  unlikeProject
+} = require('../controllers/project/likeController');
+
+const {
   saveProject,
   unsaveProject,
   getSavedProjects
-} = require('../controllers/projectController');
+} = require('../controllers/project/markerController');
+
 
 // Obtener proyectos de usuarios que sigues (feed)
 router.get('/feed/following', authMiddleware, getFollowingProjects);

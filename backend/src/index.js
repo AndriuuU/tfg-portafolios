@@ -11,10 +11,14 @@ const app = express(); // 👈 primero creamos app
 app.use(cors());
 app.use(express.json());
 
-// Conexión a MongoDB
-mongoose.connect(process.env.MONGO_URI)
-  .then(() => console.log('✅ Conectado a MongoDB'))
-  .catch(err => console.error('❌ Error al conectar MongoDB:', err));
+// Conexión a MongoDB SOLO si NO estamos en modo test
+if (process.env.NODE_ENV !== 'test') {
+  mongoose.connect(process.env.MONGO_URI)
+    .then(() => console.log('✅ Conectado a MongoDB'))
+    .catch(err => console.error('❌ Error al conectar MongoDB:', err));
+} else {
+  console.log('🧪 Modo TEST: MongoDB se configurará desde setup.js');
+}
 
 // Rutas
 app.use('/api/users', userRoutes);
@@ -38,3 +42,7 @@ app.use('/api/projects', projectRoutes);
 // Rutas de seguidores
 const followRoutes = require('./routes/followRoutes');
 app.use('/api/follow', followRoutes);
+
+// Rutas de búsqueda
+const searchRoutes = require('./routes/searchRoutes');
+app.use('/api/search', searchRoutes);

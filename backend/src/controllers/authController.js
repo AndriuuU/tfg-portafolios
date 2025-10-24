@@ -83,15 +83,33 @@ exports.register = async (req, res) => {
 //Login
 exports.login = async (req, res) => {
   try {
-    const { email, password } = req.body;
+    const { email, username, password } = req.body;
 
-    // Buscar usuario
-    const user = await User.findOne({ email });
-    if (!user) return res.status(400).json({ error: 'Usuario no encontrado' });
+    console.log('Login attempt:', { email, username, hasPassword: !!password });
+
+    // Validar que se proporcione email o username y password
+    if ((!email && !username) || !password) {
+      console.log('Validation failed: missing credentials');
+      return res.status(400).json({ error: 'Debes proporcionar email o username y contraseña' });
+    }
+
+    // Buscar usuario por email o username
+    const user = await User.findOne({ 
+      $or: [
+        { email: email || '' },
+        { username: username || '' }
+      ]
+    });
+    
+    if (!user) {
+      return res.status(400).json({ error: 'Usuario no encontrado' });
+    }
 
     // Comparar contraseña
     const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch) return res.status(400).json({ error: 'Credenciales inválidas' });
+    if (!isMatch) {
+      return res.status(400).json({ error: 'Credenciales inválidas' });
+    }
 
     // Crear token
     const token = jwt.sign(
