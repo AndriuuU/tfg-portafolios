@@ -47,7 +47,7 @@ exports.register = async (req, res) => {
       emailVerificationExpires: verificationExpires,
     });
 
-    // ⚠️ ENVÍO DE EMAIL DESHABILITADO TEMPORALMENTE
+    // ENVÍO DE EMAIL DESHABILITADO TEMPORALMENTE
     // Enviar email de verificación
     /*
     try {
