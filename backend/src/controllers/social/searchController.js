@@ -1,5 +1,5 @@
-const Project = require('../models/Project');
-const User = require('../models/User');
+const Project = require('../../models/Project');
+const User = require('../../models/User');
 
 /**
  * Búsqueda avanzada de proyectos

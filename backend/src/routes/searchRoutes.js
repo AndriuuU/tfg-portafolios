@@ -4,7 +4,7 @@ const {
   searchProjects, 
   searchUsers, 
   getPopularTags 
-} = require('../controllers/searchController');
+} = require('../controllers/social/searchController');
 
 // Búsqueda de proyectos
 router.get('/projects', searchProjects);

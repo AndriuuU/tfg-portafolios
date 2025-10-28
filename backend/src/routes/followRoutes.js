@@ -15,7 +15,7 @@ const {
   getBlockedUsers,
   updatePrivacySettings,
   checkRelationship
-} = require('../controllers/followController');
+} = require('../controllers/social/followController');
 
 // Rutas de seguimiento
 router.post('/:userId/follow', authMiddleware, followUser);

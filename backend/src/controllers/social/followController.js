@@ -1,4 +1,4 @@
-const User = require('../models/User');
+const User = require('../../models/User');
 
 // Seguir a un usuario
 exports.followUser = async (req, res) => {
