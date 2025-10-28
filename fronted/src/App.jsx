@@ -11,6 +11,7 @@ import Portfolio from "./pages/Portfolio";
 import EditProject from "./pages/EditProject";
 import ProjectDetail from "./pages/ProjectDetail";
 import Settings from "./pages/Settings";
+import Search from "./pages/Search";
 
 function App() {
   const [user, setUser] = useState(null);
@@ -31,6 +32,7 @@ function App() {
         <Route path="/register" element={<Register />} />
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/settings" element={<Settings />} />
+        <Route path="/search" element={<Search />} />
         <Route path="/projects" element={<ProjectForm />} />
         <Route path="/projects/new" element={<NewProject />} />
         <Route path="/u/:username" element={<Portfolio />} />

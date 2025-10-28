@@ -1,12 +1,27 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { getFollowRequests } from "../api/followApi";
+import SearchBar from "./SearchBar";
 import "../styles/components/_header.scss";
 
 const Header = ({ user, setUser }) => {
   const navigate = useNavigate();
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [pendingRequests, setPendingRequests] = useState(0);
+  const [darkMode, setDarkMode] = useState(() => {
+    // Cargar preferencia del localStorage
+    return localStorage.getItem('darkMode') === 'true';
+  });
+
+  // Aplicar clase al body cuando cambia el modo
+  useEffect(() => {
+    if (darkMode) {
+      document.body.classList.add('dark-mode');
+    } else {
+      document.body.classList.remove('dark-mode');
+    }
+    localStorage.setItem('darkMode', darkMode);
+  }, [darkMode]);
 
   // Cargar solicitudes pendientes
   useEffect(() => {
@@ -35,6 +50,10 @@ const Header = ({ user, setUser }) => {
     navigate("/login");
   };
 
+  const toggleDarkMode = () => {
+    setDarkMode(!darkMode);
+  };
+
   return (
     <header className="header">
       <div className="header__container">
@@ -42,6 +61,9 @@ const Header = ({ user, setUser }) => {
         <Link to="/" className="header__logo">
           PortafoliosHub
         </Link>
+
+        {/* Barra de búsqueda */}
+        {user && <SearchBar />}
 
         {/* Navegación */}
         <nav className="header__nav">
@@ -93,6 +115,11 @@ const Header = ({ user, setUser }) => {
                         <span className="user-menu__badge">{pendingRequests}</span>
                       )}
                     </Link>
+                    
+                    <button onClick={toggleDarkMode} className="user-menu__item">
+                      <span>{darkMode ? '☀️' : '🌙'}</span>
+                      <span>{darkMode ? 'Modo Claro' : 'Modo Oscuro'}</span>
+                    </button>
                     
                     <hr className="user-menu__divider" />
                     
