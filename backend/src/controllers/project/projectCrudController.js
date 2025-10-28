@@ -101,8 +101,14 @@ exports.updateProject = async (req, res) => {
       return res.status(404).json({ error: 'Proyecto no encontrado' });
     }
     
-    if (project.owner.toString() !== req.user.id) {
-      return res.status(403).json({ error: 'No autorizado' });
+    // Verificar permisos: owner o colaborador con rol editor
+    const isOwner = project.owner.toString() === req.user.id;
+    const isEditor = project.collaborators.some(
+      collab => collab.user.toString() === req.user.id && collab.role === 'editor'
+    );
+    
+    if (!isOwner && !isEditor) {
+      return res.status(403).json({ error: 'No tienes permisos para editar este proyecto' });
     }
 
     // Actualizar campos básicos
@@ -193,8 +199,9 @@ exports.deleteProject = async (req, res) => {
       return res.status(404).json({ error: 'Proyecto no encontrado' });
     }
     
+    // Solo el owner puede eliminar el proyecto
     if (project.owner.toString() !== req.user.id) {
-      return res.status(403).json({ error: 'No autorizado' });
+      return res.status(403).json({ error: 'Solo el propietario puede eliminar el proyecto' });
     }
 
     await project.deleteOne();

@@ -31,6 +31,19 @@ const {
   getSavedProjects
 } = require('../controllers/project/markerController');
 
+const {
+  inviteCollaborator,
+  acceptInvitation,
+  rejectInvitation,
+  getMyInvitations
+} = require('../controllers/project/invitationController');
+
+const {
+  removeCollaborator,
+  updateCollaboratorRole,
+  getCollaborators,
+  leaveProject
+} = require('../controllers/project/collaboratorManagementController');
 
 // Obtener proyectos de usuarios que sigues (feed)
 router.get('/feed/following', authMiddleware, getFollowingProjects);
@@ -73,5 +86,15 @@ router.delete('/:id/comments/:commentId', authMiddleware, deleteComment);
 // Likes en comentarios
 router.post('/:id/comments/:commentId/like', authMiddleware, likeComment);
 router.delete('/:id/comments/:commentId/like', authMiddleware, unlikeComment);
+
+// Colaboradores
+router.get('/invitations/my', authMiddleware, getMyInvitations);
+router.get('/:id/collaborators', authMiddleware, getCollaborators);
+router.post('/:id/collaborators/invite', authMiddleware, inviteCollaborator);
+router.post('/:id/collaborators/accept', authMiddleware, acceptInvitation);
+router.post('/:id/collaborators/reject', authMiddleware, rejectInvitation); 
+router.post('/:id/collaborators/leave', authMiddleware, leaveProject);
+router.delete('/:id/collaborators/:userId', authMiddleware, removeCollaborator); 
+router.put('/:id/collaborators/:userId/role', authMiddleware, updateCollaboratorRole);
 
 module.exports = router;
