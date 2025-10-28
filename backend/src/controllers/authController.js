@@ -1,7 +1,9 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const crypto = require('crypto');
 const User = require('../models/User');
 const { uploadToCloudinary, deleteFromCloudinary } = require('../utils/cloudinary');
+const { sendVerificationEmail } = require('../utils/emailService');
 
 exports.register = async (req, res) => {
   try {
@@ -31,13 +33,32 @@ exports.register = async (req, res) => {
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
+    // Generar token de verificación
+    const verificationToken = crypto.randomBytes(32).toString('hex');
+    const verificationExpires = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 horas
+
     // Crear usuario
     const newUser = await User.create({
       username,
       email,
       name,
       password: hashedPassword,
+      emailVerificationToken: verificationToken,
+      emailVerificationExpires: verificationExpires,
     });
+
+    // ENVÍO DE EMAIL DESHABILITADO TEMPORALMENTE
+    // Enviar email de verificación
+    /*
+    try {
+      await sendVerificationEmail(email, username, verificationToken);
+    } catch (emailError) {
+      if (process.env.NODE_ENV !== 'test') {
+        console.error('Error enviando email de verificación:', emailError);
+      }
+      // No fallar el registro si el email no se envía
+    }
+    */
 
     const userResponse = {
       id: newUser._id,
@@ -47,7 +68,7 @@ exports.register = async (req, res) => {
     };
 
     res.status(201).json({ 
-      message: 'Usuario registrado exitosamente', 
+      message: 'Usuario registrado exitosamente. Por favor verifica tu email.',
       user: userResponse 
     });
   } catch (error) {
@@ -59,15 +80,33 @@ exports.register = async (req, res) => {
 //Login
 exports.login = async (req, res) => {
   try {
-    const { email, password } = req.body;
+    const { email, username, password } = req.body;
 
-    // Buscar usuario
-    const user = await User.findOne({ email });
-    if (!user) return res.status(400).json({ error: 'Usuario no encontrado' });
+    console.log('Login attempt:', { email, username, hasPassword: !!password });
+
+    // Validar que se proporcione email o username y password
+    if ((!email && !username) || !password) {
+      console.log('Validation failed: missing credentials');
+      return res.status(400).json({ error: 'Debes proporcionar email o username y contraseña' });
+    }
+
+    // Buscar usuario por email o username
+    const user = await User.findOne({ 
+      $or: [
+        { email: email || '' },
+        { username: username || '' }
+      ]
+    });
+    
+    if (!user) {
+      return res.status(400).json({ error: 'Usuario no encontrado' });
+    }
 
     // Comparar contraseña
     const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch) return res.status(400).json({ error: 'Credenciales inválidas' });
+    if (!isMatch) {
+      return res.status(400).json({ error: 'Credenciales inválidas' });
+    }
 
     // Crear token
     const token = jwt.sign(
@@ -289,3 +328,4 @@ exports.deleteAvatar = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
+

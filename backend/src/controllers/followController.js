@@ -13,6 +13,10 @@ exports.followUser = async (req, res) => {
     const userToFollow = await User.findById(userId);
     const currentUser = await User.findById(currentUserId);
 
+    if (!currentUser) {
+      return res.status(404).json({ error: 'Tu usuario no fue encontrado' });
+    }
+
     if (!userToFollow) {
       return res.status(404).json({ error: 'Usuario no encontrado' });
     }
@@ -72,6 +76,10 @@ exports.unfollowUser = async (req, res) => {
     const currentUser = await User.findById(currentUserId);
     const userToUnfollow = await User.findById(userId);
 
+    if (!currentUser) {
+      return res.status(404).json({ error: 'Tu usuario no fue encontrado' });
+    }
+
     if (!userToUnfollow) {
       return res.status(404).json({ error: 'Usuario no encontrado' });
     }
@@ -98,6 +106,10 @@ exports.removeFollower = async (req, res) => {
     const currentUser = await User.findById(currentUserId);
     const follower = await User.findById(userId);
 
+    if (!currentUser) {
+      return res.status(404).json({ error: 'Tu usuario no fue encontrado' });
+    }
+
     if (!follower) {
       return res.status(404).json({ error: 'Usuario no encontrado' });
     }
@@ -123,6 +135,10 @@ exports.acceptFollowRequest = async (req, res) => {
 
     const currentUser = await User.findById(currentUserId);
     const requester = await User.findById(userId);
+
+    if (!currentUser) {
+      return res.status(404).json({ error: 'Tu usuario no fue encontrado' });
+    }
 
     if (!requester) {
       return res.status(404).json({ error: 'Usuario no encontrado' });
@@ -155,6 +171,10 @@ exports.rejectFollowRequest = async (req, res) => {
 
     const currentUser = await User.findById(currentUserId);
 
+    if (!currentUser) {
+      return res.status(404).json({ error: 'Tu usuario no fue encontrado' });
+    }
+
     if (!currentUser.followRequests.includes(userId)) {
       return res.status(400).json({ error: 'No hay solicitud pendiente de este usuario' });
     }
@@ -181,6 +201,10 @@ exports.blockUser = async (req, res) => {
 
     const currentUser = await User.findById(currentUserId);
     const userToBlock = await User.findById(userId);
+
+    if (!currentUser) {
+      return res.status(404).json({ error: 'Tu usuario no fue encontrado' });
+    }
 
     if (!userToBlock) {
       return res.status(404).json({ error: 'Usuario no encontrado' });
@@ -218,6 +242,10 @@ exports.unblockUser = async (req, res) => {
 
     const currentUser = await User.findById(currentUserId);
     const userToUnblock = await User.findById(userId);
+
+    if (!currentUser) {
+      return res.status(404).json({ error: 'Tu usuario no fue encontrado' });
+    }
 
     if (!userToUnblock) {
       return res.status(404).json({ error: 'Usuario no encontrado' });
@@ -293,6 +321,10 @@ exports.getFollowRequests = async (req, res) => {
 
     const user = await User.findById(currentUserId)
       .populate('followRequests', 'username name avatarUrl');
+
+    if (!user) {
+      return res.status(404).json({ error: 'Usuario no encontrado' });
+    }
 
     res.json(user.followRequests);
   } catch (error) {
