@@ -1,24 +1,35 @@
 const nodemailer = require('nodemailer');
 
-// Configurar transporter (usa variables de entorno)
-const transporter = nodemailer.createTransport({
-  host: process.env.EMAIL_HOST || 'smtp.gmail.com',
-  port: process.env.EMAIL_PORT || 587,
-  secure: false, // true para puerto 465, false para otros
-  auth: {
-    user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASS,
-  },
-});
+// Configurar transporter según el entorno
+let transporter;
 
-// Verificar configuración
-transporter.verify((error, success) => {
-  if (error) {
-    console.log('❌ Error en configuración de email:', error);
-  } else {
-    console.log('✅ Servidor de email listo');
-  }
-});
+if (process.env.NODE_ENV === 'test') {
+  // En modo test, usar un transporter falso que no hace nada
+  transporter = {
+    sendMail: async () => ({ messageId: 'test-message-id' }),
+    verify: () => Promise.resolve(true)
+  };
+} else {
+  // En producción/desarrollo, usar el transporter real
+  transporter = nodemailer.createTransport({
+    host: process.env.EMAIL_HOST || 'smtp.gmail.com',
+    port: process.env.EMAIL_PORT || 587,
+    secure: false, // true para puerto 465, false para otros
+    auth: {
+      user: process.env.EMAIL_USER,
+      pass: process.env.EMAIL_PASS,
+    },
+  });
+
+  // Verificar configuración
+  transporter.verify((error, success) => {
+    if (error) {
+      console.log('❌ Error en configuración de email:', error);
+    } else {
+      console.log('✅ Servidor de email listo');
+    }
+  });
+}
 
 // Enviar email de verificación
 exports.sendVerificationEmail = async (email, username, token) => {
@@ -47,9 +58,13 @@ exports.sendVerificationEmail = async (email, username, token) => {
 
   try {
     await transporter.sendMail(mailOptions);
-    console.log('✅ Email de verificación enviado a:', email);
+    if (process.env.NODE_ENV !== 'test') {
+      console.log('✅ Email de verificación enviado a:', email);
+    }
   } catch (error) {
-    console.error('❌ Error enviando email de verificación:', error);
+    if (process.env.NODE_ENV !== 'test') {
+      console.error('❌ Error enviando email de verificación:', error);
+    }
     throw error;
   }
 };
@@ -81,9 +96,13 @@ exports.sendPasswordResetEmail = async (email, username, token) => {
 
   try {
     await transporter.sendMail(mailOptions);
-    console.log('✅ Email de recuperación enviado a:', email);
+    if (process.env.NODE_ENV !== 'test') {
+      console.log('✅ Email de recuperación enviado a:', email);
+    }
   } catch (error) {
-    console.error('❌ Error enviando email de recuperación:', error);
+    if (process.env.NODE_ENV !== 'test') {
+      console.error('❌ Error enviando email de recuperación:', error);
+    }
     throw error;
   }
 };
@@ -107,8 +126,12 @@ exports.sendPasswordChangedEmail = async (email, username) => {
 
   try {
     await transporter.sendMail(mailOptions);
-    console.log('✅ Email de confirmación enviado a:', email);
+    if (process.env.NODE_ENV !== 'test') {
+      console.log('✅ Email de confirmación enviado a:', email);
+    }
   } catch (error) {
-    console.error('❌ Error enviando email de confirmación:', error);
+    if (process.env.NODE_ENV !== 'test') {
+      console.error('❌ Error enviando email de confirmación:', error);
+    }
   }
 };
