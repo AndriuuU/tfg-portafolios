@@ -8,12 +8,12 @@ const User = require('../../models/User');
 exports.inviteCollaborator = async (req, res) => {
   try {
     const { id: projectId } = req.params;
-    const { userId, role = 'viewer' } = req.body;
+    const { userId, username, email, role = 'viewer' } = req.body;
     const currentUserId = req.user.id;
 
-    // Validaciones
-    if (!userId) {
-      return res.status(400).json({ error: 'El ID del usuario es requerido' });
+    // Validaciones - aceptar userId, username o email
+    if (!userId && !username && !email) {
+      return res.status(400).json({ error: 'El ID, nombre de usuario o email es requerido' });
     }
 
     if (!['editor', 'viewer'].includes(role)) {
@@ -36,20 +36,30 @@ exports.inviteCollaborator = async (req, res) => {
       return res.status(403).json({ error: 'No tienes permisos para invitar colaboradores' });
     }
 
-    // Verificar que el usuario a invitar existe
-    const userToInvite = await User.findById(userId);
+    // Buscar usuario por ID, username o email
+    let userToInvite;
+    if (userId) {
+      userToInvite = await User.findById(userId);
+    } else if (username) {
+      userToInvite = await User.findOne({ username });
+    } else if (email) {
+      userToInvite = await User.findOne({ email });
+    }
+
     if (!userToInvite) {
       return res.status(404).json({ error: 'Usuario no encontrado' });
     }
 
+    const invitedUserId = userToInvite._id.toString();
+
     // Verificar que no sea el owner
-    if (userId === project.owner.toString()) {
+    if (invitedUserId === project.owner.toString()) {
       return res.status(400).json({ error: 'El propietario ya tiene acceso total al proyecto' });
     }
 
     // Verificar que no esté ya como colaborador
     const isAlreadyCollaborator = project.collaborators.some(
-      collab => collab.user.toString() === userId
+      collab => collab.user.toString() === invitedUserId
     );
     if (isAlreadyCollaborator) {
       return res.status(400).json({ error: 'Este usuario ya es colaborador del proyecto' });
@@ -57,7 +67,7 @@ exports.inviteCollaborator = async (req, res) => {
 
     // Verificar que no tenga una invitación pendiente
     const hasPendingInvitation = project.pendingInvitations.some(
-      inv => inv.user.toString() === userId
+      inv => inv.user.toString() === invitedUserId
     );
     if (hasPendingInvitation) {
       return res.status(400).json({ error: 'Ya existe una invitación pendiente para este usuario' });
@@ -65,7 +75,7 @@ exports.inviteCollaborator = async (req, res) => {
 
     // Agregar invitación pendiente
     project.pendingInvitations.push({
-      user: userId,
+      user: invitedUserId,
       role: role,
       invitedBy: currentUserId,
       invitedAt: new Date()
@@ -197,13 +207,17 @@ exports.getMyInvitations = async (req, res) => {
       );
       
       return {
-        projectId: project._id,
-        projectTitle: project.title,
-        projectSlug: project.slug,
-        projectOwner: project.owner,
+        _id: invitation._id,
+        project: {
+          _id: project._id,
+          title: project.title,
+          slug: project.slug,
+          description: project.description
+        },
         role: invitation.role,
         invitedAt: invitation.invitedAt,
-        invitedBy: invitation.invitedBy
+        invitedBy: invitation.invitedBy,
+        createdAt: invitation.invitedAt
       };
     });
 

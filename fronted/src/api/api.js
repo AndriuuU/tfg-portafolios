@@ -20,6 +20,14 @@ export const getProfile = () => API.get('/auth/profile');
 export const updateProfile = (data) => API.put('/auth/profile', data);
 export const changePassword = (passwords) => API.put('/auth/password', passwords);
 export const updateAvatar = (formData) => API.put('/auth/avatar', formData);
+export const deleteAccount = (password) => API.delete('/auth/account', { data: { password } });
+
+// ==================== EMAIL ====================
+export const verifyEmail = (token) => API.get(`/email/verify/${token}`);
+export const resendVerificationEmail = (email) => API.post('/email/resend-verification', { email });
+export const forgotPassword = (email) => API.post('/email/forgot-password', { email });
+export const resetPassword = (token, newPassword) => API.post(`/email/reset-password/${token}`, { newPassword });
+export const getEmailStatus = () => API.get('/email/status');
 
 // ==================== PROYECTOS ====================
 export const getProjects = () => API.get('/projects'); // Obtener proyectos del usuario autenticado

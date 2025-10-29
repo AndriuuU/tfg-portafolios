@@ -135,32 +135,37 @@ exports.updateProject = async (req, res) => {
 
     // Subir nueva imagen
     if (req.files && req.files.length > 0) {
-      // Múltiples archivos
-      const uploadPromises = req.files.map(file => {
-        return new Promise((resolve, reject) => {
-          const stream = cloudinary.uploader.upload_stream(
-            { folder: 'tfg-portafolios' },
-            (error, result) => {
-              if (error) {
-                console.error('Error uploading to Cloudinary:', error);
-                reject(error);
-              } else {
-                resolve(result.secure_url);
+      // Filtrar solo los archivos que sean del campo 'images'
+      const imageFiles = req.files.filter(file => file.fieldname === 'images');
+      
+      if (imageFiles.length > 0) {
+        // Múltiples archivos
+        const uploadPromises = imageFiles.map(file => {
+          return new Promise((resolve, reject) => {
+            const stream = cloudinary.uploader.upload_stream(
+              { folder: 'tfg-portafolios' },
+              (error, result) => {
+                if (error) {
+                  console.error('Error uploading to Cloudinary:', error);
+                  reject(error);
+                } else {
+                  resolve(result.secure_url);
+                }
               }
-            }
-          );
-          stream.end(file.buffer);
+            );
+            stream.end(file.buffer);
+          });
         });
-      });
 
-      try {
-        const uploadedUrls = await Promise.all(uploadPromises);
-        project.images = [...project.images, ...uploadedUrls];
-        await project.save();
-        return res.json(project);
-      } catch (error) {
-        console.error('Error uploading multiple images:', error);
-        return res.status(500).json({ error: 'Error al subir imágenes' });
+        try {
+          const uploadedUrls = await Promise.all(uploadPromises);
+          project.images = [...project.images, ...uploadedUrls];
+          await project.save();
+          return res.json(project);
+        } catch (error) {
+          console.error('Error uploading multiple images:', error);
+          return res.status(500).json({ error: 'Error al subir imágenes' });
+        }
       }
     } else if (req.file) {
       // Un solo archivo
