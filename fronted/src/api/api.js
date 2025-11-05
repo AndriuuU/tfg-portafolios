@@ -57,4 +57,22 @@ export const deleteComment = (projectId, commentId) => API.delete(`/projects/${p
 export const likeComment = (projectId, commentId) => API.post(`/projects/${projectId}/comments/${commentId}/like`);
 export const unlikeComment = (projectId, commentId) => API.delete(`/projects/${projectId}/comments/${commentId}/like`);
 
+// ==================== COLABORADORES - INVITACIONES ====================
+export const inviteCollaborator = (projectId, data) => API.post(`/projects/${projectId}/collaborators/invite`, data);
+// data: { userId o username o email, role: 'editor' o 'viewer' }
+export const acceptInvitation = (projectId) => API.post(`/projects/${projectId}/collaborators/accept`);
+export const rejectInvitation = (projectId) => API.post(`/projects/${projectId}/collaborators/reject`);
+export const getMyInvitations = () => API.get('/projects/invitations/my');
+
+// ==================== COLABORADORES - GESTIÓN ====================
+export const getCollaborators = (projectId) => API.get(`/projects/${projectId}/collaborators`);
+export const removeCollaborator = (projectId, userId) => API.delete(`/projects/${projectId}/collaborators/${userId}`);
+export const updateCollaboratorRole = (projectId, userId, role) => 
+  API.put(`/projects/${projectId}/collaborators/${userId}/role`, { role });
+export const leaveProject = (projectId) => API.post(`/projects/${projectId}/collaborators/leave`);
+
+// ==================== USUARIOS ====================
+export const getRecommendedUsers = () => API.get('/users/recommended/users');
+export const getUserByUsername = (username) => API.get(`/users/${username}`);
+
 export default API;

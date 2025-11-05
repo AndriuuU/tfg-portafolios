@@ -8,8 +8,10 @@ const ProjectPost = ({ project: initialProject }) => {
   const [isLiked, setIsLiked] = useState(false);
   const [isSaved, setIsSaved] = useState(false);
   const [showComments, setShowComments] = useState(false);
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
   const currentUserId = JSON.parse(localStorage.getItem('user'))?._id;
+  const hasMultipleImages = project.images && project.images.length > 1;
 
   // Verificar si el usuario actual ya dio like o guardó el proyecto
   useEffect(() => {
@@ -64,6 +66,20 @@ const ProjectPost = ({ project: initialProject }) => {
     }
   };
 
+  const nextImage = (e) => {
+    e.stopPropagation();
+    setCurrentImageIndex((prev) => 
+      prev === project.images.length - 1 ? 0 : prev + 1
+    );
+  };
+
+  const prevImage = (e) => {
+    e.stopPropagation();
+    setCurrentImageIndex((prev) => 
+      prev === 0 ? project.images.length - 1 : prev - 1
+    );
+  };
+
   const formatDate = (dateString) => {
     if (!dateString) return '';
     
@@ -107,15 +123,52 @@ const ProjectPost = ({ project: initialProject }) => {
         </div>
       </div>
 
-      <div>
+      <div className="project-description">
         <p>{project.description || 'Sin descripción disponible'}</p>
       </div>
 
-      <div onClick={() => goToProject(project._id)}>
+      <div className="project-image-container" onClick={() => goToProject(project._id)}>
         {project.images && project.images.length > 0 ? (
-          <img src={project.images[0]} alt={project.title} />
+          <div className="image-carousel">
+            <img 
+              src={project.images[currentImageIndex]} 
+              alt={`${project.title} - Imagen ${currentImageIndex + 1}`}
+              className="project-image"
+            />
+            
+            {hasMultipleImages && (
+              <>
+                <button 
+                  className="carousel-btn carousel-btn-prev"
+                  onClick={prevImage}
+                  aria-label="Imagen anterior"
+                >
+                  ‹
+                </button>
+                <button 
+                  className="carousel-btn carousel-btn-next"
+                  onClick={nextImage}
+                  aria-label="Siguiente imagen"
+                >
+                  ›
+                </button>
+                <div className="carousel-indicators">
+                  {project.images.map((_, index) => (
+                    <span 
+                      key={index}
+                      className={`indicator ${index === currentImageIndex ? 'active' : ''}`}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setCurrentImageIndex(index);
+                      }}
+                    />
+                  ))}
+                </div>
+              </>
+            )}
+          </div>
         ) : (
-          <div>
+          <div className="no-image-placeholder">
             <span>📁</span>
           </div>
         )}

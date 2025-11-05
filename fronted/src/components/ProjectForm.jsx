@@ -7,7 +7,6 @@ export default function ProjectForm({ project }) {
 
   const [form, setForm] = useState({
     title: project?.title || "",
-    slug: project?.slug || "",
     description: project?.description || "",
     tags: project?.tags?.join(", ") || "",
     liveUrl: project?.liveUrl || "",
@@ -32,17 +31,25 @@ export default function ProjectForm({ project }) {
     setMsg("");
 
     try {
+      // Generar slug automáticamente desde el título
+      const slug = form.title
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/^-+|-+$/g, '')
+        + '-' + Date.now();
+
       // Crear proyecto (o actualizar si existe)
       let res;
       if (project) {
         res = await API.put(`/projects/${project._id}`, {
           ...form,
-          tags: form.tags.split(",").map((t) => t.trim()),
+          tags: form.tags.split(",").map((t) => t.trim()).filter(t => t),
         });
       } else {
         res = await API.post("/projects", {
           ...form,
-          tags: form.tags.split(",").map((t) => t.trim()),
+          slug,
+          tags: form.tags.split(",").map((t) => t.trim()).filter(t => t),
         });
       }
 
@@ -51,14 +58,14 @@ export default function ProjectForm({ project }) {
       // Subir imagen si hay
       if (image) {
         const formData = new FormData();
-        formData.append("image", image);
+        formData.append("images", image); // El backend espera 'images' (plural)
 
         await API.post(`/projects/${projectId}/upload`, formData, {
           headers: { "Content-Type": "multipart/form-data" },
         });
       }
 
-      setMsg("Proyecto guardado con éxito");
+      setMsg("✅ Proyecto guardado con éxito");
       setTimeout(() => navigate("/dashboard"), 1200);
     } catch (err) {
       console.error(err);
@@ -76,63 +83,65 @@ export default function ProjectForm({ project }) {
       <form onSubmit={handleSubmit} className="space-y-3">
         <input
           name="title"
-          placeholder="Título"
+          placeholder="Título del proyecto"
           value={form.title}
-          onChange={handleChange}
-          className="w-full p-2 border rounded"
-          required
-        />
-        <input
-          name="slug"
-          placeholder="Slug único"
-          value={form.slug}
           onChange={handleChange}
           className="w-full p-2 border rounded"
           required
         />
         <textarea
           name="description"
-          placeholder="Descripción"
+          placeholder="Descripción del proyecto"
           value={form.description}
           onChange={handleChange}
           className="w-full p-2 border rounded"
+          rows="4"
         />
         <input
           name="tags"
-          placeholder="Etiquetas (separadas por comas)"
+          placeholder="Etiquetas (React, Node.js, MongoDB...)"
           value={form.tags}
           onChange={handleChange}
           className="w-full p-2 border rounded"
         />
         <input
           name="liveUrl"
-          placeholder="URL en vivo"
+          placeholder="URL del proyecto en vivo (opcional)"
           value={form.liveUrl}
           onChange={handleChange}
           className="w-full p-2 border rounded"
+          type="url"
         />
         <input
           name="repoUrl"
-          placeholder="URL repositorio"
+          placeholder="URL del repositorio (opcional)"
           value={form.repoUrl}
           onChange={handleChange}
           className="w-full p-2 border rounded"
+          type="url"
         />
-        <input
-          type="file"
-          accept="image/*"
-          onChange={handleImageChange}
-          className="w-full"
-        />
+        <div>
+          <label className="block mb-2 text-sm font-medium">Imagen del proyecto</label>
+          <input
+            type="file"
+            accept="image/*"
+            onChange={handleImageChange}
+            className="w-full"
+          />
+        </div>
         <button
           type="submit"
           disabled={loading}
-          className="w-full p-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+          className="w-full p-2 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:bg-gray-400"
         >
-          {loading ? "Guardando..." : "Guardar proyecto"}
+          {loading ? "Guardando..." : project ? "Actualizar proyecto" : "Crear proyecto"}
         </button>
       </form>
-      {msg && <p className="mt-3 text-center">{msg}</p>}
+      {msg && (
+        <p className={`mt-3 text-center p-2 rounded ${msg.includes('❌') ? 'bg-red-100 text-red-700' : 'bg-green-100 text-green-700'}`}>
+          {msg}
+        </p>
+      )}
     </div>
   );
 }
