@@ -2,13 +2,14 @@
 
 // HEADER SENCILLO
 .header {
-  background: white;
-  border-bottom: 1px solid #e5e7eb;
+  background: var(--card-bg);
+  border-bottom: 1px solid var(--border-color);
   padding: 1rem 2rem;
   position: sticky;
   top: 0;
   z-index: 100;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 1px 3px var(--card-shadow);
+  transition: all 0.3s ease;
 
   &__container {
     max-width: 1200px;
@@ -42,7 +43,7 @@
   }
 
   &__link {
-    color: #374151;
+    color: var(--text-primary);
     text-decoration: none;
     font-weight: 500;
     padding: 0.5rem 1rem;
@@ -50,7 +51,7 @@
     transition: all 0.2s;
 
     &:hover {
-      background: #f3f4f6;
+      background: var(--bg-tertiary);
       color: #4f46e5;
     }
   }
@@ -71,13 +72,13 @@
     transition: all 0.2s;
 
     &--login {
-      color: #374151;
-      border: 1px solid #d1d5db;
-      background: white;
+      color: var(--text-primary);
+      border: 1px solid var(--border-color);
+      background: var(--card-bg);
 
       &:hover {
-        background: #f9fafb;
-        border-color: #9ca3af;
+        background: var(--bg-tertiary);
+        border-color: var(--text-tertiary);
       }
     }
 
@@ -102,15 +103,15 @@
     align-items: center;
     gap: 0.5rem;
     padding: 0.5rem 1rem;
-    background: white;
-    border: 1px solid #e5e7eb;
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
     border-radius: 0.5rem;
     cursor: pointer;
     transition: all 0.2s;
 
     &:hover {
-      background: #f9fafb;
-      border-color: #d1d5db;
+      background: var(--bg-tertiary);
+      border-color: var(--text-tertiary);
     }
   }
 
@@ -129,17 +130,17 @@
 
   &__name {
     font-weight: 500;
-    color: #111827;
+    color: var(--text-primary);
   }
 
   &__dropdown {
     position: absolute;
     top: calc(100% + 0.5rem);
     right: 0;
-    background: white;
-    border: 1px solid #e5e7eb;
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
     border-radius: 0.5rem;
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 10px 25px var(--card-shadow);
     min-width: 200px;
     overflow: hidden;
     animation: fadeIn 0.2s ease;
@@ -150,7 +151,7 @@
     align-items: center;
     gap: 0.75rem;
     padding: 0.75rem 1rem;
-    color: #374151;
+    color: var(--text-primary);
     text-decoration: none;
     border: none;
     background: none;
@@ -159,7 +160,7 @@
     transition: background 0.2s;
 
     &:hover {
-      background: #f3f4f6;
+      background: var(--bg-tertiary);
     }
 
     &--danger {
@@ -183,7 +184,7 @@
 
   &__divider {
     height: 1px;
-    background: #e5e7eb;
+    background: var(--border-color);
     margin: 0;
   }
 
