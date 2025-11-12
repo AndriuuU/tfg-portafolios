@@ -75,4 +75,14 @@ export const leaveProject = (projectId) => API.post(`/projects/${projectId}/coll
 export const getRecommendedUsers = () => API.get('/users/recommended/users');
 export const getUserByUsername = (username) => API.get(`/users/${username}`);
 
+// ==================== NOTIFICACIONES ====================
+export const getNotifications = (unreadOnly = false) => 
+  API.get('/notifications', { params: { unreadOnly } });
+export const markNotificationAsRead = (notificationId) => 
+  API.put(`/notifications/${notificationId}/read`);
+export const markAllNotificationsAsRead = () => 
+  API.put('/notifications/read/all');
+export const deleteNotification = (notificationId) => 
+  API.delete(`/notifications/${notificationId}`);
+
 export default API;

@@ -1,4 +1,5 @@
 const Project = require('../../models/Project');
+const { createNotification } = require('../notificationController');
 
 // Dar like a un proyecto
 exports.likeProject = async (req, res) => {
@@ -15,6 +16,14 @@ exports.likeProject = async (req, res) => {
 
     project.likes.push(req.user.id);
     await project.save();
+
+    // Create notification for project owner
+    await createNotification(
+      project.owner,
+      req.user.id,
+      'like',
+      { projectId: project._id, message: `Le encantó tu proyecto: ${project.title}` }
+    );
 
     res.json({ message: "Like añadido", likesCount: project.likes.length });
   } catch (error) {

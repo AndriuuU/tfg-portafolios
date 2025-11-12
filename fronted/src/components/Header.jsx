@@ -2,6 +2,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { getFollowRequests } from "../api/followApi";
 import SearchBar from "./SearchBar";
+import NotificationBell from "./NotificationBell";
 import "../styles/components/_header.scss";
 
 const Header = ({ user, setUser }) => {
@@ -78,6 +79,7 @@ const Header = ({ user, setUser }) => {
 
         {/* Usuario */}
         <div className="header__user">
+          {user && <NotificationBell />}
           {user ? (
             <div className="user-menu">
               {/* Botón de usuario */}

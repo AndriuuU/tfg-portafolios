@@ -1,4 +1,5 @@
 const User = require('../../models/User');
+const { createNotification } = require('./notificationController');
 
 // Seguir a un usuario
 exports.followUser = async (req, res) => {
@@ -39,6 +40,9 @@ exports.followUser = async (req, res) => {
       
       userToFollow.followRequests.push(currentUserId);
       await userToFollow.save();
+
+      // Create follow_request notification
+      await createNotification(userId, currentUserId, 'follow_request', { message: 'Quiere seguirte' });
       
       return res.json({ 
         message: 'Solicitud de seguimiento enviada',
@@ -52,6 +56,9 @@ exports.followUser = async (req, res) => {
 
     await currentUser.save();
     await userToFollow.save();
+
+    // Create follow notification
+    await createNotification(userId, currentUserId, 'follow', { message: 'Empezó a seguirte' });
 
     res.json({ 
       message: 'Usuario seguido correctamente',
@@ -155,6 +162,9 @@ exports.acceptFollowRequest = async (req, res) => {
 
     await currentUser.save();
     await requester.save();
+
+    // Create notification that follow request was accepted
+    await createNotification(userId, currentUserId, 'follow', { message: 'Aceptó tu solicitud de seguimiento' });
 
     res.json({ message: 'Solicitud aceptada' });
   } catch (error) {

@@ -3,6 +3,8 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
+    "start": "node src/index.js",
+    "dev": "nodemon src/index.js",
     "test": "cross-env NODE_ENV=test jest --setupFilesAfterEnv=./src/tests/setup.js",
     "test:watch": "cross-env NODE_ENV=test jest --watch --setupFilesAfterEnv=./src/tests/setup.js",
     "test:coverage": "cross-env NODE_ENV=test jest --coverage --setupFilesAfterEnv=./src/tests/setup.js"

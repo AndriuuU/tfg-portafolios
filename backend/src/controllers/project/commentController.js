@@ -1,4 +1,5 @@
 const Project = require('../../models/Project');
+const { createNotification } = require('../notificationController');
 
 // Añadir comentario
 exports.addComment = async (req, res) => {
@@ -17,6 +18,16 @@ exports.addComment = async (req, res) => {
     project.comments.push(comment);
     await project.save();
     await project.populate('comments.user', 'username email');
+
+    // Create notification for project owner if commenter is not the owner
+    if (project.owner.toString() !== req.user.id) {
+      await createNotification(
+        project.owner,
+        req.user.id,
+        'comment',
+        { projectId: project._id, message: `Comentó en tu proyecto: ${project.title}` }
+      );
+    }
 
     res.json(project);
   } catch (error) {
