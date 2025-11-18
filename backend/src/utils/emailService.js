@@ -48,7 +48,7 @@ exports.sendVerificationEmail = async (email, username, token) => {
           Verificar Email
         </a>
         <p>O copia y pega este enlace en tu navegador:</p>
-        <p style="color: #666;">${verificationUrl}</p>
+        <p style="color: #666; word-break: break-all;">${verificationUrl}</p>
         <p>Este enlace expirará en 24 horas.</p>
         <hr style="margin: 30px 0;">
         <p style="color: #999; font-size: 12px;">Si no te registraste en nuestra plataforma, puedes ignorar este email.</p>
@@ -60,6 +60,8 @@ exports.sendVerificationEmail = async (email, username, token) => {
     await transporter.sendMail(mailOptions);
     if (process.env.NODE_ENV !== 'test') {
       console.log('✅ Email de verificación enviado a:', email);
+      console.log('   Token:', token);
+      console.log('   URL:', verificationUrl);
     }
   } catch (error) {
     if (process.env.NODE_ENV !== 'test') {
