@@ -51,30 +51,59 @@ export default function FollowRequests() {
     };
 
     const goToProfile = (username) => {
-        navigate(`/portfolio/${username}`);
+        navigate(`/u/${username}`);
     };
 
     if (loading) return <p>Cargando solicitudes...</p>;
     if (error) return <p>{error}</p>;
 
     return (
-        <div>
-            <h2>Solicitudes de seguimiento ({requests.length})</h2>
+        <div className="user-list">
+            <h3>Solicitudes pendientes ({requests.length})</h3>
             {requests.length === 0 ? (
-                <p>No hay solicitudes pendientes</p>
+                <div className="empty-state">
+                    <p>No hay solicitudes pendientes</p>
+                </div>
             ) : (
                 <ul>
                     {requests.map((request) => (
                         <li key={request._id}>
-                            <div onClick={() => goToProfile(request.username)}>
-                                <strong>{request.name}</strong> (@{request.username})
+                            <div className="user-avatar">
+                                {request.avatarUrl ? (
+                                    <img src={request.avatarUrl} alt={request.username} />
+                                ) : (
+                                    <div style={{
+                                        background: 'linear-gradient(135deg, #4f46e5, #7c3aed)',
+                                        color: 'white',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                        fontWeight: '700',
+                                        fontSize: '16px'
+                                    }}>
+                                        {request.name?.charAt(0).toUpperCase() || request.username?.charAt(0).toUpperCase()}
+                                    </div>
+                                )}
                             </div>
-                            <div>
-                                <button onClick={() => handleAccept(request._id)}>
-                                    Aceptar
+                            <div className="user-info">
+                                <div className="user-name" onClick={() => goToProfile(request.username)}>
+                                    {request.name}
+                                </div>
+                                <div className="user-username">@{request.username}</div>
+                            </div>
+                            <div style={{ display: 'flex', gap: '8px' }}>
+                                <button 
+                                    className="action-btn" 
+                                    onClick={() => handleAccept(request._id)}
+                                    style={{ background: '#22c55e' }}
+                                >
+                                    ✓ Aceptar
                                 </button>
-                                <button onClick={() => handleReject(request._id)}>
-                                    Rechazar
+                                <button 
+                                    className="action-btn" 
+                                    onClick={() => handleReject(request._id)}
+                                >
+                                    ✕ Rechazar
                                 </button>
                             </div>
                         </li>

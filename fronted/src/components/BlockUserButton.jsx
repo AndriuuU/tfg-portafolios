@@ -40,10 +40,7 @@ export default function BlockUserButton({ userId, isBlocked, onUpdate }) {
         <button
             onClick={isBlocked ? handleUnblock : handleBlock}
             disabled={loading}
-            className={`px-4 py-2 rounded ${isBlocked
-                    ? 'bg-green-600 hover:bg-green-700 text-white'
-                    : 'bg-red-600 hover:bg-red-700 text-white'
-                } disabled:opacity-50`}
+            className={`btn ${isBlocked ? 'btn-unblock' : 'btn-block'}`}
         >
             {loading ? 'Procesando...' : isBlocked ? '✓ Desbloquear' : '🚫 Bloquear'}
         </button>
