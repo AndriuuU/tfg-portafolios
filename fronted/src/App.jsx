@@ -16,6 +16,8 @@ import Search from "./pages/Search";
 import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
 import VerifyEmail from "./pages/VerifyEmail";
+import AnalyticsPage from "./pages/AnalyticsPage";
+import RankingPage from "./pages/RankingPage";
 
 function App() {
   const [user, setUser] = useState(null);
@@ -59,6 +61,8 @@ function App() {
           <Route path="/reset-password/:token" element={<ResetPassword />} />
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/settings" element={<Settings />} />
+          <Route path="/analytics" element={<AnalyticsPage />} />
+          <Route path="/ranking" element={<RankingPage />} />
           <Route path="/search" element={<Search />} />
           <Route path="/projects" element={<ProjectForm />} />
           <Route path="/projects/new" element={<NewProject />} />

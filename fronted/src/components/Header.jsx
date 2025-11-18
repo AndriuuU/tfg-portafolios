@@ -69,9 +69,11 @@ const Header = ({ user, setUser }) => {
         {/* Navegación */}
         <nav className="header__nav">
           <Link to="/" className="header__link">Inicio</Link>
+          <Link to="/ranking" className="header__link">🏆 Ranking</Link>
           {user && (
             <>
               <Link to="/dashboard" className="header__link">Dashboard</Link>
+              <Link to="/analytics" className="header__link">Analytics</Link>
               <Link to={`/u/${user.username}`} className="header__link">Mi Portfolio</Link>
             </>
           )}

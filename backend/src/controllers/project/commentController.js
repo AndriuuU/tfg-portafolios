@@ -1,5 +1,6 @@
 const Project = require('../../models/Project');
 const { createNotification } = require('../notificationController');
+const { logActivity, logProjectComment, logProjectCommentDelete } = require('../../utils/analyticsHelper');
 
 // Añadir comentario
 exports.addComment = async (req, res) => {
@@ -18,6 +19,14 @@ exports.addComment = async (req, res) => {
     project.comments.push(comment);
     await project.save();
     await project.populate('comments.user', 'username email');
+
+    // Logging
+    await logProjectComment(project._id);
+    await logActivity(req.user.id, 'comment_added', {
+      projectId: project._id,
+      projectTitle: project.title,
+      description: `Comentó: ${req.body.text.substring(0, 50)}...`
+    }, req);
 
     // Create notification for project owner if commenter is not the owner
     if (project.owner.toString() !== req.user.id) {
@@ -60,6 +69,13 @@ exports.deleteComment = async (req, res) => {
 
     comment.deleteOne();
     await project.save();
+    
+    // Logging
+    await logProjectCommentDelete(project._id);
+    await logActivity(req.user.id, 'comment_deleted', {
+      projectId: project._id,
+      projectTitle: project.title
+    }, req);
     
     res.json({ message: "Comentario eliminado" });
   } catch (error) {

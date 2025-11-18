@@ -9,6 +9,7 @@ module.exports = {
   testMatch: [
     '**/tests/**/*.test.js',
   ],
+  setupFilesAfterEnv: ['<rootDir>/src/tests/setup.js'],
   verbose: true,
   forceExit: true,
   clearMocks: true,

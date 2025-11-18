@@ -1,0 +1,77 @@
+@use './abstracts/variables' as *;
+@use './abstracts/mixins' as *;
+
+.analytics-page {
+  min-height: 100vh;
+  background: var(--bg-primary);
+  padding: 2rem 1rem;
+
+  @include mobile {
+    padding: 1rem 0.5rem;
+  }
+
+  .analytics-header-section {
+    max-width: 1400px;
+    margin: 0 auto 2rem;
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+
+    @include mobile {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 1rem;
+    }
+
+    .back-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: var(--card-bg);
+      color: var(--text-primary);
+      border: 1px solid var(--border-color);
+      cursor: pointer;
+      transition: all 0.2s ease;
+      font-size: 1.2rem;
+      text-decoration: none;
+
+      &:hover {
+        background: var(--primary-color);
+        color: white;
+        transform: translateX(-4px);
+      }
+
+      @include dark-mode {
+        background: var(--card-bg-dark);
+        border-color: var(--border-dark);
+        color: var(--text-primary-dark);
+
+        &:hover {
+          background: var(--primary-color-dark);
+        }
+      }
+    }
+
+    h1 {
+      font-size: clamp(1.75rem, 5vw, 2.5rem);
+      color: var(--text-primary);
+      margin: 0;
+      flex: 1;
+
+      @include mobile {
+        font-size: clamp(1.5rem, 4vw, 2rem);
+      }
+
+      @include dark-mode {
+        color: var(--text-primary-dark);
+      }
+    }
+  }
+
+  @include dark-mode {
+    background: var(--bg-primary-dark);
+  }
+}

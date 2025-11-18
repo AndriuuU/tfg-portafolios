@@ -1,5 +1,6 @@
 const Project = require('../../models/Project');
 const { cloudinary } = require('../../utils/cloudinary');
+const { logProjectView, logActivity } = require('../../utils/analyticsHelper');
 
 // Crear proyecto
 exports.createProject = async (req, res) => {
@@ -83,6 +84,14 @@ exports.getProjectById = async (req, res) => {
     
     if (!project) {
       return res.status(404).json({ error: 'Proyecto no encontrado' });
+    }
+
+    // Logging de vista - si está autenticado, registrar el usuario
+    if (req.user) {
+      await logProjectView(project._id, req.user.id, req);
+    } else {
+      // Vista anónima
+      await logProjectView(project._id, null, req);
     }
     
     res.json(project);

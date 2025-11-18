@@ -1,10 +1,17 @@
 const { MongoMemoryServer } = require('mongodb-memory-server');
 const mongoose = require('mongoose');
+const dotenv = require('dotenv');
+
+// Cargar variables del .env
+dotenv.config({ path: '.env' });
 
 let mongoServer;
 
-// Conectar a MongoDB en memoria antes de todos los tests
+// Configurar variables de entorno para tests
 beforeAll(async () => {
+  process.env.NODE_ENV = 'test';
+  process.env.JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key';
+  
   // ⚠️ IMPORTANTE: Desconectar cualquier conexión existente antes de tests
   if (mongoose.connection.readyState !== 0) {
     await mongoose.disconnect();

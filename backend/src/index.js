@@ -31,6 +31,8 @@ const projectRoutes = require('./routes/projectRoutes');
 const followRoutes = require('./routes/followRoutes');
 const searchRoutes = require('./routes/searchRoutes');
 const notificationRoutes = require('./routes/notificationRoutes');
+const analyticsRoutes = require('./routes/analyticsRoutes');
+const rankingRoutes = require('./routes/rankingRoutes');
 
 app.use('/api/users', userRoutes);
 app.use('/api/auth', authRoutes);
@@ -39,6 +41,8 @@ app.use('/api/projects', projectRoutes);
 app.use('/api/follow', followRoutes);
 app.use('/api/search', searchRoutes);
 app.use('/api/notifications', notificationRoutes);
+app.use('/api/analytics', analyticsRoutes);
+app.use('/api/ranking', rankingRoutes);
 
 // Arrancar servidor
 const PORT = process.env.PORT || 5000;
