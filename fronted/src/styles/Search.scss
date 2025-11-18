@@ -1,0 +1,345 @@
+@use './abstracts/variables' as *;
+@use './abstracts/mixins' as *;
+
+// Search Page Styles
+.search-page {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: clamp(1rem, 4vw, 2rem) 1rem;
+
+  @include tablet {
+    padding: 1.5rem 0.75rem;
+  }
+
+  @include mobile {
+    padding: 1rem 0.5rem;
+  }
+
+  .search-container {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+
+    h1 {
+      font-size: clamp(1.5rem, 5vw, 2rem);
+      font-weight: bold;
+      color: var(--text-primary);
+      margin-bottom: 0.5rem;
+    }
+
+    .search-subtitle {
+      color: var(--text-secondary);
+      margin-bottom: 1rem;
+      font-size: clamp(0.9rem, 2vw, 1rem);
+    }
+  }
+}
+
+// Search Form
+.search-form {
+  background: var(--card-bg);
+  padding: clamp(1.2rem, 3vw, 1.5rem);
+  border-radius: 12px;
+  box-shadow: 0 2px 8px var(--card-shadow);
+
+  @include dark-mode {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  }
+
+  .form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-bottom: 1rem;
+
+    @include tablet {
+      grid-template-columns: 1fr;
+      gap: 0.75rem;
+    }
+  }
+
+  .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+
+    label {
+      font-weight: 500;
+      color: var(--text-primary);
+      font-size: clamp(0.85rem, 1.5vw, 0.9rem);
+    }
+
+    input,
+    select {
+      padding: clamp(0.6rem, 1.5vw, 0.75rem);
+      border: 1px solid var(--input-border);
+      border-radius: 8px;
+      font-size: clamp(0.85rem, 1.5vw, 0.95rem);
+      transition: all 0.3s ease;
+      background: var(--input-bg);
+      color: var(--text-primary);
+      min-height: 40px;
+
+      &:focus {
+        outline: none;
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+      }
+
+      &::placeholder {
+        color: var(--text-tertiary);
+      }
+
+      @include dark-mode {
+        &:focus {
+          box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.2);
+        }
+      }
+    }
+
+    small {
+      color: var(--text-secondary);
+      font-size: clamp(0.75rem, 1.2vw, 0.85rem);
+    }
+  }
+
+  .form-actions {
+    display: flex;
+    gap: 1rem;
+    margin-top: 1rem;
+    flex-wrap: wrap;
+
+    @include mobile {
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    button {
+      padding: clamp(0.6rem, 1.5vw, 0.75rem) clamp(1rem, 2vw, 1.5rem);
+      border-radius: 8px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      border: none;
+      min-height: 44px;
+      font-size: clamp(0.85rem, 1.5vw, 0.95rem);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      &.btn-search {
+        background: var(--primary-color);
+        color: white;
+        flex: 1;
+
+        &:hover {
+          background: var(--primary-dark);
+          transform: translateY(-2px);
+          box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
+        }
+
+        &:disabled {
+          background: var(--text-tertiary);
+          cursor: not-allowed;
+          opacity: 0.6;
+          transform: none;
+        }
+
+        @include dark-mode {
+          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+
+          &:hover:not(:disabled) {
+            box-shadow: 0 4px 12px rgba(79, 70, 229, 0.4);
+          }
+        }
+
+        @include mobile {
+          flex: unset;
+          width: 100%;
+        }
+      }
+
+      &.btn-clear {
+        background: var(--bg-tertiary);
+        color: var(--text-primary);
+
+        &:hover {
+          background: var(--border-color);
+          transform: translateY(-1px);
+        }
+
+        @include mobile {
+          width: 100%;
+        }
+      }
+    }
+  }
+}
+
+// Search Results
+.search-results {
+  .results-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    gap: 1rem;
+    flex-wrap: wrap;
+
+    @include mobile {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+
+    h2 {
+      font-size: clamp(1.25rem, 4vw, 1.5rem);
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+
+    .results-count {
+      color: var(--text-secondary);
+      font-size: clamp(0.85rem, 1.5vw, 0.95rem);
+    }
+  }
+
+  .results-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+
+    @include tablet {
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 1rem;
+    }
+
+    @include mobile {
+      grid-template-columns: 1fr;
+      gap: 1rem;
+    }
+  }
+}
+
+// Pagination
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: clamp(0.5rem, 2vw, 1rem);
+  margin-top: 2rem;
+  flex-wrap: wrap;
+
+  @include mobile {
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  button {
+    padding: clamp(0.5rem, 1.5vw, 0.5rem) clamp(0.75rem, 1.5vw, 1rem);
+    border: 1px solid var(--border-color);
+    background: var(--card-bg);
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    color: var(--text-primary);
+    font-size: clamp(0.85rem, 1.5vw, 0.95rem);
+    min-height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    &:hover:not(:disabled) {
+      background: var(--bg-tertiary);
+      border-color: var(--primary-color);
+      transform: translateY(-1px);
+    }
+
+    &:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    @include mobile {
+      width: 100%;
+    }
+  }
+
+  .page-info {
+    color: var(--text-secondary);
+    font-size: clamp(0.85rem, 1.5vw, 0.95rem);
+
+    @include mobile {
+      width: 100%;
+      text-align: center;
+    }
+  }
+}
+
+// Loading & Empty States
+.search-loading {
+  text-align: center;
+  padding: clamp(2rem, 5vw, 3rem) 1rem;
+  color: var(--text-secondary);
+  font-size: clamp(0.95rem, 2vw, 1.1rem);
+}
+
+.no-results {
+  text-align: center;
+  padding: clamp(1.5rem, 4vw, 3rem);
+  background: var(--card-bg);
+  border-radius: 12px;
+  box-shadow: 0 2px 8px var(--card-shadow);
+
+  @include dark-mode {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  }
+
+  @include mobile {
+    padding: 1.5rem 1rem;
+  }
+
+  h3 {
+    font-size: clamp(1.25rem, 4vw, 1.5rem);
+    color: var(--text-primary);
+    margin-bottom: 0.5rem;
+  }
+
+  p {
+    color: var(--text-secondary);
+    margin-bottom: 1.5rem;
+    font-size: clamp(0.9rem, 1.5vw, 1rem);
+  }
+
+  button {
+    padding: clamp(0.6rem, 1.5vw, 0.75rem) clamp(1rem, 2vw, 1.5rem);
+    background: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    min-height: 44px;
+    font-size: clamp(0.85rem, 1.5vw, 0.95rem);
+
+    &:hover {
+      background: var(--primary-dark);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
+    }
+
+    @include dark-mode {
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+
+      &:hover {
+        box-shadow: 0 4px 12px rgba(79, 70, 229, 0.4);
+      }
+    }
+
+    @include mobile {
+      width: 100%;
+    }
+  }
+}

@@ -1,0 +1,508 @@
+@use './abstracts/mixins';
+
+// Collaborator Components Styles
+
+// InviteCollaborator
+.invite-collaborator {
+  background: var(--card-bg);
+  padding: clamp(1.25rem, 3vw, 1.5rem);
+  border-radius: clamp(8px, 1.5vw, 12px);
+  box-shadow: 0 2px 8px var(--card-shadow);
+  margin-top: clamp(0.875rem, 2vw, 1rem);
+
+  @include mixins.extra-small {
+    padding: 1rem;
+    border-radius: 8px;
+  }
+
+  h3 {
+    font-size: clamp(1.125rem, 2.5vw, 1.25rem);
+    font-weight: 600;
+    margin-bottom: clamp(0.875rem, 2vw, 1rem);
+    color: var(--text-primary);
+    word-break: break-word;
+  }
+
+  .invite-form {
+    display: flex;
+    flex-direction: column;
+    gap: clamp(0.875rem, 2vw, 1rem);
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: clamp(0.5rem, 1vw, 0.5rem);
+
+      label {
+        font-weight: 500;
+        color: var(--text-primary);
+        font-size: clamp(0.875rem, 1.5vw, 0.9rem);
+      }
+
+      input,
+      select {
+        padding: clamp(0.75rem, 2vw, 0.875rem);
+        border: 1px solid var(--input-border);
+        border-radius: 8px;
+        font-size: clamp(0.9375rem, 1.5vw, 0.95rem);
+        transition: all 0.2s;
+        background: var(--input-bg);
+        color: var(--text-primary);
+        min-height: 44px;
+        width: 100%;
+        box-sizing: border-box;
+
+        &:focus {
+          outline: none;
+          border-color: #4f46e5;
+          box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+
+          @include mixins.dark-mode {
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.25);
+          }
+        }
+
+        @include mixins.extra-small {
+          font-size: 1rem;
+          padding: 0.75rem;
+        }
+      }
+    }
+
+    .btn-primary {
+      padding: clamp(0.75rem, 2vw, 0.875rem) clamp(1.25rem, 3vw, 1.5rem);
+      background: #4f46e5;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+      min-height: 44px;
+      font-size: clamp(0.9375rem, 1.5vw, 1rem);
+
+      &:hover {
+        background: #4338ca;
+      }
+
+      &:disabled {
+        background: #9ca3af;
+        cursor: not-allowed;
+      }
+
+      @include mixins.extra-small {
+        padding: 0.875rem 1.25rem;
+        font-size: 1rem;
+      }
+    }
+  }
+
+  .role-info {
+    margin-top: clamp(1.25rem, 3vw, 1.5rem);
+    padding: clamp(0.875rem, 2vw, 1rem);
+    background: var(--bg-tertiary);
+    border-radius: 8px;
+    border-left: 3px solid #4f46e5;
+
+    h4 {
+      font-size: clamp(1rem, 1.5vw, 1rem);
+      font-weight: 600;
+      margin-bottom: clamp(0.5rem, 1vw, 0.5rem);
+      color: var(--text-primary);
+      word-break: break-word;
+    }
+
+    ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+
+      li {
+        padding: clamp(0.25rem, 0.5vw, 0.25rem) 0;
+        font-size: clamp(0.9375rem, 1.5vw, 1rem);
+        color: var(--text-secondary);
+        line-height: 1.5;
+
+        strong {
+          color: var(--text-primary);
+        }
+
+        @include mixins.extra-small {
+          font-size: 0.875rem;
+        }
+      }
+    }
+  }
+}
+
+// CollaboratorInvitations
+.collaborator-invitations {
+  .invitations-loading {
+    text-align: center;
+    padding: clamp(1.5rem, 3vw, 2rem);
+    color: var(--text-secondary);
+    font-size: clamp(0.9375rem, 1.5vw, 1rem);
+  }
+
+  h3 {
+    font-size: clamp(1.25rem, 3vw, 1.5rem);
+    font-weight: 600;
+    margin-bottom: clamp(1.25rem, 3vw, 1.5rem);
+    color: var(--text-primary);
+    word-break: break-word;
+  }
+
+  .invitations-list {
+    display: flex;
+    flex-direction: column;
+    gap: clamp(0.875rem, 2vw, 1rem);
+  }
+
+  .invitation-card {
+    background: var(--card-bg);
+    padding: clamp(1.25rem, 3vw, 1.5rem);
+    border-radius: clamp(8px, 1.5vw, 12px);
+    box-shadow: 0 2px 8px var(--card-shadow);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: clamp(0.875rem, 2vw, 1rem);
+    transition: all 0.2s;
+
+    &:hover {
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+
+      @include mixins.dark-mode {
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+      }
+    }
+
+    @include mixins.tablet {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+
+    @include mixins.extra-small {
+      padding: 1rem;
+      gap: 0.875rem;
+    }
+
+    .invitation-info {
+      flex: 1;
+
+      .invitation-project {
+        margin-bottom: 1rem;
+
+        h4 {
+          font-size: 1.1rem;
+          font-weight: 600;
+          margin-bottom: 0.5rem;
+          color: var(--text-primary);
+
+          a {
+            color: inherit;
+            text-decoration: none;
+            transition: color 0.2s;
+
+            &:hover {
+              color: #4f46e5;
+            }
+          }
+        }
+
+        .invitation-description {
+          color: var(--text-secondary);
+          font-size: 0.9rem;
+        }
+      }
+
+      .invitation-details {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+
+        p {
+          font-size: 0.9rem;
+          color: var(--text-primary);
+
+          strong {
+            font-weight: 600;
+          }
+
+          a {
+            color: #4f46e5;
+            text-decoration: none;
+
+            &:hover {
+              text-decoration: underline;
+            }
+          }
+        }
+
+        .invitation-date {
+          color: #9ca3af;
+          font-size: 0.85rem;
+        }
+
+        .role-badge {
+          display: inline-block;
+          padding: 0.25rem 0.75rem;
+          border-radius: 20px;
+          font-size: 0.85rem;
+          font-weight: 500;
+
+          &.role-viewer {
+            background: #dbeafe;
+            color: #1e40af;
+          }
+
+          &.role-editor {
+            background: #fef3c7;
+            color: #92400e;
+          }
+        }
+      }
+    }
+
+    .invitation-actions {
+      display: flex;
+      gap: 0.5rem;
+
+      button {
+        padding: 0.5rem 1rem;
+        border: none;
+        border-radius: 8px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.2s;
+        font-size: 0.9rem;
+
+        &:disabled {
+          opacity: 0.5;
+          cursor: not-allowed;
+        }
+
+        &.btn-accept {
+          background: #10b981;
+          color: white;
+
+          &:hover:not(:disabled) {
+            background: #059669;
+          }
+        }
+
+        &.btn-reject {
+          background: #ef4444;
+          color: white;
+
+          &:hover:not(:disabled) {
+            background: #dc2626;
+          }
+        }
+      }
+    }
+  }
+
+  .no-invitations {
+    text-align: center;
+    padding: 3rem;
+    background: var(--card-bg);
+    border-radius: 12px;
+    box-shadow: 0 2px 8px var(--card-shadow);
+    color: var(--text-secondary);
+  }
+}
+
+// CollaboratorList
+.collaborator-list {
+  h3 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    color: var(--text-primary);
+  }
+
+  .collaborators-loading {
+    text-align: center;
+    padding: 2rem;
+    color: var(--text-secondary);
+  }
+
+  .no-collaborators {
+    text-align: center;
+    padding: 2rem;
+    color: var(--text-secondary);
+    background: var(--bg-tertiary);
+    border-radius: 8px;
+  }
+
+  .collaborators-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1rem;
+    margin-bottom: 1rem;
+
+    @media (max-width: 768px) {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .collaborator-card {
+    background: var(--card-bg);
+    padding: 1rem;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px var(--card-shadow);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+    transition: all 0.2s;
+
+    &:hover {
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+
+    .collaborator-info {
+      display: flex;
+      gap: 1rem;
+      flex: 1;
+
+      .collaborator-avatar {
+        flex-shrink: 0;
+
+        img {
+          width: 50px;
+          height: 50px;
+          border-radius: 50%;
+          object-fit: cover;
+        }
+
+        .avatar-placeholder {
+          width: 50px;
+          height: 50px;
+          border-radius: 50%;
+          background: #4f46e5;
+          color: white;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-weight: 600;
+          font-size: 1.25rem;
+        }
+      }
+
+      .collaborator-details {
+        flex: 1;
+
+        h4 {
+          font-size: 1rem;
+          font-weight: 600;
+          margin-bottom: 0.25rem;
+          color: var(--text-primary);
+
+          a {
+            color: inherit;
+            text-decoration: none;
+
+            &:hover {
+              color: #4f46e5;
+            }
+          }
+        }
+
+        .collaborator-username {
+          color: var(--text-secondary);
+          font-size: 0.85rem;
+          margin-bottom: 0.5rem;
+        }
+
+        .role-selector {
+          padding: 0.25rem 0.5rem;
+          border: 1px solid var(--input-border);
+          border-radius: 6px;
+          font-size: 0.85rem;
+          margin-bottom: 0.5rem;
+          cursor: pointer;
+          background: var(--input-bg);
+          color: var(--text-primary);
+
+          &:focus {
+            outline: none;
+            border-color: #4f46e5;
+          }
+        }
+
+        .role-badge {
+          display: inline-block;
+          padding: 0.25rem 0.75rem;
+          border-radius: 20px;
+          font-size: 0.85rem;
+          font-weight: 500;
+          margin-bottom: 0.5rem;
+
+          &.role-viewer {
+            background: #dbeafe;
+            color: #1e40af;
+          }
+
+          &.role-editor {
+            background: #fef3c7;
+            color: #92400e;
+          }
+        }
+
+        .collaborator-since {
+          color: #9ca3af;
+          font-size: 0.8rem;
+        }
+      }
+    }
+
+    .btn-remove {
+      padding: 0.5rem;
+      background: #fee2e2;
+      color: #dc2626;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-size: 1.1rem;
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      &:hover:not(:disabled) {
+        background: #fecaca;
+      }
+
+      &:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+    }
+  }
+
+  .btn-leave {
+    width: 100%;
+    padding: 0.75rem;
+    background: #ef4444;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+    margin-top: 1rem;
+
+    &:hover:not(:disabled) {
+      background: #dc2626;
+    }
+
+    &:disabled {
+      background: #9ca3af;
+      cursor: not-allowed;
+    }
+  }
+}

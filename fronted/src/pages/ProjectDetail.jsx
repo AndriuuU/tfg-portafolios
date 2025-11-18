@@ -4,7 +4,7 @@ import { getProjectById, likeProject, unlikeProject, saveProject, unsaveProject 
 import Comments from "../components/Comments";
 import CollaboratorList from "../components/CollaboratorList";
 import InviteCollaborator from "../components/InviteCollaborator";
-import "../styles/Dashboard.scss";
+import "../styles/ProjectDetail.scss";
 
 export default function ProjectDetail() {
   const { id } = useParams();

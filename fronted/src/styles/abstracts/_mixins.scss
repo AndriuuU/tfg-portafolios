@@ -1,0 +1,63 @@
+// Mixin para modo oscuro
+@mixin dark-mode {
+  body.dark-mode & {
+    @content;
+  }
+}
+
+// Mixin para modo claro
+@mixin light-mode {
+  body:not(.dark-mode) & {
+    @content;
+  }
+}
+
+// Colores dinámicos (funcionan con CSS variables)
+@mixin theme-color($light, $dark) {
+  color: $light;
+
+  @include dark-mode {
+    color: $dark;
+  }
+}
+
+@mixin theme-background($light, $dark) {
+  background: $light;
+
+  @include dark-mode {
+    background: $dark;
+  }
+}
+
+@mixin theme-border($light, $dark) {
+  border-color: $light;
+
+  @include dark-mode {
+    border-color: $dark;
+  }
+}
+
+// Responsive
+@mixin extra-small {
+  @media (max-width: 375px) {
+    @content;
+  }
+}
+
+@mixin mobile {
+  @media (max-width: 480px) {
+    @content;
+  }
+}
+
+@mixin tablet {
+  @media (max-width: 768px) {
+    @content;
+  }
+}
+
+@mixin desktop {
+  @media (min-width: 769px) {
+    @content;
+  }
+}

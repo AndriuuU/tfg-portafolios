@@ -3,10 +3,11 @@ import { getUserProjects, getSavedProjects, deleteProject } from "../api/api";
 import { Link } from "react-router-dom";
 import ProjectPost from "../components/ProjectPost";
 import CollaboratorInvitations from "../components/CollaboratorInvitations";
+import CollaborativeProjects from "../components/CollaborativeProjects";
 import "../styles/Dashboard.scss";
 
 export default function Dashboard() {
-  const [activeTab, setActiveTab] = useState('my-projects'); // 'my-projects', 'saved', 'invitations'
+  const [activeTab, setActiveTab] = useState('my-projects'); // 'my-projects', 'saved', 'collaborative', 'invitations'
   const [myProjects, setMyProjects] = useState([]);
   const [savedProjects, setSavedProjects] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -81,11 +82,17 @@ export default function Dashboard() {
             💾 Guardados ({savedProjects.length})
           </button>
           <button
+            className={`tab ${activeTab === 'collaborative' ? 'active' : ''}`}
+            onClick={() => setActiveTab('collaborative')}
+          >
+            👥 Colaboraciones
+          </button>
+          {/* <button
             className={`tab ${activeTab === 'invitations' ? 'active' : ''}`}
             onClick={() => setActiveTab('invitations')}
           >
             📨 Invitaciones
-          </button>
+          </button> */}
         </div>
 
         {/* Content */}
@@ -161,11 +168,17 @@ export default function Dashboard() {
             </div>
           )}
 
-          {activeTab === 'invitations' && (
+          {activeTab === 'collaborative' && (
+            <div className="collaborative-section">
+              <CollaborativeProjects />
+            </div>
+          )}
+
+          {/* {activeTab === 'invitations' && (
             <div className="invitations-section">
               <CollaboratorInvitations />
             </div>
-          )}
+          )} */}
         </div>
       </div>
     </div>
