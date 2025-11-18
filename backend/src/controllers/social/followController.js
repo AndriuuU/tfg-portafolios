@@ -292,7 +292,7 @@ exports.getFollowers = async (req, res) => {
       return res.status(403).json({ error: 'Este usuario ha ocultado sus seguidores' });
     }
 
-    res.json(user.followers);
+    res.json({ followers: user.followers });
   } catch (error) {
     console.error('Error getFollowers:', error);
     res.status(500).json({ error: error.message });
@@ -317,7 +317,7 @@ exports.getFollowing = async (req, res) => {
       return res.status(403).json({ error: 'Este usuario ha ocultado a quién sigue' });
     }
 
-    res.json(user.following);
+    res.json({ following: user.following });
   } catch (error) {
     console.error('Error getFollowing:', error);
     res.status(500).json({ error: error.message });
@@ -336,7 +336,7 @@ exports.getFollowRequests = async (req, res) => {
       return res.status(404).json({ error: 'Usuario no encontrado' });
     }
 
-    res.json(user.followRequests);
+    res.json({ requests: user.followRequests || [] });
   } catch (error) {
     console.error('Error getFollowRequests:', error);
     res.status(500).json({ error: error.message });
@@ -351,7 +351,7 @@ exports.getBlockedUsers = async (req, res) => {
     const user = await User.findById(currentUserId)
       .populate('blockedUsers', 'username name avatarUrl');
 
-    res.json(user.blockedUsers);
+    res.json({ blockedUsers: user.blockedUsers || [] });
   } catch (error) {
     console.error('Error getBlockedUsers:', error);
     res.status(500).json({ error: error.message });

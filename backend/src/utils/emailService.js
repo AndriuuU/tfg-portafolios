@@ -135,3 +135,129 @@ exports.sendPasswordChangedEmail = async (email, username) => {
     }
   }
 };
+
+// Enviar email de notificación de cambio de email
+exports.sendEmailChangedNotification = async (oldEmail, newEmail, username) => {
+  const mailOptions = {
+    from: `"${process.env.APP_NAME || 'TFG Portafolios'}" <${process.env.EMAIL_USER}>`,
+    to: oldEmail,
+    subject: 'Tu email ha sido cambiado',
+    html: `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+        <h2>Hola ${username},</h2>
+        <p>Tu email de contacto ha sido cambiado exitosamente.</p>
+        <p><strong>Nuevo email:</strong> ${newEmail}</p>
+        <p>Si no realizaste este cambio, por favor contacta con soporte inmediatamente.</p>
+        <hr style="margin: 30px 0;">
+        <p style="color: #999; font-size: 12px;">Este es un mensaje automático, por favor no respondas a este email.</p>
+      </div>
+    `,
+  };
+
+  try {
+    // Enviar al email antiguo
+    await transporter.sendMail(mailOptions);
+    
+    // También enviar al nuevo email
+    const newEmailOptions = {
+      ...mailOptions,
+      to: newEmail,
+      subject: 'Email actualizado correctamente',
+      html: `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+          <h2>Hola ${username},</h2>
+          <p>Tu email de contacto ha sido actualizado exitosamente a esta dirección.</p>
+          <p>Ahora recibirás todas las notificaciones en este email.</p>
+          <p>Si no realizaste este cambio, por favor contacta con soporte inmediatamente.</p>
+          <hr style="margin: 30px 0;">
+          <p style="color: #999; font-size: 12px;">Este es un mensaje automático, por favor no respondas a este email.</p>
+        </div>
+      `,
+    };
+    await transporter.sendMail(newEmailOptions);
+    
+    if (process.env.NODE_ENV !== 'test') {
+      console.log('✅ Email de notificación de cambio enviado a:', oldEmail, 'y', newEmail);
+    }
+  } catch (error) {
+    if (process.env.NODE_ENV !== 'test') {
+      console.error('❌ Error enviando email de notificación de cambio:', error);
+    }
+  }
+};
+
+// Enviar email de notificación de cambio de nombre de usuario
+exports.sendUsernameChangedEmail = async (email, oldUsername, newUsername) => {
+  const mailOptions = {
+    from: `"${process.env.APP_NAME || 'TFG Portafolios'}" <${process.env.EMAIL_USER}>`,
+    to: email,
+    subject: 'Nombre de usuario cambiado',
+    html: `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+        <h2>Hola ${newUsername},</h2>
+        <p>Tu nombre de usuario ha sido cambiado exitosamente.</p>
+        <p><strong>Usuario anterior:</strong> ${oldUsername}</p>
+        <p><strong>Usuario nuevo:</strong> ${newUsername}</p>
+        <p>Si no realizaste este cambio, por favor contacta con soporte inmediatamente.</p>
+        <hr style="margin: 30px 0;">
+        <p style="color: #999; font-size: 12px;">Este es un mensaje automático, por favor no respondas a este email.</p>
+      </div>
+    `,
+  };
+
+  try {
+    await transporter.sendMail(mailOptions);
+    if (process.env.NODE_ENV !== 'test') {
+      console.log('✅ Email de cambio de username enviado a:', email);
+    }
+  } catch (error) {
+    if (process.env.NODE_ENV !== 'test') {
+      console.error('❌ Error enviando email de cambio de username:', error);
+    }
+  }
+};
+
+// Enviar email de resumen de cambios en el perfil
+exports.sendProfileUpdateEmail = async (email, username, changes) => {
+  const changesList = Object.entries(changes)
+    .map(([field, value]) => {
+      const fieldNames = {
+        name: 'Nombre completo',
+        username: 'Nombre de usuario',
+        email: 'Email',
+        password: 'Contraseña',
+        avatar: 'Foto de perfil'
+      };
+      return `<li><strong>${fieldNames[field] || field}:</strong> ${value}</li>`;
+    })
+    .join('');
+
+  const mailOptions = {
+    from: `"${process.env.APP_NAME || 'TFG Portafolios'}" <${process.env.EMAIL_USER}>`,
+    to: email,
+    subject: 'Tu perfil ha sido actualizado',
+    html: `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+        <h2>Hola ${username},</h2>
+        <p>Se han realizado cambios en tu perfil:</p>
+        <ul style="line-height: 1.8;">
+          ${changesList}
+        </ul>
+        <p>Si no realizaste estos cambios, por favor contacta con soporte inmediatamente.</p>
+        <hr style="margin: 30px 0;">
+        <p style="color: #999; font-size: 12px;">Este es un mensaje automático, por favor no respondas a este email.</p>
+      </div>
+    `,
+  };
+
+  try {
+    await transporter.sendMail(mailOptions);
+    if (process.env.NODE_ENV !== 'test') {
+      console.log('✅ Email de actualización de perfil enviado a:', email);
+    }
+  } catch (error) {
+    if (process.env.NODE_ENV !== 'test') {
+      console.error('❌ Error enviando email de actualización:', error);
+    }
+  }
+};

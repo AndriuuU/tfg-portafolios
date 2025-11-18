@@ -42,7 +42,7 @@ export default function FollowersList({ userId, isOwnProfile }) {
     };
 
     const goToProfile = (username) => {
-        navigate(`/portfolio/${username}`);
+        navigate(`/u/${username}`);
     };
 
     if (loading) return <p>Cargando seguidores...</p>;

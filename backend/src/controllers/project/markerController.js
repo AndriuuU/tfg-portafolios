@@ -1,7 +1,7 @@
 const Project = require('../../models/Project');
 const User = require('../../models/User');
 
-// Guardar proyecto en marcadores
+// Guardar/Quitar proyecto de marcadores (toggle)
 exports.saveProject = async (req, res) => {
   try {
     const user = await User.findById(req.user.id);
@@ -16,14 +16,21 @@ exports.saveProject = async (req, res) => {
       return res.status(404).json({ error: "Proyecto no encontrado" });
     }
 
-    if (user.savedProjects.includes(req.params.id)) {
-      return res.status(400).json({ error: "Proyecto ya guardado en marcadores" });
+    // Convertir a string para comparación segura
+    const projectIdString = req.params.id.toString();
+    const saveIndex = user.savedProjects.findIndex(id => id.toString() === projectIdString);
+
+    if (saveIndex > -1) {
+      // Si ya está guardado, lo quitamos
+      user.savedProjects.splice(saveIndex, 1);
+      await user.save();
+      res.json({ message: "Proyecto eliminado de marcadores", saved: false });
+    } else {
+      // Si no está guardado, lo guardamos
+      user.savedProjects.push(req.params.id);
+      await user.save();
+      res.json({ message: "Proyecto guardado en marcadores", saved: true });
     }
-
-    user.savedProjects.push(req.params.id);
-    await user.save();
-
-    res.json({ message: "Proyecto guardado en marcadores" });
   } catch (error) {
     console.error("Error saveProject:", error);
     res.status(500).json({ error: error.message });

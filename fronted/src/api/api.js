@@ -84,5 +84,9 @@ export const markAllNotificationsAsRead = () =>
   API.put('/notifications/read/all');
 export const deleteNotification = (notificationId) => 
   API.delete(`/notifications/${notificationId}`);
+export const getNotificationPreferences = () => 
+  API.get('/auth/notifications/preferences');
+export const updateNotificationPreferences = (preferences) => 
+  API.put('/auth/notifications/preferences', preferences);
 
 export default API;

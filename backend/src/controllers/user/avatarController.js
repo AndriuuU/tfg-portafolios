@@ -1,5 +1,6 @@
 const User = require('../../models/User');
 const { uploadToCloudinary, deleteFromCloudinary } = require('../../utils/cloudinary');
+const { sendProfileUpdateEmail } = require('../../utils/emailService');
 
 // Subir/actualizar avatar
 exports.uploadAvatar = async (req, res) => {
@@ -35,6 +36,15 @@ exports.uploadAvatar = async (req, res) => {
     // Actualizar usuario
     user.avatarUrl = avatarUrl;
     await user.save();
+
+    // Enviar email de notificación
+    try {
+      await sendProfileUpdateEmail(user.email, user.username, {
+        avatar: 'Foto de perfil actualizada'
+      });
+    } catch (emailError) {
+      console.error('Error enviando email de notificación de avatar:', emailError);
+    }
 
     res.json({
       message: 'Avatar actualizado correctamente',

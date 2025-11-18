@@ -48,6 +48,16 @@ const UserSchema = new mongoose.Schema({
     isPrivate: { type: Boolean, default: false },
   },
   
+  // Preferencias de notificaciones
+  notificationPreferences: {
+    likesEnabled: { type: Boolean, default: true },
+    commentsEnabled: { type: Boolean, default: true },
+    followsEnabled: { type: Boolean, default: true },
+    followRequestsEnabled: { type: Boolean, default: true },
+    messagesEnabled: { type: Boolean, default: true },
+    desktopNotificationsEnabled: { type: Boolean, default: true },
+  },
+  
   // Solicitudes de seguimiento pendientes
   followRequests: [{ 
     type: mongoose.Schema.Types.ObjectId, 

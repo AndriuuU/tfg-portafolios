@@ -1,5 +1,6 @@
 const Project = require('../../models/Project');
 const User = require('../../models/User');
+const { createNotification } = require('../notificationController');
 
 /**
  * Invitar a un colaborador al proyecto
@@ -83,6 +84,18 @@ exports.inviteCollaborator = async (req, res) => {
 
     await project.save();
 
+    // Crear notificación
+    await createNotification(
+      invitedUserId,
+      currentUserId,
+      'invitation',
+      {
+        projectId: project._id,
+        message: `Te invitó a colaborar en: ${project.title}`,
+        role: role
+      }
+    );
+
     res.status(201).json({
       message: 'Invitación enviada exitosamente',
       invitation: {
@@ -140,6 +153,17 @@ exports.acceptInvitation = async (req, res) => {
 
     await project.save();
 
+    // Crear notificación para el owner del proyecto
+    await createNotification(
+      project.owner,
+      currentUserId,
+      'invitation_accepted',
+      {
+        projectId: project._id,
+        message: `Aceptó tu invitación para colaborar en: ${project.title}`
+      }
+    );
+
     res.json({
       message: 'Invitación aceptada exitosamente',
       project: {
@@ -180,6 +204,17 @@ exports.rejectInvitation = async (req, res) => {
     project.pendingInvitations.splice(invitationIndex, 1);
     await project.save();
 
+    // Crear notificación para el owner del proyecto
+    await createNotification(
+      project.owner,
+      currentUserId,
+      'invitation_rejected',
+      {
+        projectId: project._id,
+        message: `Rechazó tu invitación para colaborar en: ${project.title}`
+      }
+    );
+
     res.json({ message: 'Invitación rechazada' });
   } catch (error) {
     console.error('Error rejectInvitation:', error);
@@ -188,20 +223,27 @@ exports.rejectInvitation = async (req, res) => {
 };
 
 /**
- * Obtener invitaciones pendientes del usuario autenticado
+ * Obtener invitaciones pendientes y aceptadas del usuario autenticado
  */
 exports.getMyInvitations = async (req, res) => {
   try {
     const currentUserId = req.user.id;
 
-    // Buscar proyectos con invitaciones pendientes para este usuario
-    const projects = await Project.find({
+    // Buscar proyectos con invitaciones pendientes
+    const projectsWithPending = await Project.find({
       'pendingInvitations.user': currentUserId
     })
       .populate('owner', 'username name avatarUrl')
       .populate('pendingInvitations.invitedBy', 'username name');
 
-    const invitations = projects.map(project => {
+    // Buscar proyectos donde somos colaboradores (invitaciones aceptadas)
+    const projectsWithAccepted = await Project.find({
+      'collaborators.user': currentUserId
+    })
+      .populate('owner', 'username name avatarUrl');
+
+    // Construir array de invitaciones pendientes
+    const pendingInvitations = projectsWithPending.map(project => {
       const invitation = project.pendingInvitations.find(
         inv => inv.user.toString() === currentUserId
       );
@@ -212,18 +254,47 @@ exports.getMyInvitations = async (req, res) => {
           _id: project._id,
           title: project.title,
           slug: project.slug,
-          description: project.description
+          description: project.description,
+          images: project.images,
+          owner: project.owner
         },
         role: invitation.role,
+        status: 'pending',
         invitedAt: invitation.invitedAt,
-        invitedBy: invitation.invitedBy,
-        createdAt: invitation.invitedAt
+        invitedBy: invitation.invitedBy
       };
     });
 
+    // Construir array de invitaciones aceptadas
+    const acceptedInvitations = projectsWithAccepted.map(project => {
+      const collaboration = project.collaborators.find(
+        collab => collab.user.toString() === currentUserId
+      );
+      
+      return {
+        _id: collaboration._id,
+        project: {
+          _id: project._id,
+          title: project.title,
+          slug: project.slug,
+          description: project.description,
+          images: project.images,
+          owner: project.owner
+        },
+        role: collaboration.role,
+        status: 'accepted',
+        addedAt: collaboration.addedAt
+      };
+    });
+
+    // Combinar y devolver
+    const allInvitations = [...pendingInvitations, ...acceptedInvitations];
+
     res.json({
-      invitations,
-      total: invitations.length
+      invitations: allInvitations,
+      total: allInvitations.length,
+      pending: pendingInvitations.length,
+      accepted: acceptedInvitations.length
     });
   } catch (error) {
     console.error('Error getMyInvitations:', error);

@@ -70,7 +70,10 @@ export default function NotificationBell() {
       'comment': '💬',
       'follow': '👤',
       'follow_request': '🔔',
-      'message': '💌'
+      'message': '💌',
+      'invitation': '👥',
+      'invitation_accepted': '✅',
+      'invitation_rejected': '❌'
     };
     return icons[type] || '🔔';
   };
@@ -98,7 +101,10 @@ export default function NotificationBell() {
       'comment': `${notification.sender.username} comentó en tu proyecto`,
       'follow': `${notification.sender.username} te empezó a seguir`,
       'follow_request': `${notification.sender.username} te envió una solicitud de seguimiento`,
-      'message': notification.message || `${notification.sender.username} te envió un mensaje`
+      'message': notification.message || `${notification.sender.username} te envió un mensaje`,
+      'invitation': `${notification.sender.username} te invitó a colaborar en un proyecto`,
+      'invitation_accepted': `${notification.sender.username} aceptó tu invitación de colaboración`,
+      'invitation_rejected': `${notification.sender.username} rechazó tu invitación de colaboración`
     };
     return messages[notification.type] || 'Nueva notificación';
   };

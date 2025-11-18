@@ -112,7 +112,12 @@ exports.createNotification = async (recipientId, senderId, type, options = {}) =
 
     await notification.save();
     
-    return await notification.populate('sender', 'username avatarUrl').populate('project', 'title');
+    // Populate en una sola llamada usando array
+    const populatedNotification = await Notification.findById(notification._id)
+      .populate('sender', 'username avatarUrl')
+      .populate('project', 'title');
+    
+    return populatedNotification;
   } catch (error) {
     console.error("Error createNotification:", error);
     return null;
