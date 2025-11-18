@@ -9,6 +9,15 @@ const UserSchema = new mongoose.Schema({
   bio: { type: String },
   links: [{ name: String, url: String }],
   
+  // Verificación de email
+  isEmailVerified: { type: Boolean, default: false },
+  emailVerificationToken: { type: String },
+  emailVerificationExpires: { type: Date },
+  
+  // Recuperación de contraseña
+  resetPasswordToken: { type: String },
+  resetPasswordExpires: { type: Date },
+  
   // Sistema de seguidores
   followers: [{ 
     type: mongoose.Schema.Types.ObjectId, 
@@ -37,6 +46,16 @@ const UserSchema = new mongoose.Schema({
     showFollowing: { type: Boolean, default: true },
     allowFollowRequests: { type: Boolean, default: true },
     isPrivate: { type: Boolean, default: false },
+  },
+  
+  // Preferencias de notificaciones
+  notificationPreferences: {
+    likesEnabled: { type: Boolean, default: true },
+    commentsEnabled: { type: Boolean, default: true },
+    followsEnabled: { type: Boolean, default: true },
+    followRequestsEnabled: { type: Boolean, default: true },
+    messagesEnabled: { type: Boolean, default: true },
+    desktopNotificationsEnabled: { type: Boolean, default: true },
   },
   
   // Solicitudes de seguimiento pendientes

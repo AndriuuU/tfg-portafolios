@@ -1,0 +1,151 @@
+@use './abstracts/variables' as *;
+@use './abstracts/mixins' as *;
+
+.toast {
+  position: fixed;
+  bottom: clamp(1rem, 3vw, 2rem);
+  right: clamp(1rem, 3vw, 2rem);
+  padding: clamp(0.75rem, 1.5vw, 1rem) clamp(1rem, 2vw, 1.5rem);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-weight: 500;
+  font-size: clamp(0.85rem, 1.5vw, 1rem);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  animation: slideIn 0.3s ease-out;
+  z-index: 9999;
+  max-width: clamp(250px, 80vw, 400px);
+  word-break: break-word;
+  min-height: 44px;
+
+  @include dark-mode {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+  }
+
+  @include mobile {
+    bottom: 1rem;
+    right: 1rem;
+    left: 1rem;
+    max-width: none;
+  }
+
+  .toast-icon {
+    font-size: clamp(1rem, 1.5vw, 1.25rem);
+    font-weight: bold;
+    flex-shrink: 0;
+  }
+
+  .toast-message {
+    flex: 1;
+    line-height: 1.4;
+  }
+
+  .toast-close {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: clamp(1rem, 1.5vw, 1.2rem);
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    flex-shrink: 0;
+
+    &:hover {
+      transform: scale(1.15);
+      opacity: 0.8;
+    }
+  }
+
+  &.toast-success {
+    background-color: var(--success-color);
+    color: white;
+
+    .toast-icon {
+      color: var(--success-light);
+    }
+
+    @include dark-mode {
+      background-color: var(--success-dark);
+    }
+  }
+
+  &.toast-error {
+    background-color: var(--danger-color);
+    color: white;
+
+    .toast-icon {
+      color: var(--danger-light);
+    }
+
+    @include dark-mode {
+      background-color: var(--danger-dark);
+    }
+  }
+
+  &.toast-info {
+    background-color: var(--info-color);
+    color: white;
+
+    .toast-icon {
+      color: var(--info-light);
+    }
+
+    @include dark-mode {
+      background-color: var(--info-dark);
+    }
+  }
+
+  &.toast-warning {
+    background-color: var(--warning-color);
+    color: white;
+
+    .toast-icon {
+      color: var(--warning-light);
+    }
+
+    @include dark-mode {
+      background-color: var(--warning-dark);
+    }
+  }
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateX(400px);
+    opacity: 0;
+
+    @include mobile {
+      transform: translateY(100px);
+    }
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+
+    @include mobile {
+      transform: translateY(0);
+    }
+  }
+}
+
+@keyframes slideOut {
+  from {
+    transform: translateX(0);
+    opacity: 1;
+
+    @include mobile {
+      transform: translateY(0);
+    }
+  }
+  to {
+    transform: translateX(400px);
+    opacity: 0;
+
+    @include mobile {
+      transform: translateY(100px);
+    }
+  }
+}

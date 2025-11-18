@@ -42,26 +42,52 @@ export default function BlockedUsers() {
     };
 
     const goToProfile = (username) => {
-        navigate(`/portfolio/${username}`);
+        navigate(`/u/${username}`);
     };
 
     if (loading) return <p>Cargando usuarios bloqueados...</p>;
     if (error) return <p>{error}</p>;
 
     return (
-        <div>
-            <h2>Usuarios bloqueados ({blockedUsers.length})</h2>
+        <div className="user-list">
+            <h3>Usuarios bloqueados ({blockedUsers.length})</h3>
             {blockedUsers.length === 0 ? (
-                <p>No has bloqueado a ningún usuario</p>
+                <div className="empty-state">
+                    <p>No has bloqueado a ningún usuario</p>
+                </div>
             ) : (
                 <ul>
                     {blockedUsers.map((user) => (
                         <li key={user._id}>
-                            <div onClick={() => goToProfile(user.username)}>
-                                <strong>{user.name}</strong> (@{user.username})
+                            <div className="user-avatar">
+                                {user.avatarUrl ? (
+                                    <img src={user.avatarUrl} alt={user.username} />
+                                ) : (
+                                    <div style={{
+                                        background: 'linear-gradient(135deg, #4f46e5, #7c3aed)',
+                                        color: 'white',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                        fontWeight: '700',
+                                        fontSize: '16px'
+                                    }}>
+                                        {user.name?.charAt(0).toUpperCase() || user.username?.charAt(0).toUpperCase()}
+                                    </div>
+                                )}
                             </div>
-                            <button onClick={() => handleUnblock(user._id)}>
-                                Desbloquear
+                            <div className="user-info">
+                                <div className="user-name" onClick={() => goToProfile(user.username)}>
+                                    {user.name}
+                                </div>
+                                <div className="user-username">@{user.username}</div>
+                            </div>
+                            <button 
+                                className="action-btn"
+                                onClick={() => handleUnblock(user._id)}
+                                style={{ background: '#22c55e' }}
+                            >
+                                ✓ Desbloquear
                             </button>
                         </li>
                     ))}

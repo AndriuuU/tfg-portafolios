@@ -67,13 +67,13 @@ export default function FollowButton({ userId, onUpdate }) {
             {relationship.isBlocked ? (
                 <p>Usuario bloqueado</p>
             ) : relationship.hasPendingRequest ? (
-                <button disabled>Solicitud enviada</button>
+                <button className="btn btn-follow" disabled>Solicitud enviada</button>
             ) : relationship.isFollowing ? (
-                <button onClick={handleUnfollow} disabled={loading}>
+                <button className="btn btn-follow following" onClick={handleUnfollow} disabled={loading}>
                     {loading ? 'Procesando...' : 'Dejar de seguir'}
                 </button>
             ) : (
-                <button onClick={handleFollow} disabled={loading}>
+                <button className="btn btn-follow" onClick={handleFollow} disabled={loading}>
                     {loading ? 'Procesando...' : 'Seguir'}
                 </button>
             )}

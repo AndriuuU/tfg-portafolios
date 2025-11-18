@@ -46,11 +46,14 @@ export default function Register() {
     try {
       const response = await API.post("/auth/register", form);
       console.log("Registro exitoso:", response.data);
-      setMsg({ text: "Usuario registrado exitosamente. Redirigiendo al login...", type: "success" });
+      setMsg({ 
+        text: "✅ Usuario registrado exitosamente. Por favor revisa tu email para verificar tu cuenta.", 
+        type: "success" 
+      });
       
       setTimeout(() => {
         navigate("/login");
-      }, 2000);
+      }, 4000);
     } catch (err) {
       console.error("Error en registro:", err.response?.data);
       

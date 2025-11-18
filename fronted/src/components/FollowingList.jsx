@@ -42,7 +42,7 @@ export default function FollowingList({ userId, isOwnProfile }) {
   };
 
   const goToProfile = (username) => {
-    navigate(`/portfolio/${username}`);
+    navigate(`/u/${username}`);
   };
 
   if (loading) return <p>Cargando seguidos...</p>;

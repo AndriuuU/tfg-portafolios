@@ -1,4 +1,5 @@
-const User = require('../models/User');
+const User = require('../../models/User');
+const { createNotification } = require('./notificationController');
 
 // Seguir a un usuario
 exports.followUser = async (req, res) => {
@@ -12,6 +13,10 @@ exports.followUser = async (req, res) => {
 
     const userToFollow = await User.findById(userId);
     const currentUser = await User.findById(currentUserId);
+
+    if (!currentUser) {
+      return res.status(404).json({ error: 'Tu usuario no fue encontrado' });
+    }
 
     if (!userToFollow) {
       return res.status(404).json({ error: 'Usuario no encontrado' });
@@ -35,6 +40,9 @@ exports.followUser = async (req, res) => {
       
       userToFollow.followRequests.push(currentUserId);
       await userToFollow.save();
+
+      // Create follow_request notification
+      await createNotification(userId, currentUserId, 'follow_request', { message: 'Quiere seguirte' });
       
       return res.json({ 
         message: 'Solicitud de seguimiento enviada',
@@ -48,6 +56,9 @@ exports.followUser = async (req, res) => {
 
     await currentUser.save();
     await userToFollow.save();
+
+    // Create follow notification
+    await createNotification(userId, currentUserId, 'follow', { message: 'Empezó a seguirte' });
 
     res.json({ 
       message: 'Usuario seguido correctamente',
@@ -71,6 +82,10 @@ exports.unfollowUser = async (req, res) => {
 
     const currentUser = await User.findById(currentUserId);
     const userToUnfollow = await User.findById(userId);
+
+    if (!currentUser) {
+      return res.status(404).json({ error: 'Tu usuario no fue encontrado' });
+    }
 
     if (!userToUnfollow) {
       return res.status(404).json({ error: 'Usuario no encontrado' });
@@ -98,6 +113,10 @@ exports.removeFollower = async (req, res) => {
     const currentUser = await User.findById(currentUserId);
     const follower = await User.findById(userId);
 
+    if (!currentUser) {
+      return res.status(404).json({ error: 'Tu usuario no fue encontrado' });
+    }
+
     if (!follower) {
       return res.status(404).json({ error: 'Usuario no encontrado' });
     }
@@ -124,6 +143,10 @@ exports.acceptFollowRequest = async (req, res) => {
     const currentUser = await User.findById(currentUserId);
     const requester = await User.findById(userId);
 
+    if (!currentUser) {
+      return res.status(404).json({ error: 'Tu usuario no fue encontrado' });
+    }
+
     if (!requester) {
       return res.status(404).json({ error: 'Usuario no encontrado' });
     }
@@ -140,6 +163,9 @@ exports.acceptFollowRequest = async (req, res) => {
     await currentUser.save();
     await requester.save();
 
+    // Create notification that follow request was accepted
+    await createNotification(userId, currentUserId, 'follow', { message: 'Aceptó tu solicitud de seguimiento' });
+
     res.json({ message: 'Solicitud aceptada' });
   } catch (error) {
     console.error('Error acceptFollowRequest:', error);
@@ -154,6 +180,10 @@ exports.rejectFollowRequest = async (req, res) => {
     const currentUserId = req.user.id;
 
     const currentUser = await User.findById(currentUserId);
+
+    if (!currentUser) {
+      return res.status(404).json({ error: 'Tu usuario no fue encontrado' });
+    }
 
     if (!currentUser.followRequests.includes(userId)) {
       return res.status(400).json({ error: 'No hay solicitud pendiente de este usuario' });
@@ -181,6 +211,10 @@ exports.blockUser = async (req, res) => {
 
     const currentUser = await User.findById(currentUserId);
     const userToBlock = await User.findById(userId);
+
+    if (!currentUser) {
+      return res.status(404).json({ error: 'Tu usuario no fue encontrado' });
+    }
 
     if (!userToBlock) {
       return res.status(404).json({ error: 'Usuario no encontrado' });
@@ -219,6 +253,10 @@ exports.unblockUser = async (req, res) => {
     const currentUser = await User.findById(currentUserId);
     const userToUnblock = await User.findById(userId);
 
+    if (!currentUser) {
+      return res.status(404).json({ error: 'Tu usuario no fue encontrado' });
+    }
+
     if (!userToUnblock) {
       return res.status(404).json({ error: 'Usuario no encontrado' });
     }
@@ -254,7 +292,7 @@ exports.getFollowers = async (req, res) => {
       return res.status(403).json({ error: 'Este usuario ha ocultado sus seguidores' });
     }
 
-    res.json(user.followers);
+    res.json({ followers: user.followers });
   } catch (error) {
     console.error('Error getFollowers:', error);
     res.status(500).json({ error: error.message });
@@ -279,7 +317,7 @@ exports.getFollowing = async (req, res) => {
       return res.status(403).json({ error: 'Este usuario ha ocultado a quién sigue' });
     }
 
-    res.json(user.following);
+    res.json({ following: user.following });
   } catch (error) {
     console.error('Error getFollowing:', error);
     res.status(500).json({ error: error.message });
@@ -294,7 +332,11 @@ exports.getFollowRequests = async (req, res) => {
     const user = await User.findById(currentUserId)
       .populate('followRequests', 'username name avatarUrl');
 
-    res.json(user.followRequests);
+    if (!user) {
+      return res.status(404).json({ error: 'Usuario no encontrado' });
+    }
+
+    res.json({ requests: user.followRequests || [] });
   } catch (error) {
     console.error('Error getFollowRequests:', error);
     res.status(500).json({ error: error.message });
@@ -309,7 +351,7 @@ exports.getBlockedUsers = async (req, res) => {
     const user = await User.findById(currentUserId)
       .populate('blockedUsers', 'username name avatarUrl');
 
-    res.json(user.blockedUsers);
+    res.json({ blockedUsers: user.blockedUsers || [] });
   } catch (error) {
     console.error('Error getBlockedUsers:', error);
     res.status(500).json({ error: error.message });

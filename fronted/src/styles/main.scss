@@ -4,3 +4,10 @@
 
 // Components
 @use './components/header';
+@use './components/Components';
+
+// Pages
+@use './Dashboard';
+@use './Search';
+@use './Collaborators';
+@use './Pages';

@@ -45,19 +45,35 @@ export default function EditProject() {
     setMsg("");
 
     try {
-      const formData = new FormData();
-      formData.append("title", title);
-      formData.append("slug", slug);
-      formData.append("description", description);
-      formData.append("tags", tags);
-      formData.append("liveUrl", liveUrl);
-      formData.append("repoUrl", repoUrl);
-      formData.append("removeImage", removeImage ? "true" : "false");
-      if (image) formData.append("image", image);
+      // Preparar tags como array
+      const tagsArray = tags.split(",").map((t) => t.trim()).filter(t => t);
+      
+      // Si hay imagen, usar FormData
+      if (image || removeImage) {
+        const formData = new FormData();
+        formData.append("title", title);
+        formData.append("slug", slug);
+        formData.append("description", description);
+        formData.append("tags", tagsArray.join(",")); // Enviar como string separado por comas
+        formData.append("liveUrl", liveUrl);
+        formData.append("repoUrl", repoUrl);
+        formData.append("removeImage", removeImage ? "true" : "false");
+        if (image) formData.append("images", image); // El backend espera 'images' (plural)
 
-      await API.put(`/projects/${id}`, formData, {
-        headers: { "Content-Type": "multipart/form-data" },
-      });
+        await API.put(`/projects/${id}`, formData, {
+          headers: { "Content-Type": "multipart/form-data" },
+        });
+      } else {
+        // Si no hay imagen, enviar JSON
+        await API.put(`/projects/${id}`, {
+          title,
+          slug,
+          description,
+          tags: tagsArray,
+          liveUrl,
+          repoUrl,
+        });
+      }
 
       setMsg("✅ Proyecto actualizado con éxito");
       setTimeout(() => navigate("/dashboard"), 1200);

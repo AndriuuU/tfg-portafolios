@@ -1,0 +1,308 @@
+@use './abstracts/variables' as *;
+@use './abstracts/mixins' as *;
+
+.notification-bell {
+  position: relative;
+
+  .bell-button {
+    position: relative;
+    background: transparent;
+    border: none;
+    font-size: clamp(1.25rem, 2vw, 1.5rem);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    padding: clamp(0.4rem, 1vw, 0.5rem);
+    min-height: 44px;
+    min-width: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    &:hover {
+      transform: scale(1.1);
+      filter: brightness(1.2);
+    }
+
+    .notification-badge {
+      position: absolute;
+      top: -5px;
+      right: -5px;
+      background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+      color: white;
+      border-radius: 50%;
+      width: clamp(20px, 4vw, 24px);
+      height: clamp(20px, 4vw, 24px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: clamp(0.65rem, 1vw, 0.75rem);
+      font-weight: 700;
+      box-shadow: 0 2px 8px rgba(79, 70, 229, 0.3);
+
+      @include dark-mode {
+        box-shadow: 0 2px 8px rgba(79, 70, 229, 0.5);
+      }
+    }
+  }
+
+  .notification-panel {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    margin-top: 0.5rem;
+    width: clamp(300px, 90vw, 400px);
+    max-height: clamp(400px, 70vh, 600px);
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    border-radius: 12px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    z-index: 1000;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+
+    @include dark-mode {
+      background: rgba(45, 45, 45, 0.95);
+      border-color: rgba(255, 255, 255, 0.1);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    }
+
+    @include mobile {
+      position: fixed;
+      width: 100vw;
+      max-height: 70vh;
+      max-width: 100%;
+      right: auto;
+      left: 0;
+      top: auto;
+      bottom: 0;
+      margin-top: 0;
+      border-radius: 12px 12px 0 0;
+    }
+
+    .notification-header {
+      padding: clamp(0.75rem, 2vw, 1rem);
+      border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+
+      @include dark-mode {
+        border-bottom-color: rgba(255, 255, 255, 0.05);
+      }
+
+      @include mobile {
+        flex-wrap: nowrap;
+      }
+
+      h3 {
+        margin: 0;
+        font-size: clamp(0.95rem, 2vw, 1.1rem);
+        color: var(--text-primary);
+        font-weight: 600;
+      }
+
+      .mark-all-read {
+        background: transparent;
+        border: 1px solid var(--primary-color);
+        color: var(--primary-color);
+        padding: clamp(0.3rem, 1vw, 0.4rem) clamp(0.6rem, 1.5vw, 0.8rem);
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: clamp(0.7rem, 1.2vw, 0.8rem);
+        font-weight: 600;
+        transition: all 0.3s ease;
+        white-space: nowrap;
+        min-height: 32px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        &:hover {
+          background: rgba(79, 70, 229, 0.1);
+          transform: translateY(-1px);
+        }
+
+        @include dark-mode {
+          border-color: var(--primary-color);
+
+          &:hover {
+            background: rgba(79, 70, 229, 0.15);
+          }
+        }
+
+        @include mobile {
+          white-space: nowrap;
+        }
+      }
+    }
+
+    .notification-list {
+      flex: 1;
+      overflow-y: auto;
+      overflow-x: hidden;
+      -webkit-overflow-scrolling: touch;
+
+      &::-webkit-scrollbar {
+        width: 6px;
+      }
+
+      &::-webkit-scrollbar-track {
+        background: rgba(0, 0, 0, 0.05);
+      }
+
+      &::-webkit-scrollbar-thumb {
+        background: rgba(79, 70, 229, 0.3);
+        border-radius: 3px;
+
+        &:hover {
+          background: rgba(79, 70, 229, 0.5);
+        }
+      }
+    }
+
+    .notification-empty {
+      padding: clamp(1.5rem, 4vw, 2rem) 1rem;
+      text-align: center;
+
+      p {
+        color: var(--text-secondary);
+        font-size: clamp(0.85rem, 1.5vw, 0.95rem);
+        margin: 0;
+      }
+    }
+
+    .notification-item {
+      padding: clamp(0.75rem, 2vw, 1rem);
+      border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+      display: flex;
+      gap: clamp(0.5rem, 1vw, 0.75rem);
+      align-items: flex-start;
+      transition: all 0.3s ease;
+      cursor: pointer;
+      min-height: 44px;
+
+      @include dark-mode {
+        border-bottom-color: rgba(255, 255, 255, 0.05);
+      }
+
+      &:hover {
+        background: rgba(79, 70, 229, 0.05);
+
+        @include dark-mode {
+          background: rgba(79, 70, 229, 0.1);
+        }
+
+        .notification-close {
+          opacity: 1;
+        }
+      }
+
+      &.unread {
+        background: rgba(79, 70, 229, 0.08);
+
+        @include dark-mode {
+          background: rgba(79, 70, 229, 0.15);
+        }
+      }
+
+      &:last-child {
+        border-bottom: none;
+      }
+
+      .notification-content {
+        flex: 1;
+        display: flex;
+        gap: clamp(0.5rem, 1vw, 0.75rem);
+        min-width: 0;
+
+        .notification-icon {
+          font-size: clamp(1.2rem, 2vw, 1.5rem);
+          flex-shrink: 0;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          min-width: 32px;
+        }
+
+        .notification-text {
+          flex: 1;
+          min-width: 0;
+
+          p {
+            margin: 0 0 0.25rem 0;
+            color: var(--text-primary);
+            font-size: clamp(0.8rem, 1.5vw, 0.9rem);
+            line-height: 1.4;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            line-clamp: 2;
+            -webkit-box-orient: vertical;
+            word-break: break-word;
+          }
+
+          .notification-time {
+            font-size: clamp(0.7rem, 1vw, 0.8rem);
+            color: var(--text-secondary);
+          }
+        }
+      }
+
+      .notification-close {
+        background: transparent;
+        border: none;
+        color: var(--text-secondary);
+        cursor: pointer;
+        font-size: clamp(0.85rem, 1.5vw, 1rem);
+        padding: clamp(0.25rem, 0.5vw, 0.5rem);
+        transition: all 0.3s ease;
+        opacity: 0;
+        flex-shrink: 0;
+        min-width: 32px;
+        min-height: 32px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        &:hover {
+          color: var(--danger-color);
+          opacity: 1;
+          transform: scale(1.15);
+        }
+      }
+
+      .notification-read {
+        background: transparent;
+        border: none;
+        color: var(--primary-color);
+        cursor: pointer;
+        font-size: clamp(0.7rem, 1vw, 0.8rem);
+        padding: clamp(0.2rem, 0.5vw, 0.25rem);
+        transition: all 0.3s ease;
+        flex-shrink: 0;
+        min-width: 32px;
+        min-height: 32px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        &:hover {
+          transform: scale(1.2);
+          color: var(--primary-dark);
+        }
+      }
+    }
+  }
+
+  @include mobile {
+    .notification-panel {
+      width: 100vw;
+      right: auto;
+    }
+  }
+}

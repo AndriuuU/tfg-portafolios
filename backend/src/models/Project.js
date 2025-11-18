@@ -11,6 +11,30 @@ const projectSchema = new mongoose.Schema({
   repoUrl: String,
   images: [String],
   
+  // Sistema de colaboradores
+  collaborators: [{
+    user: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+    role: { 
+      type: String, 
+      enum: ['editor', 'viewer'], 
+      default: 'viewer' 
+    },
+    addedAt: { type: Date, default: Date.now },
+    addedBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User' }
+  }],
+  
+  // Invitaciones pendientes de colaboradores
+  pendingInvitations: [{
+    user: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+    role: { 
+      type: String, 
+      enum: ['editor', 'viewer'], 
+      default: 'viewer' 
+    },
+    invitedAt: { type: Date, default: Date.now },
+    invitedBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true }
+  }],
+  
   // Likes del proyecto
   likes: [{
     type: mongoose.Schema.Types.ObjectId,

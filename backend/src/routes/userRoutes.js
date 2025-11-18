@@ -3,6 +3,8 @@ const User = require('../models/User');
 const Project = require("../models/Project");
 const router = express.Router();
 const authMiddleware = require("../middleware/authMiddleware");
+const upload = require('../middleware/upload');
+const { uploadAvatar, deleteAvatar } = require('../controllers/user/avatarController');
 
 
 // Crear usuario (temporal, sin auth)
@@ -51,6 +53,10 @@ router.get('/recommended/users', authMiddleware, async (req, res) => {
   }
 });
 
+// Rutas de avatar (requieren autenticación)
+router.post('/avatar', authMiddleware, upload.single('avatar'), uploadAvatar);
+router.delete('/avatar', authMiddleware, deleteAvatar);
+
 // Middleware de autenticación
 router.get("/me/profile", authMiddleware, async (req, res) => {
   try {
@@ -66,10 +72,38 @@ router.get("/me/profile", authMiddleware, async (req, res) => {
 });
 
 // Obtener perfil público por username
-router.get("/:username", async (req, res) => {
+router.get("/:username", (req, res, next) => {
+  // Aplicar autenticación optionalmente
+  authMiddleware(req, res, () => next());
+}, async (req, res) => {
   try {
     const user = await User.findOne({ username: req.params.username }).select("-password");
     if (!user) return res.status(404).json({ error: "Usuario no encontrado" });
+
+    // Obtener el ID del usuario actual si está autenticado
+    const currentUserId = req.user?.id;
+    const isOwnProfile = currentUserId === user._id.toString();
+
+    // Si la cuenta es privada y no es su propio perfil
+    if (user.privacy?.isPrivate && !isOwnProfile) {
+      // Verificar si el usuario actual sigue al propietario del perfil
+      const isFollowing = user.followers?.some(id => id.toString() === currentUserId);
+      
+      if (!isFollowing) {
+        // No mostrar proyectos si no sigue la cuenta privada
+        return res.json({ 
+          user: {
+            _id: user._id,
+            username: user.username,
+            name: user.name,
+            avatarUrl: user.avatarUrl,
+            isPrivate: true,
+            message: "Esta es una cuenta privada. Debes seguir este usuario para ver su contenido."
+          },
+          projects: []
+        });
+      }
+    }
 
     const projects = await Project.find({ owner: user._id });
     res.json({ user, projects });

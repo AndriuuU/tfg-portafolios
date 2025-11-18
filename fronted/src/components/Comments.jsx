@@ -164,29 +164,28 @@ export default function Comments({ projectId, token }) {
   }, [projectId]);
 
   return (
-    <div className="mt-6">
-      <h3 className="text-lg font-semibold mb-3">Comentarios</h3>
+    <div className="comments-section">
+      <h3 className="comments-title">Comentarios ({comments.length})</h3>
 
-      {errorMsg && <p className="text-red-500 mb-2">{errorMsg}</p>}
+      {errorMsg && <p className="error-message">{errorMsg}</p>}
 
-      <form onSubmit={handleSubmit} className="flex gap-2 mb-4">
+      <form onSubmit={handleSubmit} className="comment-form">
         <input
           type="text"
           value={newComment}
           onChange={(e) => setNewComment(e.target.value)}
           placeholder="Escribe un comentario..."
-          className="flex-1 p-2 border rounded"
+          className="comment-input"
         />
-        <button
-          type="submit"
-          className="px-3 py-2 bg-blue-600 text-white rounded"
-        >
-          Comentar
+        <button type="submit" className="comment-submit">
+          💬 Comentar
         </button>
       </form>
 
-      <ul className="space-y-2">
-        {comments.length === 0 && <p className="text-gray-500">No hay comentarios aún.</p>}
+      <div className="comments-list">
+        {comments.length === 0 && (
+          <p className="empty-comments">No hay comentarios aún. ¡Sé el primero en comentar!</p>
+        )}
         {comments.map((c) => {
           const commentUser = c.user;
           const commentUserId = commentUser ? commentUser._id || commentUser.id : null;
@@ -195,18 +194,33 @@ export default function Comments({ projectId, token }) {
           const likesCount = c.likes?.length || 0;
 
           return (
-            <li key={c._id} className="p-3 border rounded bg-gray-50">
-              <div className="flex justify-between items-start">
-                <div className="flex-1">
-                  <p className="text-sm text-gray-700">
-                    <span className="font-semibold">{username}</span> : {c.text}
-                  </p>
-                  <p className="text-xs text-gray-400">
-                    {new Date(c.createdAt).toLocaleString()}
-                  </p>
+            <div key={c._id} className="comment">
+              <div className="comment-header">
+                <div className="comment-user">
+                  {commentUser?.avatarUrl ? (
+                    <img 
+                      src={commentUser.avatarUrl} 
+                      alt={username}
+                      className="comment-avatar"
+                    />
+                  ) : (
+                    <div className="comment-avatar-placeholder">
+                      {username.charAt(0).toUpperCase()}
+                    </div>
+                  )}
+                  <div className="comment-meta">
+                    <span className="comment-author">{username}</span>
+                    <span className="comment-date">
+                      {new Date(c.createdAt).toLocaleString('es-ES', {
+                        day: 'numeric',
+                        month: 'short',
+                        hour: '2-digit',
+                        minute: '2-digit'
+                      })}
+                    </span>
+                  </div>
                 </div>
                 {commentUserId && (() => {
-                  // comparar con user local guardado
                   let localUserId = null;
                   try {
                     localUserId = localStorage.getItem("user")
@@ -217,9 +231,9 @@ export default function Comments({ projectId, token }) {
                     return (
                       <button
                         onClick={() => handleDelete(c._id, commentUserId)}
-                        className="text-red-600 text-sm ml-2"
+                        className="comment-delete"
                       >
-                        Eliminar
+                        🗑️
                       </button>
                     );
                   }
@@ -227,22 +241,21 @@ export default function Comments({ projectId, token }) {
                 })()}
               </div>
               
-              {/* Botón de like para el comentario */}
-              <div className="mt-2 flex items-center gap-2">
+              <p className="comment-content">{c.text}</p>
+              
+              <div className="comment-actions">
                 <button
                   onClick={() => handleLikeComment(c._id)}
-                  className={`flex items-center gap-1 text-sm ${
-                    isLiked ? 'text-red-500' : 'text-gray-500'
-                  } hover:text-red-600`}
+                  className={`comment-like-btn ${isLiked ? 'liked' : ''}`}
                 >
                   <span>{isLiked ? '❤️' : '🤍'}</span>
                   <span>{likesCount}</span>
                 </button>
               </div>
-            </li>
+            </div>
           );
         })}
-      </ul>
+      </div>
     </div>
   );
 }
