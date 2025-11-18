@@ -230,7 +230,7 @@ tfg-portafolios/
 
 ### Documentos Principales
 - **[Backend README](./backend/README.md)** - Documentación completa del API
-- **[Ranking API Docs](./RANKING_DOCUMENTATION.md)** - Especificaciones del sistema de ranking
+- **[Frontend README](./fronted/README.md)** - Guía de desarrollo frontend
 
 ### Endpoints Principales
 
