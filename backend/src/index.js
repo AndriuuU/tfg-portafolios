@@ -33,6 +33,7 @@ const searchRoutes = require('./routes/searchRoutes');
 const notificationRoutes = require('./routes/notificationRoutes');
 const analyticsRoutes = require('./routes/analyticsRoutes');
 const rankingRoutes = require('./routes/rankingRoutes');
+const exportRoutes = require('./routes/exportRoutes');
 
 app.use('/api/users', userRoutes);
 app.use('/api/auth', authRoutes);
@@ -43,6 +44,7 @@ app.use('/api/search', searchRoutes);
 app.use('/api/notifications', notificationRoutes);
 app.use('/api/analytics', analyticsRoutes);
 app.use('/api/ranking', rankingRoutes);
+app.use('/api/export', exportRoutes);
 
 // Arrancar servidor
 const PORT = process.env.PORT || 5000;

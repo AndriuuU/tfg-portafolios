@@ -1,6 +1,7 @@
 import { useParams, Link } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { getProjectById, likeProject, unlikeProject, saveProject, unsaveProject } from "../api/api";
+import { downloadProjectPDF } from "../api/exportApi";
 import Comments from "../components/Comments";
 import CollaboratorList from "../components/CollaboratorList";
 import InviteCollaborator from "../components/InviteCollaborator";
@@ -10,6 +11,7 @@ export default function ProjectDetail() {
   const { id } = useParams();
   const [project, setProject] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [exporting, setExporting] = useState(false);
   const [showInviteForm, setShowInviteForm] = useState(false);
   const [showCollaborators, setShowCollaborators] = useState(false);
   const currentUser = JSON.parse(localStorage.getItem("user") || "{}");
@@ -120,6 +122,32 @@ export default function ProjectDetail() {
                 ✏️ Editar
               </Link>
             )}
+            <button 
+              onClick={async () => {
+                setExporting(true);
+                try {
+                  // Generar HTML del proyecto
+                  const pdfGenerator = ProjectPDFGenerator({ project, owner: project.owner });
+                  const projectHTML = pdfGenerator.generateHTML();
+
+                  // Descargar como PDF
+                  const result = await downloadProjectPDF(projectHTML);
+                  if (!result.success) {
+                    alert(`Error: ${result.message}`);
+                  }
+                } catch (error) {
+                  console.error("Error exporting project:", error);
+                  alert("Error al exportar el proyecto");
+                } finally {
+                  setExporting(false);
+                }
+              }}
+              disabled={exporting}
+              className="btn-export"
+              title="Descargar proyecto como PDF"
+            >
+              {exporting ? '⏳ Generando PDF...' : '📄 Exportar'}
+            </button>
             {currentUser.id && (
               <>
                 <button onClick={handleLike} className={`btn-like ${project.isLiked ? 'liked' : ''}`}>

@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import API from "../api/api";
+import { downloadPortfolioPDF } from "../api/exportApi";
+import PortfolioPDFGenerator from "../components/PortfolioPDFGenerator";
 import FollowButton from "../components/FollowButton";
 import FollowersList from "../components/FollowersList";
 import FollowingList from "../components/FollowingList";
@@ -39,8 +41,29 @@ const usePortfolio = (username) => {
 };
 
 // Componente para la cabecera del usuario
-const UserHeader = ({ user, currentUserId, onFollowUpdate, relationship, showFollowers, showFollowing, setShowFollowers, setShowFollowing }) => {
+const UserHeader = ({ user, currentUserId, onFollowUpdate, relationship, showFollowers, showFollowing, setShowFollowers, setShowFollowing, projects }) => {
   const isOwnProfile = currentUserId === user._id;
+  const [exporting, setExporting] = useState(false);
+
+  const handleExportPortfolio = async () => {
+    setExporting(true);
+    try {
+      // Generar HTML del portfolio
+      const pdfGenerator = PortfolioPDFGenerator({ user, projects });
+      const portfolioHTML = pdfGenerator.generateHTML();
+
+      // Descargar como PDF
+      const result = await downloadPortfolioPDF(portfolioHTML);
+      if (!result.success) {
+        alert(`Error: ${result.message}`);
+      }
+    } catch (error) {
+      console.error("Error exporting portfolio:", error);
+      alert("Error al exportar el portafolio");
+    } finally {
+      setExporting(false);
+    }
+  };
   
   return (
     <div className="user-header">
@@ -78,9 +101,19 @@ const UserHeader = ({ user, currentUserId, onFollowUpdate, relationship, showFol
         </div>
         <div className="header-actions">
           {isOwnProfile && (
-            <Link to="/settings" className="btn btn-follow">
-              ⚙️ Configuración
-            </Link>
+            <>
+              <button 
+                onClick={handleExportPortfolio}
+                disabled={exporting}
+                className="btn btn-export"
+                title="Descargar portafolio como PDF"
+              >
+                {exporting ? '⏳ Generando PDF...' : '📄 Exportar Portfolio'}
+              </button>
+              <Link to="/settings" className="btn btn-follow">
+                ⚙️ Configuración
+              </Link>
+            </>
           )}
           {!isOwnProfile && (
             <>
@@ -237,6 +270,7 @@ export default function Portfolio() {
           showFollowing={showFollowing}
           setShowFollowers={setShowFollowers}
           setShowFollowing={setShowFollowing}
+          projects={projects}
         />
 
         {isOwnProfile && user.privacy?.isPrivate && (

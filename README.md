@@ -533,7 +533,6 @@ R: En login, haz clic en "¿Olvidaste tu contraseña?" y sigue el email.
 
 ### v1.1 (Próximo)
 - [ ] Chat en tiempo real
-- [ ] Colaboración en proyectos
 - [ ] Sistema de badges
 - [ ] Exportar portafolio como PDF
 
@@ -544,7 +543,6 @@ R: En login, haz clic en "¿Olvidaste tu contraseña?" y sigue el email.
 - [ ] Análisis predictivo
 
 ### v2.0
-- [ ] Aplicación móvil nativa
 - [ ] Machine learning para recomendaciones
 - [ ] Marketplace de servicios
 - [ ] Comunidades y foros

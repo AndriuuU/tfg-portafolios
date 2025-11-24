@@ -14,35 +14,36 @@
     background: var(--card-bg);
     border: 1px solid var(--border-color);
     border-radius: clamp(12px, 2vw, 16px);
-    padding: clamp(1.5rem, 4vw, 2.5rem);
-    margin-bottom: clamp(1.5rem, 4vw, 2.5rem);
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+    padding: clamp(2rem, 5vw, 3rem);
+    margin-bottom: clamp(2rem, 4vw, 3rem);
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
     transition: all 0.3s ease;
 
     &:hover {
-      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
     }
 
     .header-content {
       display: flex;
-      align-items: center;
+      align-items: flex-start;
       justify-content: space-between;
-      gap: clamp(1rem, 3vw, 1.875rem);
+      gap: clamp(2rem, 4vw, 3rem);
 
       @include mixins.tablet {
         flex-direction: column;
-        align-items: stretch;
+        align-items: center;
+        text-align: center;
       }
 
       @include mixins.extra-small {
-        gap: 1.25rem;
+        gap: 1.5rem;
       }
     }
 
     .header-left {
       display: flex;
       align-items: center;
-      gap: clamp(1rem, 3vw, 1.5625rem);
+      gap: clamp(1.5rem, 3vw, 2rem);
       flex: 1;
 
       @include mixins.mobile {
@@ -56,17 +57,17 @@
     }
 
     .user-avatar {
-      width: clamp(80px, 15vw, 120px);
-      height: clamp(80px, 15vw, 120px);
+      width: clamp(90px, 16vw, 130px);
+      height: clamp(90px, 16vw, 130px);
       border-radius: 50%;
-      border: clamp(3px, 0.5vw, 4px) solid var(--primary-color);
+      border: 3px solid var(--primary-color);
       overflow: hidden;
       flex-shrink: 0;
-      box-shadow: 0 4px 15px rgba(79, 70, 229, 0.2);
+      box-shadow: 0 8px 24px rgba(79, 70, 229, 0.25);
 
       @include mixins.extra-small {
-        width: 80px;
-        height: 80px;
+        width: 90px;
+        height: 90px;
       }
 
       img {
@@ -81,7 +82,7 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: clamp(1.5rem, 5vw, 2.5rem);
+        font-size: clamp(2rem, 5vw, 3rem);
         font-weight: 700;
         text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
       }
@@ -99,11 +100,15 @@
       }
 
       h1 {
-        font-size: clamp(1.5rem, 4vw, 2rem);
-        font-weight: 700;
+        font-size: clamp(1.75rem, 5vw, 2.25rem);
+        font-weight: 800;
         color: var(--text-primary);
-        margin: 0 0 clamp(0.5rem, 1vw, 0.5rem) 0;
+        margin: 0 0 clamp(0.5rem, 1vw, 0.75rem) 0;
         word-break: break-word;
+        background: linear-gradient(135deg, var(--text-primary), var(--primary-color));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
 
         @include mixins.extra-small {
           font-size: 1.5rem;
@@ -111,19 +116,20 @@
       }
 
       .username {
-        font-size: clamp(0.875rem, 1.5vw, 1rem);
+        font-size: clamp(0.95rem, 1.5vw, 1.1rem);
         color: var(--primary-color);
-        font-weight: 600;
-        margin-bottom: clamp(0.5rem, 1.5vw, 0.75rem);
+        font-weight: 700;
+        margin-bottom: clamp(0.75rem, 1.5vw, 1rem);
+        letter-spacing: 0.5px;
       }
 
       .email {
-        font-size: clamp(0.8125rem, 1.5vw, 0.875rem);
+        font-size: clamp(0.85rem, 1.5vw, 0.95rem);
         color: var(--text-secondary);
         display: flex;
         align-items: center;
-        gap: clamp(0.375rem, 1vw, 0.5rem);
-        margin-bottom: clamp(0.875rem, 2vw, 1rem);
+        gap: clamp(0.5rem, 1vw, 0.75rem);
+        margin-bottom: clamp(1rem, 2vw, 1.25rem);
         word-break: break-all;
         line-clamp: 2;
         flex-wrap: wrap;
@@ -135,7 +141,7 @@
 
       .stats {
         display: flex;
-        gap: clamp(1rem, 3vw, 1.5625rem);
+        gap: clamp(1.5rem, 3vw, 2.5rem);
         flex-wrap: wrap;
 
         @include mixins.mobile {
@@ -143,31 +149,49 @@
         }
 
         @include mixins.extra-small {
-          gap: 1rem;
+          gap: 1.5rem;
         }
 
         .stat {
           display: flex;
           flex-direction: column;
-          gap: clamp(0.25rem, 0.5vw, 0.25rem);
+          gap: 0.5rem;
           cursor: pointer;
           transition: all 0.3s ease;
-          min-width: 60px;
+          min-width: 90px;
+          text-align: center;
+          padding: 12px;
+          border-radius: 8px;
+          background: rgba(79, 70, 229, 0.05);
+
+          @include mixins.dark-mode {
+            background: rgba(102, 126, 234, 0.1);
+          }
 
           &:hover {
-            transform: translateY(-2px);
+            transform: translateY(-4px);
+            background: rgba(79, 70, 229, 0.1);
+
+            @include mixins.dark-mode {
+              background: rgba(102, 126, 234, 0.15);
+            }
           }
 
           .stat-value {
-            font-size: clamp(1.125rem, 2.5vw, 1.25rem);
-            font-weight: 700;
-            color: var(--primary-color);
+            font-size: clamp(1.25rem, 3vw, 1.5rem);
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--primary-color), #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
           }
 
           .stat-label {
-            font-size: clamp(0.75rem, 1.5vw, 0.8125rem);
+            font-size: clamp(0.8rem, 1.5vw, 0.9rem);
             color: var(--text-secondary);
-            font-weight: 500;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
           }
         }
       }
@@ -177,6 +201,7 @@
       display: flex;
       gap: clamp(0.625rem, 1.5vw, 0.75rem);
       flex-wrap: wrap;
+      justify-content: flex-end;
 
       @include mixins.tablet {
         width: 100%;
@@ -185,6 +210,7 @@
 
       @include mixins.extra-small {
         gap: 0.5rem;
+        flex-direction: column;
       }
 
       a,
@@ -253,6 +279,28 @@
             }
           }
 
+          &.btn-export {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            font-weight: 700;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+
+            &:hover {
+              background: linear-gradient(135deg, #5568d3 0%, #6b3d91 100%);
+              transform: translateY(-2px);
+              box-shadow: 0 6px 16px rgba(102, 126, 234, 0.4);
+            }
+
+            &:active {
+              transform: translateY(0);
+            }
+
+            &:disabled {
+              opacity: 0.7;
+              cursor: wait;
+            }
+          }
+
           &:disabled {
             opacity: 0.6;
             cursor: not-allowed;
@@ -315,11 +363,23 @@
 
   .content-section {
     .section-title {
-      font-size: clamp(1.25rem, 3vw, 1.5rem);
-      font-weight: 700;
+      font-size: clamp(1.5rem, 4vw, 1.875rem);
+      font-weight: 800;
       color: var(--text-primary);
-      margin-bottom: clamp(1rem, 2.5vw, 1.25rem);
+      margin-bottom: clamp(1.5rem, 3vw, 2rem);
       word-break: break-word;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+
+      span {
+        font-size: clamp(0.875rem, 2vw, 1rem);
+        font-weight: 600;
+        color: var(--text-secondary);
+        background: rgba(79, 70, 229, 0.1);
+        padding: 4px 12px;
+        border-radius: 20px;
+      }
     }
 
     .list-container {
@@ -455,11 +515,41 @@
     }
   }
 
+  .section-title {
+    font-size: clamp(1.5rem, 4vw, 1.875rem);
+    font-weight: 800;
+    color: var(--text-primary);
+    margin-bottom: clamp(1.5rem, 3vw, 2rem);
+    word-break: break-word;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+
+    span {
+      font-size: clamp(0.875rem, 2vw, 1rem);
+      font-weight: 600;
+      color: var(--text-secondary);
+      background: rgba(79, 70, 229, 0.1);
+      padding: 4px 12px;
+      border-radius: 20px;
+    }
+  }
+
   .projects-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-    gap: 25px;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 28px;
     margin-bottom: 40px;
+
+    @include mixins.tablet {
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 20px;
+    }
+
+    @include mixins.mobile {
+      grid-template-columns: 1fr;
+      gap: 16px;
+    }
 
     .project-card {
       background: var(--card-bg);
@@ -470,21 +560,32 @@
       display: flex;
       flex-direction: column;
       height: 100%;
+      cursor: pointer;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
 
       &:hover {
         transform: translateY(-8px);
         border-color: var(--primary-color);
-        box-shadow: 0 12px 24px rgba(79, 70, 229, 0.15);
+        box-shadow: 0 12px 32px rgba(79, 70, 229, 0.15);
+
+        @include mixins.dark-mode {
+          box-shadow: 0 12px 32px rgba(102, 126, 234, 0.2);
+        }
+
+        .project-image {
+          transform: scale(1.05);
+        }
       }
 
       .project-image {
         width: 100%;
-        height: 180px;
+        height: 200px;
         background: linear-gradient(135deg, #4f46e5, #7c3aed);
         overflow: hidden;
         display: flex;
         align-items: center;
         justify-content: center;
+        transition: transform 0.3s ease;
 
         img {
           width: 100%;
@@ -493,17 +594,17 @@
         }
 
         .placeholder {
-          font-size: 48px;
+          font-size: 56px;
           opacity: 0.7;
         }
       }
 
       .project-content {
-        padding: 20px;
+        padding: 24px;
         flex: 1;
         display: flex;
         flex-direction: column;
-        gap: 12px;
+        gap: 14px;
 
         .project-title {
           font-size: 18px;
@@ -512,10 +613,11 @@
           margin: 0;
           word-break: break-word;
           display: -webkit-box;
-          -webkit-line-clamp: 1;
-          line-clamp: 1;
+          -webkit-line-clamp: 2;
+          line-clamp: 2;
           -webkit-box-orient: vertical;
           overflow: hidden;
+          line-height: 1.3;
         }
 
         .project-description {
@@ -523,49 +625,53 @@
           color: var(--text-secondary);
           margin: 0;
           display: -webkit-box;
-          -webkit-line-clamp: 2;
-          line-clamp: 2;
+          -webkit-line-clamp: 3;
+          line-clamp: 3;
           -webkit-box-orient: vertical;
           overflow: hidden;
-          line-height: 1.5;
+          line-height: 1.6;
         }
 
         .project-tags {
           display: flex;
           gap: 8px;
           flex-wrap: wrap;
+          margin-top: 4px;
 
           .tag {
-            padding: 4px 10px;
             background: rgba(79, 70, 229, 0.1);
             color: var(--primary-color);
+            padding: 6px 12px;
             border-radius: 20px;
             font-size: 12px;
-            font-weight: 500;
-            transition: all 0.3s ease;
+            font-weight: 600;
+            white-space: nowrap;
 
-            &:hover {
-              background: var(--primary-color);
-              color: white;
+            @include mixins.dark-mode {
+              background: rgba(102, 126, 234, 0.15);
+              color: #a8c5ff;
             }
           }
         }
-
         .project-actions {
           display: flex;
-          gap: 8px;
+          gap: 10px;
+          flex-wrap: wrap;
           margin-top: auto;
+          padding-top: 12px;
+          border-top: 1px solid var(--border-color);
 
           a {
             flex: 1;
+            min-width: 100px;
             padding: 8px 12px;
             background: var(--primary-color);
             color: white;
-            text-align: center;
-            border-radius: 6px;
             text-decoration: none;
-            font-weight: 600;
+            border-radius: 6px;
             font-size: 12px;
+            font-weight: 600;
+            text-align: center;
             transition: all 0.3s ease;
 
             &:hover {
@@ -574,15 +680,14 @@
               box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
             }
 
-            &:active {
-              transform: translateY(0);
-            }
-
             &.secondary {
-              background: #6b7280;
+              background: var(--card-bg);
+              border: 1px solid var(--border-color);
+              color: var(--text-primary);
 
               &:hover {
-                background: #4b5563;
+                border-color: var(--primary-color);
+                color: var(--primary-color);
               }
             }
           }
