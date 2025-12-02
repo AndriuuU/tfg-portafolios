@@ -1,20 +1,20 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
+import { useAuth } from "../context/AuthContext";
 import { getFollowRequests } from "../api/followApi";
 import SearchBar from "./SearchBar";
 import NotificationBell from "./NotificationBell";
 import "../styles/components/_header.scss";
 
-const Header = ({ user, setUser }) => {
+const Header = () => {
   const navigate = useNavigate();
+  const { user, logout } = useAuth();
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [pendingRequests, setPendingRequests] = useState(0);
   const [darkMode, setDarkMode] = useState(() => {
-    // Cargar preferencia del localStorage
     return localStorage.getItem('darkMode') === 'true';
   });
 
-  // Aplicar clase al body cuando cambia el modo
   useEffect(() => {
     if (darkMode) {
       document.body.classList.add('dark-mode');
@@ -24,11 +24,9 @@ const Header = ({ user, setUser }) => {
     localStorage.setItem('darkMode', darkMode);
   }, [darkMode]);
 
-  // Cargar solicitudes pendientes
   useEffect(() => {
     if (user) {
       loadPendingRequests();
-      // Actualizar cada 20 segundos
       const interval = setInterval(loadPendingRequests, 20000);
       return () => clearInterval(interval);
     }
@@ -45,9 +43,7 @@ const Header = ({ user, setUser }) => {
   };
 
   const handleLogout = () => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("user");
-    setUser(null);
+    logout();
     navigate("/login");
   };
 
@@ -69,14 +65,14 @@ const Header = ({ user, setUser }) => {
         {/* Navegación */}
         <nav className="header__nav">
           <Link to="/" className="header__link">Inicio</Link>
-          <Link to="/ranking" className="header__link">🏆 Ranking</Link>
           {user && (
             <>
               <Link to="/dashboard" className="header__link">Dashboard</Link>
-              <Link to="/analytics" className="header__link">Analytics</Link>
               <Link to={`/u/${user.username}`} className="header__link">Mi Portfolio</Link>
+              <Link to="/analytics" className="header__link">Analytics</Link>
             </>
           )}
+           <Link to="/ranking" className="header__link">Ranking</Link>
         </nav>
 
         {/* Usuario */}

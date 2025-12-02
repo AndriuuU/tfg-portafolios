@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react';
 import { getFollowers, removeFollower } from '../api/followApi';
 import { useNavigate } from 'react-router-dom';
+import '../styles/components/Modal.scss';
 
-export default function FollowersList({ userId, isOwnProfile }) {
+export default function FollowersList({ userId, isOwnProfile, onClose }) {
     const [followers, setFollowers] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -43,43 +44,80 @@ export default function FollowersList({ userId, isOwnProfile }) {
 
     const goToProfile = (username) => {
         navigate(`/u/${username}`);
+        if (onClose) onClose();
     };
 
-    if (loading) return <p>Cargando seguidores...</p>;
-    if (error) return <p>{error}</p>;
+    if (loading) return (
+        <div className="modal-overlay" onClick={onClose}>
+            <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+                <div className="modal-header">
+                    <h3>Seguidores</h3>
+                    <button className="modal-close" onClick={onClose}>×</button>
+                </div>
+                <div className="modal-body">
+                    <p className="loading-text">Cargando seguidores...</p>
+                </div>
+            </div>
+        </div>
+    );
+    
+    if (error) return (
+        <div className="modal-overlay" onClick={onClose}>
+            <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+                <div className="modal-header">
+                    <h3>Seguidores</h3>
+                    <button className="modal-close" onClick={onClose}>×</button>
+                </div>
+                <div className="modal-body">
+                    <p className="error-text">{error}</p>
+                </div>
+            </div>
+        </div>
+    );
 
     return (
-        <div>
-            <h3>Seguidores ({followers.length})</h3>
-            {followers.length === 0 ? (
-                <p>No hay seguidores</p>
-            ) : (
-                <ul>
-                    {followers.map((follower) => (
-                        <li key={follower._id} style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1rem', padding: '0.5rem', borderRadius: '0.5rem', cursor: 'pointer' }}>
-                            {follower.avatarUrl ? (
-                                <img 
-                                    src={follower.avatarUrl} 
-                                    alt={follower.username}
-                                    style={{ width: '40px', height: '40px', borderRadius: '50%', objectFit: 'cover' }}
-                                />
-                            ) : (
-                                <div style={{ width: '40px', height: '40px', borderRadius: '50%', background: 'linear-gradient(135deg, #3b82f6, #8b5cf6)', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold' }}>
-                                    {follower.name?.charAt(0).toUpperCase() || follower.username?.charAt(0).toUpperCase()}
-                                </div>
-                            )}
-                            <div onClick={() => goToProfile(follower.username)} style={{ flex: 1 }}>
-                                <strong>{follower.name}</strong> (@{follower.username})
-                            </div>
-                            {isOwnProfile && (
-                                <button onClick={() => handleRemove(follower._id)} style={{ padding: '0.25rem 0.75rem', background: '#dc2626', color: 'white', border: 'none', borderRadius: '0.375rem', cursor: 'pointer' }}>
-                                    Eliminar
-                                </button>
-                            )}
-                        </li>
-                    ))}
-                </ul>
-            )}
+        <div className="modal-overlay" onClick={onClose}>
+            <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+                <div className="modal-header">
+                    <h3>Seguidores ({followers.length})</h3>
+                    <button className="modal-close" onClick={onClose}>×</button>
+                </div>
+                <div className="modal-body">
+                    {followers.length === 0 ? (
+                        <div className="empty-state">
+                            <p>No hay seguidores</p>
+                        </div>
+                    ) : (
+                        <ul className="users-list">
+                            {followers.map((follower) => (
+                                <li key={follower._id} className="user-item">
+                                    <div className="user-avatar">
+                                        {follower.avatarUrl ? (
+                                            <img 
+                                                src={follower.avatarUrl} 
+                                                alt={follower.username}
+                                            />
+                                        ) : (
+                                            <div className="avatar-placeholder">
+                                                {follower.name?.charAt(0).toUpperCase() || follower.username?.charAt(0).toUpperCase()}
+                                            </div>
+                                        )}
+                                    </div>
+                                    <div className="user-info" onClick={() => goToProfile(follower.username)}>
+                                        <div className="user-name">{follower.name}</div>
+                                        <div className="user-username">@{follower.username}</div>
+                                    </div>
+                                    {isOwnProfile && (
+                                        <button onClick={() => handleRemove(follower._id)} className="btn-remove">
+                                            Eliminar
+                                        </button>
+                                    )}
+                                </li>
+                            ))}
+                        </ul>
+                    )}
+                </div>
+            </div>
         </div>
     );
 }

@@ -72,15 +72,7 @@ export default function FollowRequests() {
                                 {request.avatarUrl ? (
                                     <img src={request.avatarUrl} alt={request.username} />
                                 ) : (
-                                    <div style={{
-                                        background: 'linear-gradient(135deg, #4f46e5, #7c3aed)',
-                                        color: 'white',
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        justifyContent: 'center',
-                                        fontWeight: '700',
-                                        fontSize: '16px'
-                                    }}>
+                                    <div className="avatar-placeholder">
                                         {request.name?.charAt(0).toUpperCase() || request.username?.charAt(0).toUpperCase()}
                                     </div>
                                 )}

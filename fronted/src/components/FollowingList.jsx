@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react';
 import { getFollowing, unfollowUser } from '../api/followApi';
 import { useNavigate } from 'react-router-dom';
+import '../styles/components/Modal.scss';
 
-export default function FollowingList({ userId, isOwnProfile }) {
+export default function FollowingList({ userId, isOwnProfile, onClose }) {
   const [following, setFollowing] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -43,43 +44,80 @@ export default function FollowingList({ userId, isOwnProfile }) {
 
   const goToProfile = (username) => {
     navigate(`/u/${username}`);
+    if (onClose) onClose();
   };
 
-  if (loading) return <p>Cargando seguidos...</p>;
-  if (error) return <p>{error}</p>;
+  if (loading) return (
+    <div className="modal-overlay" onClick={onClose}>
+      <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+        <div className="modal-header">
+          <h3>Siguiendo</h3>
+          <button className="modal-close" onClick={onClose}>×</button>
+        </div>
+        <div className="modal-body">
+          <p className="loading-text">Cargando seguidos...</p>
+        </div>
+      </div>
+    </div>
+  );
+  
+  if (error) return (
+    <div className="modal-overlay" onClick={onClose}>
+      <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+        <div className="modal-header">
+          <h3>Siguiendo</h3>
+          <button className="modal-close" onClick={onClose}>×</button>
+        </div>
+        <div className="modal-body">
+          <p className="error-text">{error}</p>
+        </div>
+      </div>
+    </div>
+  );
 
   return (
-    <div>
-      <h3>Siguiendo ({following.length})</h3>
-      {following.length === 0 ? (
-        <p>No sigues a nadie</p>
-      ) : (
-        <ul>
-          {following.map((user) => (
-            <li key={user._id} style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1rem', padding: '0.5rem', borderRadius: '0.5rem', cursor: 'pointer' }}>
-              {user.avatarUrl ? (
-                <img 
-                  src={user.avatarUrl} 
-                  alt={user.username}
-                  style={{ width: '40px', height: '40px', borderRadius: '50%', objectFit: 'cover' }}
-                />
-              ) : (
-                <div style={{ width: '40px', height: '40px', borderRadius: '50%', background: 'linear-gradient(135deg, #3b82f6, #8b5cf6)', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold' }}>
-                  {user.name?.charAt(0).toUpperCase() || user.username?.charAt(0).toUpperCase()}
-                </div>
-              )}
-              <div onClick={() => goToProfile(user.username)} style={{ flex: 1 }}>
-                <strong>{user.name}</strong> (@{user.username})
-              </div>
-              {isOwnProfile && (
-                <button onClick={() => handleUnfollow(user._id)} style={{ padding: '0.25rem 0.75rem', background: '#dc2626', color: 'white', border: 'none', borderRadius: '0.375rem', cursor: 'pointer' }}>
-                  Dejar de seguir
-                </button>
-              )}
-            </li>
-          ))}
-        </ul>
-      )}
+    <div className="modal-overlay" onClick={onClose}>
+      <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+        <div className="modal-header">
+          <h3>Siguiendo ({following.length})</h3>
+          <button className="modal-close" onClick={onClose}>×</button>
+        </div>
+        <div className="modal-body">
+          {following.length === 0 ? (
+            <div className="empty-state">
+              <p>No sigues a nadie</p>
+            </div>
+          ) : (
+            <ul className="users-list">
+              {following.map((user) => (
+                <li key={user._id} className="user-item">
+                  <div className="user-avatar">
+                    {user.avatarUrl ? (
+                      <img 
+                        src={user.avatarUrl} 
+                        alt={user.username}
+                      />
+                    ) : (
+                      <div className="avatar-placeholder">
+                        {user.name?.charAt(0).toUpperCase() || user.username?.charAt(0).toUpperCase()}
+                      </div>
+                    )}
+                  </div>
+                  <div className="user-info" onClick={() => goToProfile(user.username)}>
+                    <div className="user-name">{user.name}</div>
+                    <div className="user-username">@{user.username}</div>
+                  </div>
+                  {isOwnProfile && (
+                    <button onClick={() => handleUnfollow(user._id)} className="btn-remove">
+                      Dejar de seguir
+                    </button>
+                  )}
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
+      </div>
     </div>
   );
 }
