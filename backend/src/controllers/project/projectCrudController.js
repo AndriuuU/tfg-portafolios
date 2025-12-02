@@ -42,7 +42,10 @@ exports.createProject = async (req, res) => {
 exports.getUserProjects = async (req, res) => {
   try {
     const projects = await Project.find({ owner: req.user.id })
-      .populate("comments.user", "username email");
+      .populate("owner", "name username email avatarUrl")
+      .populate("comments.user", "username email")
+      .populate("collaborators.user", "name username email avatarUrl")
+      .populate("collaborators.addedBy", "name username");
 
     res.json(projects);
   } catch (error) {
@@ -80,7 +83,12 @@ exports.getFollowingProjects = async (req, res) => {
 exports.getProjectById = async (req, res) => {
   try {
     const project = await Project.findById(req.params.id)
-      .populate("comments.user", "username email");
+      .populate("owner", "name username email avatarUrl")
+      .populate("comments.user", "username email")
+      .populate("collaborators.user", "name username email avatarUrl")
+      .populate("collaborators.addedBy", "name username")
+      .populate("pendingInvitations.user", "name username email avatarUrl")
+      .populate("pendingInvitations.invitedBy", "name username");
     
     if (!project) {
       return res.status(404).json({ error: 'Proyecto no encontrado' });
