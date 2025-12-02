@@ -16,7 +16,7 @@ const cleanToken = (req, res, next) => {
     token = token.trim();
     token = token.replace(/\s+/g, '');
     token = decodeURIComponent(token);
-    token = token.toLowerCase().trim();
+    // NO convertir a minúsculas porque los tokens son case-sensitive
     req.params.token = token;
   }
   next();

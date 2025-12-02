@@ -46,6 +46,10 @@ app.use('/api/analytics', analyticsRoutes);
 app.use('/api/ranking', rankingRoutes);
 app.use('/api/export', exportRoutes);
 
+// Error handler (debe ir DESPUÉS de todas las rutas)
+const { errorHandler } = require('./middleware/errorHandler');
+app.use(errorHandler);
+
 // Arrancar servidor
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Servidor corriendo en puerto ${PORT}`));
