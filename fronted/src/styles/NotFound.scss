@@ -1,0 +1,310 @@
+@use "./abstracts/mixins" as mixins;
+
+.not-found-page {
+  min-height: 100vh;
+  background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: clamp(2rem, 3vw, 3rem);
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+  margin-top: -60px;
+  padding-top: clamp(80px, 15vh, 120px);
+
+  &::before,
+  &::after {
+    content: "";
+    position: absolute;
+    border-radius: 50%;
+    opacity: 0.08;
+    pointer-events: none;
+  }
+
+  &::before {
+    width: 500px;
+    height: 500px;
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+    top: -250px;
+    right: -250px;
+    animation: float 6s ease-in-out infinite;
+  }
+
+  &::after {
+    width: 400px;
+    height: 400px;
+    background: linear-gradient(135deg, var(--secondary-color) 0%, var(--primary-color) 100%);
+    bottom: -200px;
+    left: -200px;
+    animation: float 8s ease-in-out infinite reverse;
+  }
+
+  @include mixins.dark-mode {
+    background: linear-gradient(135deg, var(--bg-primary) 0%, #1a1a2e 100%);
+
+    &::before {
+      opacity: 0.05;
+    }
+
+    &::after {
+      opacity: 0.05;
+    }
+  }
+}
+
+.not-found-container {
+  width: 100%;
+  max-width: 700px;
+  z-index: 10;
+  position: relative;
+}
+
+.error-content {
+  background: var(--card-bg);
+  border: 1px solid var(--border-color);
+  border-radius: clamp(16px, 3vw, 24px);
+  padding: clamp(3rem, 6vw, 4rem);
+  text-align: center;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.12);
+  animation: slideUp 0.6s ease-out;
+
+  @include mixins.dark-mode {
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+  }
+
+  @include mixins.extra-small {
+    padding: 2rem 1.5rem;
+    border-radius: 16px;
+  }
+}
+
+.error-code {
+  font-size: clamp(5rem, 20vw, 8rem);
+  font-weight: 900;
+  line-height: 1;
+  margin: 0 0 0.5rem 0;
+  letter-spacing: -3px;
+  color: var(--primary-color);
+  animation: scaleIn 0.6s ease-out;
+
+  @include mixins.dark-mode {
+    color: #a8c5ff;
+  }
+
+  @include mixins.extra-small {
+    font-size: 3.5rem;
+    letter-spacing: -2px;
+  }
+}
+
+.error-title {
+  font-size: clamp(2rem, 5vw, 3rem);
+  font-weight: 800;
+  color: var(--text-primary);
+  margin: 0 0 1.5rem 0;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  animation: slideUp 0.8s ease-out;
+  animation-fill-mode: both;
+  animation-delay: 0.1s;
+
+  @include mixins.extra-small {
+    letter-spacing: 2px;
+  }
+}
+
+.error-description {
+  font-size: clamp(0.95rem, 2vw, 1.125rem);
+  color: var(--text-secondary);
+  margin: 0 0 clamp(2rem, 4vw, 3rem) 0;
+  line-height: 1.6;
+  animation: slideUp 0.8s ease-out;
+  animation-fill-mode: both;
+  animation-delay: 0.2s;
+}
+
+.error-actions {
+  display: flex;
+  gap: clamp(1rem, 2vw, 1.5rem);
+  margin-bottom: clamp(2.5rem, 4vw, 3.5rem);
+  flex-wrap: wrap;
+  justify-content: center;
+  animation: slideUp 0.8s ease-out;
+  animation-fill-mode: both;
+  animation-delay: 0.3s;
+
+  .btn {
+    padding: clamp(0.875rem, 1.5vw, 1rem) clamp(1.75rem, 3vw, 2.25rem);
+    border-radius: 12px;
+    font-weight: 700;
+    font-size: clamp(0.95rem, 1.5vw, 1.05rem);
+    text-decoration: none !important;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    border: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    white-space: nowrap;
+
+    &.btn-primary {
+      background: linear-gradient(135deg, #4f46e5 0%, #6d28d9 100%);
+      color: #ffffff !important;
+      box-shadow: 0 8px 20px rgba(79, 70, 229, 0.4);
+      font-weight: 700;
+
+      &:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 12px 32px rgba(79, 70, 229, 0.5);
+        background: linear-gradient(135deg, #4338ca 0%, #5b21b6 100%);
+      }
+
+      &:visited {
+        color: #ffffff !important;
+      }
+
+      @include mixins.dark-mode {
+        background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+        box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+
+        &:hover {
+          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+          box-shadow: 0 12px 32px rgba(102, 126, 234, 0.5);
+        }
+      }
+    }
+
+    &.btn-secondary {
+      background: rgba(79, 70, 229, 0.1);
+      color: var(--primary-color) !important;
+      border: 2px solid rgba(79, 70, 229, 0.3);
+
+      &:hover {
+        background: rgba(79, 70, 229, 0.2);
+        border-color: var(--primary-color);
+        transform: translateY(-4px);
+      }
+
+      @include mixins.dark-mode {
+        background: rgba(102, 126, 234, 0.1);
+        border-color: rgba(102, 126, 234, 0.4);
+        color: #a8c5ff !important;
+
+        &:hover {
+          background: rgba(102, 126, 234, 0.2);
+          border-color: #a8c5ff;
+        }
+      }
+    }
+
+    @include mixins.extra-small {
+      width: 100%;
+      justify-content: center;
+    }
+  }
+}
+
+.error-suggestions {
+  text-align: left;
+  background: rgba(79, 70, 229, 0.05);
+  border: 1px solid rgba(79, 70, 229, 0.15);
+  border-radius: 12px;
+  padding: clamp(1.5rem, 3vw, 2rem);
+  animation: slideUp 0.8s ease-out;
+  animation-fill-mode: both;
+  animation-delay: 0.4s;
+
+  @include mixins.dark-mode {
+    background: rgba(102, 126, 234, 0.08);
+    border-color: rgba(102, 126, 234, 0.2);
+  }
+
+  h3 {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin: 0 0 1rem 0;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-size: clamp(0.85rem, 1.5vw, 0.95rem);
+  }
+
+  ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 0.75rem;
+
+    li {
+      a {
+        color: var(--primary-color);
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 0.9rem;
+        transition: all 0.3s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 0.5rem;
+        border-radius: 6px;
+
+        &:hover {
+          background: rgba(79, 70, 229, 0.1);
+          gap: 10px;
+          color: var(--secondary-color);
+
+          @include mixins.dark-mode {
+            background: rgba(102, 126, 234, 0.15);
+            color: #a8c5ff;
+          }
+        }
+
+        &::before {
+          content: "→";
+          opacity: 0;
+          transition: opacity 0.3s ease;
+        }
+
+        &:hover::before {
+          opacity: 1;
+        }
+      }
+    }
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-30px);
+  }
+}
+

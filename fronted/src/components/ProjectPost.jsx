@@ -15,7 +15,8 @@ const ProjectPost = ({ project: initialProject }) => {
   const [commentText, setCommentText] = useState('');
   const [loadingComment, setLoadingComment] = useState(false);
 
-  const currentUserId = JSON.parse(localStorage.getItem('user'))?._id;
+  const currentUser = JSON.parse(localStorage.getItem('user'));
+  const currentUserId = currentUser?._id;
   const hasMultipleImages = project.images && project.images.length > 1;
 
   // Verificar si el usuario actual ya dio like o guardó el proyecto
@@ -26,7 +27,14 @@ const ProjectPost = ({ project: initialProject }) => {
       const hasLike = project.likes.some(id => id.toString() === userIdString);
       setIsLiked(hasLike);
     }
-  }, [currentUserId, project.likes]);
+    
+    // Verificar si el proyecto está guardado
+    if (currentUser && currentUser.savedProjects) {
+      const projectIdString = project._id.toString();
+      const hasSaved = currentUser.savedProjects.some(id => id.toString() === projectIdString);
+      setIsSaved(hasSaved);
+    }
+  }, [currentUserId, currentUser, project.likes, project._id]);
 
   const goToProfile = (username) => {
     navigate(`/u/${username}`);
@@ -40,16 +48,17 @@ const ProjectPost = ({ project: initialProject }) => {
     e.stopPropagation();
     try {
       const response = await likeProject(project._id);
+      const { liked, likesCount } = response.data;
       
       // Actualizar estado basado en respuesta del backend
-      setIsLiked(response.liked);
+      setIsLiked(liked);
       setProject(prev => ({
         ...prev,
-        likes: response.likesCount ? Array(response.likesCount).fill(true) : []
+        likes: Array(likesCount).fill(currentUserId)
       }));
       
       // Mostrar toast específico según la acción
-      if (response.liked) {
+      if (liked) {
         showToast('¡Le has dado like! 👍', 'success');
       } else {
         showToast('Like removido', 'info');
@@ -63,10 +72,25 @@ const ProjectPost = ({ project: initialProject }) => {
     e.stopPropagation();
     try {
       const response = await saveProject(project._id);
-      setIsSaved(response.saved);
+      const { saved } = response.data;
+      setIsSaved(saved);
+      
+      // Actualizar localStorage
+      const updatedUser = JSON.parse(localStorage.getItem('user'));
+      if (saved) {
+        if (!updatedUser.savedProjects) updatedUser.savedProjects = [];
+        if (!updatedUser.savedProjects.includes(project._id)) {
+          updatedUser.savedProjects.push(project._id);
+        }
+      } else {
+        updatedUser.savedProjects = updatedUser.savedProjects.filter(
+          id => id.toString() !== project._id.toString()
+        );
+      }
+      localStorage.setItem('user', JSON.stringify(updatedUser));
       
       // Mostrar toast específico según la acción
-      if (response.saved) {
+      if (saved) {
         showToast('¡Proyecto guardado! 📌', 'success');
       } else {
         showToast('Proyecto eliminado de guardados', 'info');
@@ -167,13 +191,15 @@ const ProjectPost = ({ project: initialProject }) => {
   return (
     <div className="project-card">
       <div className="project-header" onClick={() => goToProfile(project.owner.username)}>
-        {project.owner.avatarUrl ? (
-          <img src={project.owner.avatarUrl} alt={project.owner.username} className="author-avatar" />
-        ) : (
-          <div className="author-avatar initials" title={project.owner.name || project.owner.username}>
-            {project.owner.name?.charAt(0).toUpperCase() || project.owner.username?.charAt(0).toUpperCase()}
-          </div>
-        )}
+        <div className="author-avatar">
+          {project.owner.avatarUrl ? (
+            <img src={project.owner.avatarUrl} alt={project.owner.username} />
+          ) : (
+            <div className="avatar-placeholder" title={project.owner.name || project.owner.username}>
+              {project.owner.name?.charAt(0).toUpperCase() || project.owner.username?.charAt(0).toUpperCase()}
+            </div>
+          )}
+        </div>
         <div className="author-info">
           <p className="author-name">{project.owner.name || project.owner.username}</p>
           <p className="author-meta">Ha publicado un nuevo portafolio · {formatDate(project.createdAt)}</p>
