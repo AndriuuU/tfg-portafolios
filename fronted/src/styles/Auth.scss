@@ -1,0 +1,448 @@
+@use './abstracts/variables' as *;
+@use './abstracts/mixins' as *;
+
+// Auth Pages (Login & Register)
+.auth-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: clamp(1.5rem, 4vw, 2.5rem) clamp(1rem, 3vw, 1.25rem);
+  background: linear-gradient(135deg, $primary-color 0%, $secondary-color 100%);
+  position: relative;
+  overflow: hidden;
+
+  // Decorative background
+  &::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -50%;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
+    animation: float 20s ease-in-out infinite;
+  }
+
+  &::after {
+    content: '';
+    position: absolute;
+    bottom: -50%;
+    left: -50%;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.05) 0%, transparent 70%);
+    animation: float 25s ease-in-out infinite reverse;
+  }
+
+  @include tablet {
+    padding: clamp(1rem, 3vw, 1.5rem) clamp(0.75rem, 2vw, 1rem);
+  }
+
+  @include medium {
+    padding: clamp(0.75rem, 2.5vw, 1.25rem) clamp(0.5rem, 1.5vw, 0.75rem);
+  }
+
+  @include mobile {
+    padding: clamp(0.75rem, 2vw, 1rem) clamp(0.5rem, 1.5vw, 0.75rem);
+  }
+
+  @include extra-small {
+    padding: 0.75rem 0.5rem;
+  }
+
+  .auth-container {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    max-width: 480px;
+    background: rgba(255, 255, 255, 0.98);
+    backdrop-filter: blur(20px);
+    border-radius: 24px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3), 
+                0 0 0 1px rgba(255, 255, 255, 0.2);
+    padding: clamp(2rem, 5vw, 3rem);
+    animation: slideUp 0.6s ease-out;
+
+    @include dark-mode {
+      background: rgba(45, 45, 45, 0.98);
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6),
+                  0 0 0 1px rgba(255, 255, 255, 0.1);
+    }
+
+    @include mobile {
+      max-width: 100%;
+      border-radius: 20px;
+    }
+
+    // Header
+    .auth-header {
+      text-align: center;
+      margin-bottom: 2rem;
+
+      .auth-icon {
+        font-size: clamp(2.5rem, 6vw, 3rem);
+        margin-bottom: 1rem;
+        display: inline-block;
+        animation: bounce 2s ease-in-out infinite;
+      }
+
+      h1 {
+        font-size: clamp(1.75rem, 5vw, 2rem);
+        font-weight: 700;
+        color: var(--text-primary);
+        margin-bottom: 0.5rem;
+        background: linear-gradient(135deg, $primary-color, $secondary-color);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+
+      p {
+        color: var(--text-secondary);
+        font-size: clamp(0.95rem, 2vw, 1rem);
+        line-height: 1.5;
+      }
+    }
+
+    // Messages
+    .auth-message {
+      padding: 1rem;
+      border-radius: 12px;
+      margin-bottom: 1.5rem;
+      font-size: 0.95rem;
+      line-height: 1.5;
+      animation: slideDown 0.4s ease-out;
+      border: 1px solid;
+
+      &.success {
+        background: rgba(16, 185, 129, 0.1);
+        border-color: $success;
+        color: $success;
+
+        @include dark-mode {
+          background: rgba(16, 185, 129, 0.15);
+        }
+      }
+
+      &.error {
+        background: rgba(239, 68, 68, 0.1);
+        border-color: $error;
+        color: $error;
+
+        @include dark-mode {
+          background: rgba(239, 68, 68, 0.15);
+        }
+      }
+    }
+
+    // Form
+    .auth-form {
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+
+      .form-group {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+
+        label {
+          font-weight: 600;
+          color: var(--text-primary);
+          font-size: 0.95rem;
+          display: flex;
+          align-items: center;
+          gap: 0.25rem;
+        }
+
+        input {
+          padding: 0.875rem 1rem;
+          border: 2px solid var(--border-color);
+          border-radius: 12px;
+          font-size: 1rem;
+          transition: all 0.3s ease;
+          background: var(--bg-primary);
+          color: var(--text-primary);
+          min-height: 48px;
+
+          &::placeholder {
+            color: var(--text-tertiary);
+          }
+
+          &:focus {
+            outline: none;
+            border-color: $primary-color;
+            box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.1);
+            transform: translateY(-1px);
+
+            @include dark-mode {
+              box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.2);
+            }
+          }
+
+          &:disabled {
+            background: var(--bg-tertiary);
+            cursor: not-allowed;
+            opacity: 0.6;
+          }
+
+          &.error {
+            border-color: $error;
+            
+            &:focus {
+              box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.1);
+            }
+          }
+
+          @include mobile {
+            font-size: 16px; // Prevents zoom on iOS
+          }
+        }
+
+        .input-hint {
+          font-size: 0.85rem;
+          color: var(--text-tertiary);
+          display: flex;
+          align-items: center;
+          gap: 0.25rem;
+        }
+
+        .input-error {
+          font-size: 0.85rem;
+          color: $error;
+          display: flex;
+          align-items: center;
+          gap: 0.25rem;
+          animation: shake 0.4s ease-in-out;
+        }
+      }
+
+      .form-submit {
+        margin-top: 0.5rem;
+
+        button {
+          width: 100%;
+          padding: 1rem;
+          background: linear-gradient(135deg, $primary-color, $secondary-color);
+          color: white;
+          border: none;
+          border-radius: 12px;
+          font-weight: 600;
+          font-size: 1.05rem;
+          cursor: pointer;
+          transition: all 0.3s ease;
+          min-height: 52px;
+          position: relative;
+          overflow: hidden;
+
+          &::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s ease;
+          }
+
+          &:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(79, 70, 229, 0.4);
+
+            &::before {
+              left: 100%;
+            }
+
+            @include dark-mode {
+              box-shadow: 0 8px 20px rgba(79, 70, 229, 0.5);
+            }
+          }
+
+          &:active:not(:disabled) {
+            transform: translateY(0);
+          }
+
+          &:disabled {
+            background: var(--text-tertiary);
+            cursor: not-allowed;
+            transform: none;
+            opacity: 0.7;
+          }
+
+          @include mobile {
+            font-size: 1rem;
+            min-height: 48px;
+          }
+        }
+      }
+    }
+
+    // Links Section
+    .auth-links {
+      margin-top: 1.5rem;
+      text-align: center;
+
+      .forgot-password {
+        display: block;
+        margin-bottom: 1rem;
+        color: $primary-color;
+        text-decoration: none;
+        font-size: 0.95rem;
+        font-weight: 500;
+        transition: all 0.3s ease;
+
+        &:hover {
+          color: $accent-hover;
+          text-decoration: underline;
+        }
+      }
+
+      .divider {
+        display: flex;
+        align-items: center;
+        margin: 1.5rem 0;
+        gap: 1rem;
+
+        &::before,
+        &::after {
+          content: '';
+          flex: 1;
+          height: 1px;
+          background: var(--border-color);
+        }
+
+        span {
+          color: var(--text-tertiary);
+          font-size: 0.9rem;
+          font-weight: 500;
+        }
+      }
+
+      .switch-auth {
+        padding: 1rem;
+        background: var(--bg-secondary);
+        border-radius: 12px;
+        font-size: 0.95rem;
+        color: var(--text-secondary);
+
+        a {
+          color: $primary-color;
+          text-decoration: none;
+          font-weight: 600;
+          transition: all 0.3s ease;
+
+          &:hover {
+            color: $accent-hover;
+            text-decoration: underline;
+          }
+        }
+      }
+    }
+
+    // Password strength indicator (for register)
+    .password-strength {
+      margin-top: 0.5rem;
+
+      .strength-bar {
+        height: 4px;
+        background: var(--border-color);
+        border-radius: 2px;
+        overflow: hidden;
+        margin-bottom: 0.5rem;
+
+        .strength-fill {
+          height: 100%;
+          transition: all 0.3s ease;
+          border-radius: 2px;
+
+          &.weak {
+            width: 33%;
+            background: $error;
+          }
+
+          &.medium {
+            width: 66%;
+            background: $warning;
+          }
+
+          &.strong {
+            width: 100%;
+            background: $success;
+          }
+        }
+      }
+
+      .strength-text {
+        font-size: 0.85rem;
+        font-weight: 500;
+
+        &.weak {
+          color: $error;
+        }
+
+        &.medium {
+          color: $warning;
+        }
+
+        &.strong {
+          color: $success;
+        }
+      }
+    }
+  }
+}
+
+// Animations
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes bounce {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+@keyframes shake {
+  0%, 100% {
+    transform: translateX(0);
+  }
+  25% {
+    transform: translateX(-5px);
+  }
+  75% {
+    transform: translateX(5px);
+  }
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translate(0, 0) scale(1);
+  }
+  50% {
+    transform: translate(30px, 30px) scale(1.1);
+  }
+}

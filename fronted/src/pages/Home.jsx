@@ -1,43 +1,21 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { getRecommendedUsers, getFollowingProjects } from '../api/api';
+import { useAuth } from '../context/AuthContext';
+import { useFollowingProjects, useRecommendedUsers } from '../hooks';
 import ProjectPost from '../components/ProjectPost';
 import '../styles/Home.scss';
 
 export default function Home() {
   const navigate = useNavigate();
+  const { user } = useAuth();
   const [activeTab, setActiveTab] = useState('following');
-  const [projects, setProjects] = useState([]);
-  const [recommended, setRecommended] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [user, setUser] = useState(null);
-
-  useEffect(() => {
-    const storedUser = localStorage.getItem('user');
-    if (storedUser) {
-      setUser(JSON.parse(storedUser));
-      loadData();
-    } else {
-      setLoading(false);
-    }
-  }, []);
-
-  const loadData = async () => {
-    setLoading(true);
-    try {
-      // Cargar proyectos de usuarios que sigo
-      const projectsRes = await getFollowingProjects();
-      setProjects(projectsRes.data?.projects || []);
-
-      // Cargar usuarios recomendados
-      const recommendedRes = await getRecommendedUsers();
-      setRecommended(recommendedRes.data?.users || []);
-    } catch (error) {
-      console.error('Error loading data:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
+  
+  const { data: projectsData, loading: projectsLoading } = useFollowingProjects();
+  const { data: recommendedData, loading: recommendedLoading } = useRecommendedUsers();
+  
+  const projects = projectsData?.projects || [];
+  const recommended = recommendedData?.users || [];
+  const loading = projectsLoading || recommendedLoading;
 
   const goToProfile = (username) => {
     navigate(`/u/${username}`);
@@ -132,17 +110,18 @@ export default function Home() {
                       className="user-card"
                       onClick={() => goToProfile(userItem.username)}
                     >
-                      {userItem.avatarUrl ? (
-                        <img 
-                          src={userItem.avatarUrl} 
-                          alt={userItem.username} 
-                          className="user-avatar"
-                        />
-                      ) : (
-                        <div className="user-avatar initials">
-                          {userItem.name?.charAt(0).toUpperCase() || userItem.username?.charAt(0).toUpperCase()}
-                        </div>
-                      )}
+                      <div className="user-avatar">
+                        {userItem.avatarUrl ? (
+                          <img 
+                            src={userItem.avatarUrl} 
+                            alt={userItem.username}
+                          />
+                        ) : (
+                          <div className="avatar-placeholder">
+                            {userItem.name?.charAt(0).toUpperCase() || userItem.username?.charAt(0).toUpperCase()}
+                          </div>
+                        )}
+                      </div>
                       <div className="user-info">
                         <h3>{userItem.name || userItem.username}</h3>
                         <p className="username">@{userItem.username}</p>

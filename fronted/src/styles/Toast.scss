@@ -60,54 +60,54 @@
   }
 
   &.toast-success {
-    background-color: var(--success-color);
+    background-color: $toast-success-bg;
     color: white;
 
     .toast-icon {
-      color: var(--success-light);
+      color: $toast-success-icon;
     }
 
     @include dark-mode {
-      background-color: var(--success-dark);
+      background-color: $toast-success-bg-dark;
     }
   }
 
   &.toast-error {
-    background-color: var(--danger-color);
+    background-color: $toast-error-bg;
     color: white;
 
     .toast-icon {
-      color: var(--danger-light);
+      color: $toast-error-icon;
     }
 
     @include dark-mode {
-      background-color: var(--danger-dark);
+      background-color: $toast-error-bg-dark;
     }
   }
 
   &.toast-info {
-    background-color: var(--info-color);
+    background-color: $toast-info-bg;
     color: white;
 
     .toast-icon {
-      color: var(--info-light);
+      color: $toast-info-icon;
     }
 
     @include dark-mode {
-      background-color: var(--info-dark);
+      background-color: $toast-info-bg-dark;
     }
   }
 
   &.toast-warning {
-    background-color: var(--warning-color);
+    background-color: $toast-warning-bg;
     color: white;
 
     .toast-icon {
-      color: var(--warning-light);
+      color: $toast-warning-icon;
     }
 
     @include dark-mode {
-      background-color: var(--warning-dark);
+      background-color: $toast-warning-bg-dark;
     }
   }
 }

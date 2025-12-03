@@ -2,25 +2,49 @@ import { useParams, Link } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { getProjectById, likeProject, unlikeProject, saveProject, unsaveProject } from "../api/api";
 import { downloadProjectPDF } from "../api/exportApi";
+import { useToast } from "../context/ToastContext";
 import Comments from "../components/Comments";
 import CollaboratorList from "../components/CollaboratorList";
 import InviteCollaborator from "../components/InviteCollaborator";
+import ProjectPDFGenerator from "../components/ProjectPDFGenerator";
 import "../styles/ProjectDetail.scss";
 
 export default function ProjectDetail() {
   const { id } = useParams();
+  const { showToast } = useToast();
   const [project, setProject] = useState(null);
   const [loading, setLoading] = useState(true);
   const [exporting, setExporting] = useState(false);
   const [showInviteForm, setShowInviteForm] = useState(false);
   const [showCollaborators, setShowCollaborators] = useState(false);
+  const [isLiked, setIsLiked] = useState(false);
+  const [isSaved, setIsSaved] = useState(false);
+  const [likesCount, setLikesCount] = useState(0);
   const currentUser = JSON.parse(localStorage.getItem("user") || "{}");
 
   const fetchProject = async () => {
     try {
       setLoading(true);
       const res = await getProjectById(id);
-      setProject(res.data);
+      const projectData = res.data;
+      setProject(projectData);
+      
+      // Verificar si el usuario dio like
+      if (currentUser._id && projectData.likes) {
+        const userIdString = currentUser._id.toString();
+        const hasLike = projectData.likes.some(likeId => likeId.toString() === userIdString);
+        setIsLiked(hasLike);
+      }
+      
+      // Establecer contador de likes
+      setLikesCount(projectData.likes?.length || 0);
+      
+      // Verificar si el usuario guardó el proyecto
+      if (currentUser.savedProjects) {
+        const projectIdString = projectData._id.toString();
+        const hasSaved = currentUser.savedProjects.some(savedId => savedId.toString() === projectIdString);
+        setIsSaved(hasSaved);
+      }
     } catch (err) {
       console.error("Error al cargar proyecto:", err);
     } finally {
@@ -34,21 +58,9 @@ export default function ProjectDetail() {
 
   const handleLike = async () => {
     try {
-      if (project.isLiked) {
-        await unlikeProject(id);
-        setProject({
-          ...project,
-          likes: project.likes - 1,
-          isLiked: false
-        });
-      } else {
-        await likeProject(id);
-        setProject({
-          ...project,
-          likes: project.likes + 1,
-          isLiked: true
-        });
-      }
+      const response = await likeProject(id);
+      setIsLiked(response.data.liked);
+      setLikesCount(response.data.likesCount);
     } catch (err) {
       console.error('Error al dar like:', err);
     }
@@ -56,19 +68,22 @@ export default function ProjectDetail() {
 
   const handleSave = async () => {
     try {
-      if (project.isSaved) {
-        await unsaveProject(id);
-        setProject({
-          ...project,
-          isSaved: false
-        });
+      const response = await saveProject(id);
+      setIsSaved(response.data.saved);
+      
+      // Actualizar localStorage
+      const updatedUser = JSON.parse(localStorage.getItem('user'));
+      if (response.data.saved) {
+        if (!updatedUser.savedProjects) updatedUser.savedProjects = [];
+        if (!updatedUser.savedProjects.includes(id)) {
+          updatedUser.savedProjects.push(id);
+        }
       } else {
-        await saveProject(id);
-        setProject({
-          ...project,
-          isSaved: true
-        });
+        updatedUser.savedProjects = updatedUser.savedProjects.filter(
+          savedId => savedId.toString() !== id.toString()
+        );
       }
+      localStorage.setItem('user', JSON.stringify(updatedUser));
     } catch (err) {
       console.error('Error al guardar:', err);
     }
@@ -126,18 +141,26 @@ export default function ProjectDetail() {
               onClick={async () => {
                 setExporting(true);
                 try {
+                  // Validar que tenemos los datos necesarios
+                  if (!project || !project.owner) {
+                    showToast('Error: No se puede exportar el proyecto', 'error');
+                    return;
+                  }
+
                   // Generar HTML del proyecto
                   const pdfGenerator = ProjectPDFGenerator({ project, owner: project.owner });
                   const projectHTML = pdfGenerator.generateHTML();
 
                   // Descargar como PDF
                   const result = await downloadProjectPDF(projectHTML);
-                  if (!result.success) {
-                    alert(`Error: ${result.message}`);
+                  if (result.success) {
+                    showToast('¡PDF descargado con éxito! 📄', 'success');
+                  } else {
+                    showToast(`Error: ${result.message}`, 'error');
                   }
                 } catch (error) {
                   console.error("Error exporting project:", error);
-                  alert("Error al exportar el proyecto");
+                  showToast('Error al exportar el proyecto', 'error');
                 } finally {
                   setExporting(false);
                 }
@@ -148,13 +171,13 @@ export default function ProjectDetail() {
             >
               {exporting ? '⏳ Generando PDF...' : '📄 Exportar'}
             </button>
-            {currentUser.id && (
+            {currentUser._id && (
               <>
-                <button onClick={handleLike} className={`btn-like ${project.isLiked ? 'liked' : ''}`}>
-                  {project.isLiked ? '❤️' : '🤍'} {project.likes || 0}
+                <button onClick={handleLike} className={`btn-like ${isLiked ? 'liked' : ''}`}>
+                  {isLiked ? '❤️' : '🤍'} {likesCount}
                 </button>
-                <button onClick={handleSave} className={`btn-save ${project.isSaved ? 'saved' : ''}`}>
-                  {project.isSaved ? '💾' : '🔖'} {project.isSaved ? 'Guardado' : 'Guardar'}
+                <button onClick={handleSave} className={`btn-save ${isSaved ? 'saved' : ''}`}>
+                  {isSaved ? '💾' : '🔖'} {isSaved ? 'Guardado' : 'Guardar'}
                 </button>
               </>
             )}

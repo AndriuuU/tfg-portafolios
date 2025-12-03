@@ -3,18 +3,44 @@
 .settings-page {
   min-height: 100vh;
   background: var(--bg-primary);
-  padding: clamp(1.5rem, 4vw, 2.5rem) clamp(1rem, 3vw, 1.25rem);
+  padding: clamp(1rem, 3vw, 2rem) clamp(0.75rem, 2vw, 1.25rem);
+
+  @include mixins.tablet {
+    padding: clamp(0.75rem, 2.5vw, 1.5rem) clamp(0.5rem, 1.5vw, 1rem);
+  }
+
+  @include mixins.medium {
+    padding: clamp(0.75rem, 2vw, 1.25rem) clamp(0.5rem, 1.5vw, 0.75rem);
+  }
+
+  @include mixins.mobile {
+    padding: clamp(0.5rem, 1.5vw, 1rem) clamp(0.5rem, 1vw, 0.75rem);
+  }
+
+  @include mixins.extra-small {
+    padding: 0.5rem 0.5rem;
+  }
 
   .settings-container {
     max-width: 1400px;
     margin: 0 auto;
+    width: 100%;
+
+    @include mixins.tablet {
+      max-width: 100%;
+      padding: 0;
+    }
   }
 
   .settings-header {
     display: flex;
     align-items: center;
-    gap: clamp(0.75rem, 2vw, 1.25rem);
-    margin-bottom: clamp(1.5rem, 4vw, 2.5rem);
+    gap: clamp(0.5rem, 2vw, 1.25rem);
+    margin-bottom: clamp(1rem, 3vw, 2rem);
+
+    @include mixins.tablet {
+      margin-bottom: clamp(0.75rem, 2vw, 1.5rem);
+    }
 
     .back-btn {
       display: flex;
@@ -65,12 +91,22 @@
 
     @include mixins.tablet {
       grid-template-columns: 1fr;
-      gap: 1.25rem;
+      gap: 1rem;
+    }
+
+    @include mixins.medium {
+      grid-template-columns: 1fr;
+      gap: 0.875rem;
+    }
+
+    @include mixins.mobile {
+      grid-template-columns: 1fr;
+      gap: 0.75rem;
     }
 
     @include mixins.extra-small {
       grid-template-columns: 1fr;
-      gap: 1rem;
+      gap: 0.75rem;
     }
 
     .settings-sidebar {
@@ -80,35 +116,111 @@
       padding: 0;
       height: fit-content;
       position: sticky;
-      top: 20px;
+      top: 100px;
       box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
 
       @include mixins.tablet {
         position: static;
+        top: auto;
+        display: flex;
+        flex-wrap: wrap;
+        border-radius: 8px;
+        overflow: hidden;
+        width: 100%;
+      }
+
+      @include mixins.medium {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0;
+        overflow: hidden;
+        border-radius: 8px;
+      }
+
+      @include mixins.small-mobile {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0;
+        overflow: hidden;
+        border-radius: 6px;
+        width: 100%;
+      }
+
+      @include mixins.mobile {
+        display: flex;
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+        width: 100%;
+
+        &::-webkit-scrollbar {
+          display: none;
+        }
       }
 
       @include mixins.extra-small {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0;
         border-radius: 8px;
-        overflow-x: auto;
-        -webkit-overflow-scrolling: touch;
+        overflow: hidden;
       }
 
       .menu-item {
         display: flex;
         align-items: center;
-        gap: clamp(0.75rem, 2vw, 0.875rem);
-        padding: clamp(0.875rem, 2vw, 1rem) clamp(1rem, 3vw, 1.25rem);
+        gap: clamp(0.5rem, 1.5vw, 0.875rem);
+        padding: clamp(0.75rem, 1.5vw, 0.875rem) clamp(0.75rem, 2vw, 1.25rem);
         background: transparent;
         border: none;
         width: 100%;
         cursor: pointer;
         transition: all 0.3s ease;
-        font-size: clamp(0.875rem, 1.5vw, 0.875rem);
+        font-size: 0.875rem;
         font-weight: 600;
         color: var(--text-secondary);
         border-left: 3px solid transparent;
         min-height: 44px;
         text-align: left;
+
+        @include mixins.tablet {
+          flex: 1 1 calc(50% - 0.625rem);
+          justify-content: center;
+          padding: 0.875rem 0.625rem;
+          border-left: none;
+          border-bottom: 3px solid transparent;
+          min-height: 50px;
+          font-size: 0.825rem;
+        }
+
+        @include mixins.medium {
+          flex: 1 1 calc(50% - 0.4375rem);
+          justify-content: center;
+          padding: 0.75rem 0.5rem;
+          font-size: 0.8rem;
+        }
+
+        @include mixins.small-mobile {
+          flex: 1 1 calc(33.333% - 0.4rem);
+          justify-content: center;
+          padding: 0.65rem 0.4rem;
+          font-size: 0.7rem;
+          white-space: normal;
+          line-height: 1.2;
+          border-bottom: 2px solid transparent;
+          border-left: none;
+          min-height: auto;
+        }
+
+        @include mixins.mobile {
+          flex: 0 0 auto;
+          padding: 0.75rem;
+          white-space: nowrap;
+          border-bottom: 2px solid transparent;
+          border-left: none;
+          font-size: 0.75rem;
+        }
 
         &:hover {
           background: rgba(79, 70, 229, 0.05);
@@ -124,22 +236,61 @@
           color: var(--primary-color);
           border-left-color: var(--primary-color);
 
+          @include mixins.tablet {
+            border-left-color: transparent;
+            border-bottom-color: var(--primary-color);
+          }
+
+          @include mixins.medium {
+            border-left-color: transparent;
+            border-bottom-color: var(--primary-color);
+          }
+
+          @include mixins.small-mobile {
+            border-left-color: transparent;
+            border-bottom-color: var(--primary-color);
+          }
+
+          @include mixins.mobile {
+            border-bottom-color: var(--primary-color);
+          }
+
           @include mixins.dark-mode {
             background: rgba(79, 70, 229, 0.2);
           }
         }
 
         span {
-          font-size: clamp(1rem, 2vw, 1.125rem);
+          font-size: 1rem;
           flex-shrink: 0;
+
+          @include mixins.tablet {
+            font-size: 0.9rem;
+          }
+
+          @include mixins.medium {
+            font-size: 0.85rem;
+          }
+
+          @include mixins.small-mobile {
+            font-size: 0.65rem;
+          }
+
+          @include mixins.mobile {
+            font-size: 0.7rem;
+          }
         }
 
         @include mixins.extra-small {
-          padding: 1rem 0.875rem;
-          font-size: 0.875rem;
+          flex: 1 1 calc(50% - 0.3rem);
+          justify-content: center;
+          padding: 0.75rem 0.5rem;
+          font-size: 0.75rem;
+          white-space: normal;
+          line-height: 1.2;
           
           span {
-            font-size: 1rem;
+            font-size: 0.65rem;
           }
         }
       }

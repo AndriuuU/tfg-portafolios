@@ -108,7 +108,13 @@ const Ranking = () => {
               <td className="rank">#{user.rank}</td>
               <td className="user-info">
                 <div className="user-avatar">
-                  <img src={user.avatarUrl || '/default-avatar.png'} alt={user.username} />
+                  {user.avatarUrl ? (
+                    <img src={user.avatarUrl} alt={user.username} />
+                  ) : (
+                    <div className="avatar-placeholder">
+                      {user.name?.charAt(0).toUpperCase() || user.username?.charAt(0).toUpperCase()}
+                    </div>
+                  )}
                 </div>
                 <div className="user-details">
                   <p className="username">{user.username}</p>
