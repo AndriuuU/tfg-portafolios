@@ -1,5 +1,6 @@
 [build]
-cmds = ["npm ci"]
+cmds = ["npm install"]
 
 [start]
-cmd = "npm start"
+cmd = "node src/index.js"
+
