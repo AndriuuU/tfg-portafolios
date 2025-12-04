@@ -1,8 +1,1 @@
-[build]
-providers = ["nodejs-npm"]
-
-[[build.cmds]]
-cmd = "npm ci"
-
-[start]
-cmd = "node src/index.js"
+# This file is deprecated - Railway will use Dockerfile instead

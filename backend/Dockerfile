@@ -1,14 +1,13 @@
-version: '3.8'
+FROM node:18-alpine
 
-services:
-  backend:
-    image: node:18-alpine
-    working_dir: /app
-    ports:
-      - "8080:8080"
-    environment:
-      - NODE_ENV=production
-      - PORT=8080
-    command: sh -c "npm ci && node src/index.js"
-    volumes:
-      - .:/app
+WORKDIR /app
+
+COPY package*.json ./
+
+RUN npm ci --only=production
+
+COPY src ./src
+
+EXPOSE 8080
+
+CMD ["node", "src/index.js"]
