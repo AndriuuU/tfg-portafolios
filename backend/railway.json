@@ -1,0 +1,11 @@
+{
+  "build": {
+    "builder": "nixpacks"
+  },
+  "deploy": {
+    "numReplicas": 1,
+    "startCommand": "npm start",
+    "healthcheckPath": "/health",
+    "restartPolicyMaxRetries": 10
+  }
+}
