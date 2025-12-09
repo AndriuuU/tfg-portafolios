@@ -1,44 +1,26 @@
-const nodemailer = require('nodemailer');
+const sgMail = require('@sendgrid/mail');
 
-// Configurar transporter según el entorno
-let transporter;
-
-if (process.env.NODE_ENV === 'test') {
-  // En modo test, usar un transporter falso que no hace nada
-  transporter = {
-    sendMail: async () => ({ messageId: 'test-message-id' }),
-    verify: () => Promise.resolve(true)
-  };
+// Configurar SendGrid
+if (process.env.SENDGRID_API_KEY) {
+  sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+  console.log('✅ SendGrid configurado correctamente');
 } else {
-  // En producción/desarrollo, usar el transporter real
-  transporter = nodemailer.createTransport({
-    host: process.env.EMAIL_HOST || 'smtp.gmail.com',
-    port: process.env.EMAIL_PORT || 587,
-    secure: false, // true para puerto 465, false para otros
-    auth: {
-      user: process.env.EMAIL_USER,
-      pass: process.env.EMAIL_PASS,
-    },
-  });
-
-  // Verificar configuración
-  transporter.verify((error, success) => {
-    if (error) {
-      console.log('❌ Error en configuración de email:', error);
-    } else {
-      console.log('✅ Servidor de email listo');
-    }
-  });
+  console.warn('⚠️ SENDGRID_API_KEY no está definida');
 }
 
 // Enviar email de verificación
 exports.sendVerificationEmail = async (email, username, token) => {
+  if (process.env.NODE_ENV === 'test') {
+    console.log('🧪 TEST: Email de verificación enviado a:', email);
+    return;
+  }
+
   const verificationUrl = `${process.env.FRONTEND_URL || 'http://localhost:5173'}/verify-email/${token}`;
   
-  const mailOptions = {
-    from: `"${process.env.APP_NAME || 'TFG Portafolios'}" <${process.env.EMAIL_USER}>`,
+  const msg = {
     to: email,
-    subject: 'Verifica tu cuenta',
+    from: process.env.EMAIL_USER || 'noreply@portafolioshub.com',
+    subject: 'Verifica tu cuenta - TFG Portafolios',
     html: `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
         <h2>Hola ${username},</h2>
@@ -57,16 +39,10 @@ exports.sendVerificationEmail = async (email, username, token) => {
   };
 
   try {
-    await transporter.sendMail(mailOptions);
-    if (process.env.NODE_ENV !== 'test') {
-      console.log('✅ Email de verificación enviado a:', email);
-      console.log('   Token:', token);
-      console.log('   URL:', verificationUrl);
-    }
+    await sgMail.send(msg);
+    console.log('✅ Email de verificación enviado a:', email);
   } catch (error) {
-    if (process.env.NODE_ENV !== 'test') {
-      console.error('❌ Error enviando email de verificación:', error);
-    }
+    console.error('❌ Error enviando email de verificación:', error.message);
     throw error;
   }
 };
@@ -75,9 +51,9 @@ exports.sendVerificationEmail = async (email, username, token) => {
 exports.sendPasswordResetEmail = async (email, username, token) => {
   const resetUrl = `${process.env.FRONTEND_URL || 'http://localhost:5173'}/reset-password/${token}`;
   
-  const mailOptions = {
-    from: `"${process.env.APP_NAME || 'TFG Portafolios'}" <${process.env.EMAIL_USER}>`,
+  const msg = {
     to: email,
+    from: process.env.EMAIL_USER,
     subject: 'Recuperación de contraseña',
     html: `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
@@ -97,13 +73,13 @@ exports.sendPasswordResetEmail = async (email, username, token) => {
   };
 
   try {
-    await transporter.sendMail(mailOptions);
+    await sgMail.send(msg);
     if (process.env.NODE_ENV !== 'test') {
       console.log('✅ Email de recuperación enviado a:', email);
     }
   } catch (error) {
     if (process.env.NODE_ENV !== 'test') {
-      console.error('❌ Error enviando email de recuperación:', error);
+      console.error('❌ Error enviando email de recuperación:', error.message);
     }
     throw error;
   }
@@ -111,9 +87,9 @@ exports.sendPasswordResetEmail = async (email, username, token) => {
 
 // Enviar email de confirmación de cambio de contraseña
 exports.sendPasswordChangedEmail = async (email, username) => {
-  const mailOptions = {
-    from: `"${process.env.APP_NAME || 'TFG Portafolios'}" <${process.env.EMAIL_USER}>`,
+  const msg = {
     to: email,
+    from: process.env.EMAIL_USER,
     subject: 'Contraseña cambiada exitosamente',
     html: `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
@@ -127,22 +103,22 @@ exports.sendPasswordChangedEmail = async (email, username) => {
   };
 
   try {
-    await transporter.sendMail(mailOptions);
+    await sgMail.send(msg);
     if (process.env.NODE_ENV !== 'test') {
       console.log('✅ Email de confirmación enviado a:', email);
     }
   } catch (error) {
     if (process.env.NODE_ENV !== 'test') {
-      console.error('❌ Error enviando email de confirmación:', error);
+      console.error('❌ Error enviando email de confirmación:', error.message);
     }
   }
 };
 
 // Enviar email de notificación de cambio de email
 exports.sendEmailChangedNotification = async (oldEmail, newEmail, username) => {
-  const mailOptions = {
-    from: `"${process.env.APP_NAME || 'TFG Portafolios'}" <${process.env.EMAIL_USER}>`,
+  const msg = {
     to: oldEmail,
+    from: process.env.EMAIL_USER,
     subject: 'Tu email ha sido cambiado',
     html: `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
@@ -158,12 +134,12 @@ exports.sendEmailChangedNotification = async (oldEmail, newEmail, username) => {
 
   try {
     // Enviar al email antiguo
-    await transporter.sendMail(mailOptions);
+    await sgMail.send(msg);
     
     // También enviar al nuevo email
-    const newEmailOptions = {
-      ...mailOptions,
+    const newMsg = {
       to: newEmail,
+      from: process.env.EMAIL_USER,
       subject: 'Email actualizado correctamente',
       html: `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
@@ -176,23 +152,23 @@ exports.sendEmailChangedNotification = async (oldEmail, newEmail, username) => {
         </div>
       `,
     };
-    await transporter.sendMail(newEmailOptions);
+    await sgMail.send(newMsg);
     
     if (process.env.NODE_ENV !== 'test') {
       console.log('✅ Email de notificación de cambio enviado a:', oldEmail, 'y', newEmail);
     }
   } catch (error) {
     if (process.env.NODE_ENV !== 'test') {
-      console.error('❌ Error enviando email de notificación de cambio:', error);
+      console.error('❌ Error enviando email de notificación de cambio:', error.message);
     }
   }
 };
 
 // Enviar email de notificación de cambio de nombre de usuario
 exports.sendUsernameChangedEmail = async (email, oldUsername, newUsername) => {
-  const mailOptions = {
-    from: `"${process.env.APP_NAME || 'TFG Portafolios'}" <${process.env.EMAIL_USER}>`,
+  const msg = {
     to: email,
+    from: process.env.EMAIL_USER,
     subject: 'Nombre de usuario cambiado',
     html: `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
@@ -208,13 +184,13 @@ exports.sendUsernameChangedEmail = async (email, oldUsername, newUsername) => {
   };
 
   try {
-    await transporter.sendMail(mailOptions);
+    await sgMail.send(msg);
     if (process.env.NODE_ENV !== 'test') {
       console.log('✅ Email de cambio de username enviado a:', email);
     }
   } catch (error) {
     if (process.env.NODE_ENV !== 'test') {
-      console.error('❌ Error enviando email de cambio de username:', error);
+      console.error('❌ Error enviando email de cambio de username:', error.message);
     }
   }
 };
@@ -234,9 +210,9 @@ exports.sendProfileUpdateEmail = async (email, username, changes) => {
     })
     .join('');
 
-  const mailOptions = {
-    from: `"${process.env.APP_NAME || 'TFG Portafolios'}" <${process.env.EMAIL_USER}>`,
+  const msg = {
     to: email,
+    from: process.env.EMAIL_USER,
     subject: 'Tu perfil ha sido actualizado',
     html: `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
@@ -253,13 +229,13 @@ exports.sendProfileUpdateEmail = async (email, username, changes) => {
   };
 
   try {
-    await transporter.sendMail(mailOptions);
+    await sgMail.send(msg);
     if (process.env.NODE_ENV !== 'test') {
       console.log('✅ Email de actualización de perfil enviado a:', email);
     }
   } catch (error) {
     if (process.env.NODE_ENV !== 'test') {
-      console.error('❌ Error enviando email de actualización:', error);
+      console.error('❌ Error enviando email de actualización:', error.message);
     }
   }
 };

@@ -58,7 +58,7 @@ const analyticsSchema = new mongoose.Schema({
 }, { timestamps: true });
 
 // Índices para optimizar búsquedas
-analyticsSchema.index({ projectId: 1 });
+// Nota: projectId ya tiene índice único por la propiedad unique: true
 analyticsSchema.index({ 'views.daily.date': 1 });
 analyticsSchema.index({ 'likes.daily.date': 1 });
 analyticsSchema.index({ 'comments.daily.date': 1 });
