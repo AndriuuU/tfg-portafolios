@@ -1,8 +1,17 @@
 import axios from 'axios';
-import API_URL from './config';
+
+// Crear función que devuelve la URL dinámicamente
+const getAPIURL = () => {
+  // Si estamos en Netlify (production)
+  if (typeof window !== 'undefined' && window.location.hostname.includes('netlify.app')) {
+    return 'https://tfg-portafolios-production.up.railway.app';
+  }
+  // Desarrollo local
+  return 'http://localhost:5000';
+};
 
 const API = axios.create({
-  baseURL: `${API_URL}/api`
+  baseURL: `${getAPIURL()}/api`
 });
 
 // Agregar token a todas las requests autenticadas
