@@ -1,4 +1,5 @@
 [build]
+  base = "fronted"
   command = "npm run build"
   publish = "dist"
 
