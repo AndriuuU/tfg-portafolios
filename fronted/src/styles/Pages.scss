@@ -246,7 +246,7 @@
           }
 
           .user-username {
-            color: var(--text-secondary);
+            color: var(--text-primary);
             font-size: clamp(0.8rem, 1.5vw, 0.9rem);
             margin-bottom: 0.75rem;
             word-break: break-word;
@@ -430,7 +430,7 @@
           }
 
           .username {
-            color: var(--text-secondary);
+            color: var(--text-primary);
             font-size: clamp(0.95rem, 2vw, 1.1rem);
             margin-bottom: 1rem;
           }
@@ -490,7 +490,7 @@
           }
 
           .stat-label {
-            color: var(--text-secondary);
+            color: var(--text-primary);
             font-size: clamp(0.8rem, 1.5vw, 0.9rem);
           }
         }

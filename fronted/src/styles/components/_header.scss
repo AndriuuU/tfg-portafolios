@@ -300,6 +300,19 @@
       }
     }
 
+    &--admin {
+      color: #4f46e5;
+      font-weight: 600;
+
+      &:hover {
+        background: rgba(79, 70, 229, 0.1);
+
+        @include mixins.dark-mode {
+          background: rgba(79, 70, 229, 0.2);
+        }
+      }
+    }
+
     @include mixins.extra-small {
       padding: 1rem;
       gap: 1rem;
