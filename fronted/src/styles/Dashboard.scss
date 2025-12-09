@@ -99,7 +99,7 @@
       padding: 0.75rem 1.5rem;
       border: none;
       background: transparent;
-      color: var(--text-secondary);
+      color: var(--text-primary);
       font-weight: 500;
       cursor: pointer;
       border-radius: 8px;
@@ -112,7 +112,7 @@
 
       &:hover {
         background: var(--bg-tertiary);
-        color: var(--text-primary);
+        color: var(--primary-color);
       }
 
       &.active {

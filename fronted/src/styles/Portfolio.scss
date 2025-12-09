@@ -76,6 +76,19 @@
         object-fit: cover;
       }
 
+      .avatar-placeholder {
+        background: linear-gradient(135deg, #4f46e5, #7c3aed);
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: clamp(2rem, 5vw, 3rem);
+        font-weight: 700;
+        text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+        width: 100%;
+        height: 100%;
+      }
+
       &.initials {
         background: linear-gradient(135deg, #4f46e5, #7c3aed);
         color: white;
@@ -105,10 +118,6 @@
         color: var(--text-primary);
         margin: 0 0 clamp(0.5rem, 1vw, 0.75rem) 0;
         word-break: break-word;
-        background: linear-gradient(135deg, var(--text-primary), var(--primary-color));
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        background-clip: text;
 
         @include mixins.extra-small {
           font-size: 1.5rem;
