@@ -1,22 +1,27 @@
-// Detectar la URL del API dinámicamente basado en el hostname
+// Detectar la URL del API en tiempo de ejecución
+let API_URL = null;
+
 const getAPIURL = () => {
-  // Si estamos en producción (Netlify)
-  if (typeof window !== 'undefined' && window.location.hostname.includes('netlify.app')) {
-    return 'https://tfg-portafolios-production.up.railway.app';
-  }
+  if (API_URL) return API_URL;
   
-  // Variable de entorno (se lee en tiempo de build)
+  // Variables de entorno (disponibles en tiempo de build)
   const envURL = import.meta.env.VITE_API_URL;
+  console.log('🔍 import.meta.env.VITE_API_URL:', envURL);
+  
   if (envURL) {
-    console.log('📍 Usando API_URL del .env:', envURL);
-    return envURL;
+    API_URL = envURL;
+    console.log('✅ Usando URL del entorno:', API_URL);
+    return API_URL;
   }
   
-  // Desarrollo local fallback
-  console.log('📍 Usando API_URL de fallback: http://localhost:5000');
-  return 'http://localhost:5000';
+  // Si no hay variable de entorno, usar localhost por defecto
+  API_URL = 'http://localhost:5000';
+  console.log('✅ Usando URL de fallback:', API_URL);
+  return API_URL;
 };
 
-const API_URL = getAPIURL();
-console.log('🔗 API_URL final:', API_URL);
-export default API_URL;
+// Llamar la función inmediatamente
+const API_URL_VALUE = getAPIURL();
+console.log('🔗 API_URL final:', API_URL_VALUE);
+
+export default API_URL_VALUE;
