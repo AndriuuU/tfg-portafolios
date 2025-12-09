@@ -5,11 +5,6 @@ const getAPIURL = () => {
     return 'https://tfg-portafolios-production.up.railway.app';
   }
   
-  // Variable de entorno
-  if (import.meta.env.VITE_API_URL) {
-    return import.meta.env.VITE_API_URL;
-  }
-  
   // Desarrollo local
   return 'http://localhost:5000';
 };
