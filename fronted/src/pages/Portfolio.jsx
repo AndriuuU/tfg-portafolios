@@ -178,7 +178,7 @@ const ProjectCard = ({ project, isOwnProfile, onDelete }) => {
 
   const handleEdit = (e) => {
     e.stopPropagation();
-    navigate(`/projects/edit/${project._id}`);
+    navigate(`/projects/${project._id}/edit`);
   };
 
   const handleDelete = async (e) => {
@@ -442,7 +442,7 @@ export default function Portfolio() {
           {isOwnProfile && (
             <button 
               onClick={() => navigate('/projects/new')}
-              className="btn btn-create"
+              className="btn btn-primary"
             >
               ➕ Crear Proyecto
             </button>

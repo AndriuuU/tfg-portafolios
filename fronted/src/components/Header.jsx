@@ -55,7 +55,8 @@ const Header = () => {
       <div className="header__container">
         {/* Logo */}
         <Link to="/" className="header__logo">
-          PortafoliosHub
+          <img src="/logoPH.png" alt="PortafoliosHub Logo" className="logo-img" />
+          <span className="logo-text">PortafoliosHub</span>
         </Link>
 
         {/* Barra de búsqueda */}
