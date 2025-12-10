@@ -4,20 +4,34 @@ import '../styles/components/Components.scss';
 
 function SearchBar() {
   const [searchTerm, setSearchTerm] = useState('');
+  const [searchType, setSearchType] = useState('projects'); // 'projects' o 'users'
   const navigate = useNavigate();
 
   const handleSubmit = (e) => {
     e.preventDefault();
     if (searchTerm.trim()) {
-      navigate(`/search?q=${encodeURIComponent(searchTerm)}`);
+      if (searchType === 'projects') {
+        navigate(`/search?q=${encodeURIComponent(searchTerm)}`);
+      } else {
+        navigate(`/users?q=${encodeURIComponent(searchTerm)}`);
+      }
     }
   };
 
   return (
     <form onSubmit={handleSubmit} className="search-bar">
+      <select
+        value={searchType}
+        onChange={(e) => setSearchType(e.target.value)}
+        className="search-bar-select"
+        aria-label="Tipo de búsqueda"
+      >
+        <option value="projects">Proyectos</option>
+        <option value="users">Usuarios</option>
+      </select>
       <input
         type="text"
-        placeholder="Buscar proyectos..."
+        placeholder={searchType === 'projects' ? 'Buscar proyectos...' : 'Buscar usuarios...'}
         value={searchTerm}
         onChange={(e) => setSearchTerm(e.target.value)}
         className="search-bar-input"
