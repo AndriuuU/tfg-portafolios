@@ -457,16 +457,6 @@ docker-compose up
 - ✅ Variables sensibles en .env
 - ✅ Rate limiting
 - ✅ Headers de seguridad
-
-### Checklist de Seguridad
-- [ ] No subir `.env` a Git
-- [ ] Regenerar `JWT_SECRET` en producción
-- [ ] Usar HTTPS en producción
-- [ ] Configurar CORS correctamente
-- [ ] Validar todas las entradas
-- [ ] Sanitizar datos de usuario
-- [ ] Auditar dependencias regularmente
-
 ---
 
 ## 📊 Estadísticas del Proyecto
@@ -513,36 +503,14 @@ Solución: Verificar credenciales de Cloudinary en .env
 
 ---
 
-## 🤝 Contribuir
-
-¡Las contribuciones son bienvenidas! Por favor:
-
-1. Fork el repositorio
-2. Crea una rama para tu feature (`git checkout -b feature/AmazingFeature`)
-3. Commit tus cambios (`git commit -m 'feat: Add AmazingFeature'`)
-4. Push a la rama (`git push origin feature/AmazingFeature`)
-5. Abre un Pull Request
-
-### Pautas de Contribución
-- Sigue el código existente
-- Escribe tests para nuevas funciones
-- Actualiza la documentación
-- Usa convenciones de commit semantic
-
----
-
 ## 📝 Licencia
 
 Este proyecto está bajo la Licencia MIT. Ver archivo `LICENSE` para más detalles.
 
 ```
-MIT License
 
-Copyright (c) 2024 Andrés Rodríguez
+Copyright (c) 2026 Andrés Molina González
 
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction...
 ```
 
 ---
