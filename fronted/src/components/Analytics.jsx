@@ -23,7 +23,6 @@ export default function Analytics() {
       const res = await API.get('/analytics/dashboard');
       setDashboardData(res.data);
     } catch (err) {
-      console.error('Error fetching dashboard:', err);
       setError('Error al cargar el dashboard');
       setLoading(false);
     }
@@ -35,7 +34,6 @@ export default function Analytics() {
       setTopProjects(res.data.topProjects || []);
       setLoading(false);
     } catch (err) {
-      console.error('Error fetching top projects:', err);
       setLoading(false);
     }
   };
@@ -45,7 +43,6 @@ export default function Analytics() {
       const res = await API.get('/ranking/global?limit=10&skip=0');
       setGlobalRanking(res.data.users || []);
     } catch (err) {
-      console.error('Error fetching global ranking:', err);
     }
   };
 
@@ -54,7 +51,6 @@ export default function Analytics() {
       const res = await API.get('/ranking/my-position');
       setUserPosition(res.data);
     } catch (err) {
-      console.error('Error fetching user position:', err);
     }
   };
 

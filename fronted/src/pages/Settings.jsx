@@ -3,6 +3,7 @@ import { useNavigate, Link, useSearchParams } from "react-router-dom";
 import API from "../api/api";
 import { updatePrivacySettings } from "../api/followApi";
 import { deleteAccount, getNotificationPreferences, updateNotificationPreferences } from "../api/api";
+import { useToast } from "../context/ToastContext";
 import FollowRequests from "../components/FollowRequests";
 import BlockedUsers from "../components/BlockedUsers";
 import "../styles/Settings.scss";
@@ -10,6 +11,7 @@ import "../styles/Settings.scss";
 export default function Settings() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
+  const { showToast } = useToast();
   const [user, setUser] = useState(null);
   const [activeSection, setActiveSection] = useState(() => {
     const section = searchParams.get('section');
@@ -88,7 +90,7 @@ export default function Settings() {
       const res = await getNotificationPreferences();
       setNotificationPreferences(res.data.notificationPreferences);
     } catch (error) {
-      console.error("Error loading notification preferences:", error);
+      showToast('❌ Error al cargar preferencias de notificaciones', 'error');
     }
   };
 
@@ -165,13 +167,15 @@ export default function Settings() {
       });
 
       setMsg({ text: "Perfil actualizado exitosamente", type: "success" });
+      showToast('✅ Perfil actualizado exitosamente', 'success');
 
       // Scroll al mensaje
       window.scrollTo({ top: 0, behavior: 'smooth' });
     } catch (err) {
-      console.error("Error updating profile:", err);
+      const errorMsg = err.response?.data?.error || "Error al actualizar perfil";
+      showToast(`❌ ${errorMsg}`, 'error');
       setMsg({
-        text: err.response?.data?.error || "Error al actualizar perfil",
+        text: errorMsg,
         type: "error",
       });
       window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -197,10 +201,12 @@ export default function Settings() {
       window.dispatchEvent(new Event('user-updated'));
       
       setMsg({ text: "Configuración de privacidad actualizada", type: "success" });
+      showToast('✅ Configuración de privacidad actualizada', 'success');
     } catch (err) {
-      console.error("Error updating privacy:", err);
+      const errorMsg = err.response?.data?.error || "Error al actualizar privacidad";
+      showToast(`❌ ${errorMsg}`, 'error');
       setMsg({
-        text: err.response?.data?.error || "Error al actualizar privacidad",
+        text: errorMsg,
         type: "error",
       });
     } finally {
@@ -216,10 +222,12 @@ export default function Settings() {
     try {
       const res = await updateNotificationPreferences(notificationPreferences);
       setMsg({ text: "Preferencias de notificación actualizadas", type: "success" });
+      showToast('✅ Preferencias de notificación actualizadas', 'success');
     } catch (err) {
-      console.error("Error updating notifications:", err);
+      const errorMsg = err.response?.data?.error || "Error al actualizar notificaciones";
+      showToast(`❌ ${errorMsg}`, 'error');
       setMsg({
-        text: err.response?.data?.error || "Error al actualizar notificaciones",
+        text: errorMsg,
         type: "error",
       });
     } finally {
@@ -262,10 +270,12 @@ export default function Settings() {
       setAvatarFile(null);
       setAvatarPreview(null);
       setMsg({ text: "Avatar actualizado exitosamente", type: "success" });
+      showToast('✅ Avatar actualizado exitosamente', 'success');
     } catch (err) {
-      console.error("Error uploading avatar:", err);
+      const errorMsg = err.response?.data?.error || "Error al subir avatar";
+      showToast(`❌ ${errorMsg}`, 'error');
       setMsg({
-        text: err.response?.data?.error || "Error al subir avatar",
+        text: errorMsg,
         type: "error",
       });
     } finally {
@@ -285,11 +295,13 @@ export default function Settings() {
     try {
       await deleteAccount(deletePassword);
       localStorage.clear();
+      showToast('✅ Cuenta eliminada correctamente', 'success');
       navigate("/login");
     } catch (err) {
-      console.error("Error deleting account:", err);
+      const errorMsg = err.response?.data?.error || "Error al eliminar cuenta";
+      showToast(`❌ ${errorMsg}`, 'error');
       setMsg({
-        text: err.response?.data?.error || "Error al eliminar cuenta",
+        text: errorMsg,
         type: "error",
       });
     } finally {
@@ -409,7 +421,7 @@ export default function Settings() {
                           name="currentPassword"
                           value={formData.currentPassword}
                           onChange={handleChange}
-                          placeholder="Deixa en blanco si no quieres cambiarla"
+                          placeholder="Deja en blanco si no quieres cambiarla"
                         />
                       </div>
 
@@ -421,7 +433,7 @@ export default function Settings() {
                             name="newPassword"
                             value={formData.newPassword}
                             onChange={handleChange}
-                            placeholder="Deixa en blanco si no quieres cambiarla"
+                            placeholder="Deja en blanco si no quieres cambiarla"
                           />
                         </div>
 

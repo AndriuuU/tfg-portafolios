@@ -1,6 +1,6 @@
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 import { ToastProvider } from "./context/ToastContext";
-import { AuthProvider } from "./context/AuthContext";
+import { AuthProvider, useAuth } from "./context/AuthContext";
 import Header from "./components/Header";
 import Home from "./pages/Home";
 import Login from "./pages/Login";
@@ -13,12 +13,27 @@ import EditProject from "./pages/EditProject";
 import ProjectDetail from "./pages/ProjectDetail";
 import Settings from "./pages/Settings";
 import Search from "./pages/Search";
+import UserSearch from "./pages/UserSearch";
 import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
 import VerifyEmail from "./pages/VerifyEmail";
 import AnalyticsPage from "./pages/AnalyticsPage";
 import RankingPage from "./pages/RankingPage";
+import AdminPanel from "./pages/AdminPanel";
 import NotFound from "./pages/NotFound";
+
+// Ruta protegida solo para admins
+const AdminRoute = ({ children }) => {
+  const { user, loading } = useAuth();
+  
+  if (loading) return <div>Cargando...</div>;
+  
+  if (!user) return <Navigate to="/login" replace />;
+  
+  if (!user.isAdmin) return <Navigate to="/" replace />;
+  
+  return children;
+};
 
 function App() {
   return (
@@ -37,7 +52,9 @@ function App() {
             <Route path="/settings" element={<Settings />} />
             <Route path="/analytics" element={<AnalyticsPage />} />
             <Route path="/ranking" element={<RankingPage />} />
+            <Route path="/admin" element={<AdminRoute><AdminPanel /></AdminRoute>} />
             <Route path="/search" element={<Search />} />
+            <Route path="/users" element={<UserSearch />} />
             <Route path="/projects" element={<ProjectForm />} />
             <Route path="/projects/new" element={<NewProject />} />
             <Route path="/projects/:id/edit" element={<EditProject />} />

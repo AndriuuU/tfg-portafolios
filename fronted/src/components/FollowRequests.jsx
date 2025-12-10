@@ -20,7 +20,6 @@ export default function FollowRequests() {
             const res = await getFollowRequests();
             setRequests(res.data?.requests || []);
         } catch (err) {
-            console.error('Error loading requests:', err);
             setError(err.response?.data?.error || 'Error al cargar solicitudes');
             setRequests([]);
         } finally {
@@ -34,7 +33,6 @@ export default function FollowRequests() {
             await acceptFollowRequest(userId);
             await loadRequests();
         } catch (err) {
-            console.error('Error accepting request:', err);
             alert(err.response?.data?.error || 'Error al aceptar solicitud');
         }
     };
@@ -45,7 +43,6 @@ export default function FollowRequests() {
             await rejectFollowRequest(userId);
             await loadRequests();
         } catch (err) {
-            console.error('Error rejecting request:', err);
             alert(err.response?.data?.error || 'Error al rechazar solicitud');
         }
     };

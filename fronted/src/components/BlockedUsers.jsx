@@ -20,7 +20,6 @@ export default function BlockedUsers() {
             const res = await getBlockedUsers();
             setBlockedUsers(res.data?.blockedUsers || []);
         } catch (err) {
-            console.error('Error loading blocked users:', err);
             setError(err.response?.data?.error || 'Error al cargar usuarios bloqueados');
             setBlockedUsers([]);
         } finally {
@@ -36,7 +35,6 @@ export default function BlockedUsers() {
             await unblockUser(userId);
             await loadBlockedUsers();
         } catch (err) {
-            console.error('Error unblocking user:', err);
             alert(err.response?.data?.error || 'Error al desbloquear usuario');
         }
     };

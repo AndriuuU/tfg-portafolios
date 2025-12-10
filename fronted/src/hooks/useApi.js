@@ -17,7 +17,6 @@ export function useApi(apiCall, deps = []) {
       setData(res.data);
     } catch (err) {
       setError(err.response?.data?.error || 'Error inesperado');
-      console.error('API Error:', err);
     } finally {
       setLoading(false);
     }
@@ -37,7 +36,6 @@ export function useApi(apiCall, deps = []) {
       } catch (err) {
         if (!cancelled) {
           setError(err.response?.data?.error || 'Error inesperado');
-          console.error('API Error:', err);
         }
       } finally {
         if (!cancelled) {

@@ -49,7 +49,6 @@ export default function Comments({ projectId, token }) {
         setComments([]);
       }
     } catch (err) {
-      console.error("Error al cargar comentarios:", err);
       setErrorMsg("Error al cargar comentarios");
     }
   };
@@ -109,7 +108,6 @@ export default function Comments({ projectId, token }) {
         ));
       }
     } catch (err) {
-      console.error("Error al dar like al comentario:", err);
       const errorMessage = err.response?.data?.error || "Error al dar like";
       
       // Si el error es que ya dio like, actualizar el estado local
@@ -154,7 +152,6 @@ export default function Comments({ projectId, token }) {
       });
       fetchComments();
     } catch (err) {
-      console.error("Error al eliminar comentario:", err);
       setErrorMsg(err.response?.data?.error || "Error al eliminar comentario");
     }
   };

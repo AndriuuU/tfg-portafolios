@@ -15,8 +15,6 @@ function ResetPassword() {
   useEffect(() => {
     if (!token) {
       setError('Token de recuperación no válido o expirado');
-    } else {
-      console.log('Token obtenido de la URL:', token);
     }
   }, [token]);
 
@@ -53,7 +51,6 @@ function ResetPassword() {
         navigate('/login');
       }, 2000);
     } catch (err) {
-      console.error('Error al resetear contraseña:', err);
       const errorMessage = err.response?.data?.error || 'Error al restablecer la contraseña';
       
       if (err.response?.status === 400) {

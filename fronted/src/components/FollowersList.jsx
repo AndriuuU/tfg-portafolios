@@ -21,7 +21,6 @@ export default function FollowersList({ userId, isOwnProfile, onClose }) {
             const res = await getFollowers(userId);
             setFollowers(res.data?.followers || []);
         } catch (err) {
-            console.error('Error loading followers:', err);
             setError(err.response?.data?.error || 'Error al cargar seguidores');
             setFollowers([]);
         } finally {
@@ -37,7 +36,6 @@ export default function FollowersList({ userId, isOwnProfile, onClose }) {
             await removeFollower(followerId);
             await loadFollowers();
         } catch (err) {
-            console.error('Error removing follower:', err);
             alert(err.response?.data?.error || 'Error al eliminar seguidor');
         }
     };

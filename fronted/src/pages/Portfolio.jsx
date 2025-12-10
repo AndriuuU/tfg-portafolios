@@ -7,12 +7,13 @@ import FollowButton from "../components/FollowButton";
 import FollowersList from "../components/FollowersList";
 import FollowingList from "../components/FollowingList";
 import BlockUserButton from "../components/BlockUserButton";
+import ReportModal from "../components/ReportModal";
 import { checkRelationship, getFollowers, getFollowing } from "../api/followApi";
 import { useToast } from "../context/ToastContext";
 import "../styles/Portfolio.scss";
 
 // Custom hook para cargar portfolio del usuario
-const usePortfolio = (username) => {
+const usePortfolio = (username, showToast) => {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -25,8 +26,26 @@ const usePortfolio = (username) => {
         setData(res.data);
         setError(null);
       } catch (err) {
-        console.error('Error loading portfolio:', err);
-        setError('Usuario no encontrado');
+        // Mensajes específicos para cuentas bloqueadas
+        const errorData = err.response?.data;
+        let errorMessage;
+        
+        if (errorData?.type === 'ACCOUNT_DELETED') {
+          errorMessage = '🗑️ Esta cuenta ha sido eliminada';
+        } else if (errorData?.type === 'ACCOUNT_BANNED') {
+          errorMessage = '🚫 Esta cuenta ha sido baneada';
+        } else if (errorData?.type === 'ACCOUNT_SUSPENDED') {
+          errorMessage = '⏸️ Esta cuenta ha sido suspendida temporalmente';
+        } else if (err.response?.status === 404) {
+          errorMessage = '❌ Usuario no encontrado';
+        } else {
+          errorMessage = '❌ Error al cargar el perfil';
+        }
+        
+        setError(errorMessage);
+        if (showToast) {
+          showToast(errorMessage, 'error');
+        }
         setData(null);
       } finally {
         setLoading(false);
@@ -36,7 +55,7 @@ const usePortfolio = (username) => {
     if (username) {
       fetchPortfolio();
     }
-  }, [username]);
+  }, [username, showToast]);
 
   return { data, loading, error };
 };
@@ -45,6 +64,7 @@ const usePortfolio = (username) => {
 const UserHeader = ({ user, currentUserId, onFollowUpdate, relationship, showFollowers, showFollowing, setShowFollowers, setShowFollowing, projects, followersCount, followingCount }) => {
   const isOwnProfile = currentUserId === user._id;
   const [exporting, setExporting] = useState(false);
+  const [showReportModal, setShowReportModal] = useState(false);
 
   const handleExportPortfolio = async () => {
     setExporting(true);
@@ -56,79 +76,95 @@ const UserHeader = ({ user, currentUserId, onFollowUpdate, relationship, showFol
       // Descargar como PDF
       const result = await downloadPortfolioPDF(portfolioHTML);
       if (!result.success) {
-        alert(`Error: ${result.message}`);
+        showToast(`❌ ${result.message}`, 'error');
       }
     } catch (error) {
-      console.error("Error exporting portfolio:", error);
-      alert("Error al exportar el portafolio");
+      showToast('❌ Error al exportar el portafolio', 'error');
     } finally {
       setExporting(false);
     }
   };
   
   return (
-    <div className="user-header">
-      <div className="header-content">
-        <div className="header-left">
-          <div className="user-avatar">
-            {user.avatarUrl ? (
-              <img 
-                src={user.avatarUrl} 
-                alt={user.username}
-              />
-            ) : (
-              <div className="avatar-placeholder">
-                {user.name?.charAt(0).toUpperCase() || user.username?.charAt(0).toUpperCase()}
-              </div>
-            )}
-          </div>
-          <div className="user-info">
-            <h1>{user.name || user.username}</h1>
-            <p className="username">@{user.username}</p>
-            {user.email && (
-              <p className="email">📧 {user.email}</p>
-            )}
-            <div className="stats">
-              <div className="stat" onClick={() => setShowFollowers(!showFollowers)} style={{ cursor: 'pointer' }}>
-                <span className="stat-value">{followersCount !== null ? followersCount : (user.followers?.length || 0)}</span>
-                <span className="stat-label">seguidores</span>
-              </div>
-              <div className="stat" onClick={() => setShowFollowing(!showFollowing)} style={{ cursor: 'pointer' }}>
-                <span className="stat-value">{followingCount !== null ? followingCount : (user.following?.length || 0)}</span>
-                <span className="stat-label">siguiendo</span>
+    <>
+      <div className="user-header">
+        <div className="header-content">
+          <div className="header-left">
+            <div className="user-avatar">
+              {user.avatarUrl ? (
+                <img 
+                  src={user.avatarUrl} 
+                  alt={user.username}
+                />
+              ) : (
+                <div className="avatar-placeholder">
+                  {user.name?.charAt(0).toUpperCase() || user.username?.charAt(0).toUpperCase()}
+                </div>
+              )}
+            </div>
+            <div className="user-info">
+              <h1>{user.name || user.username}</h1>
+              <p className="username">@{user.username}</p>
+              {user.email && (
+                <p className="email">📧 {user.email}</p>
+              )}
+              <div className="stats">
+                <div className="stat" onClick={() => setShowFollowers(!showFollowers)} style={{ cursor: 'pointer' }}>
+                  <span className="stat-value">{followersCount !== null ? followersCount : (user.followers?.length || 0)}</span>
+                  <span className="stat-label">seguidores</span>
+                </div>
+                <div className="stat" onClick={() => setShowFollowing(!showFollowing)} style={{ cursor: 'pointer' }}>
+                  <span className="stat-value">{followingCount !== null ? followingCount : (user.following?.length || 0)}</span>
+                  <span className="stat-label">siguiendo</span>
+                </div>
               </div>
             </div>
           </div>
-        </div>
-        <div className="header-actions">
-          {isOwnProfile && (
-            <>
-              <button 
-                onClick={handleExportPortfolio}
-                disabled={exporting}
-                className="btn btn-export"
-                title="Descargar portafolio como PDF"
-              >
-                {exporting ? '⏳ Generando PDF...' : '📄 Exportar Portfolio'}
-              </button>
-              <Link to="/settings" className="btn btn-follow">
-                ⚙️ Configuración
-              </Link>
-            </>
-          )}
-          {!isOwnProfile && (
-            <>
-              <FollowButton userId={user._id} onUpdate={onFollowUpdate} />
-              <BlockUserButton 
-                userId={user._id} 
-                isBlocked={relationship?.isBlocked} 
-                onUpdate={onFollowUpdate}
-              />
-            </>
-          )}
+          <div className="header-actions">
+            {isOwnProfile && (
+              <>
+                <button 
+                  onClick={handleExportPortfolio}
+                  disabled={exporting}
+                  className="btn btn-export"
+                  title="Descargar portafolio como PDF"
+                >
+                  {exporting ? '⏳ Generando PDF...' : '📄 Exportar portfolio'}
+                </button>
+                <Link to="/settings" className="btn btn-follow">
+                  ⚙️ Configuración
+                </Link>
+              </>
+            )}
+            {!isOwnProfile && (
+              <>
+                <FollowButton userId={user._id} onUpdate={onFollowUpdate} />
+                <BlockUserButton 
+                  userId={user._id} 
+                  isBlocked={relationship?.isBlocked} 
+                  onUpdate={onFollowUpdate}
+                />
+                <button 
+                  onClick={() => setShowReportModal(true)}
+                  className="btn btn-report"
+                  title="Reportar este usuario"
+                >
+                  🚩 Reportar
+                </button>
+              </>
+            )}
+          </div>
         </div>
       </div>
-    </div>
+      {showReportModal && (
+        <ReportModal 
+          type="user"
+          targetId={user._id}
+          targetTitle={user.username}
+          onClose={() => setShowReportModal(false)}
+        />
+      )}
+    </>
   );
 };
 
@@ -265,7 +301,7 @@ export default function Portfolio() {
   const { username } = useParams();
   const navigate = useNavigate();
   const { showToast } = useToast();
-  const { data, loading, error } = usePortfolio(username);
+  const { data, loading, error } = usePortfolio(username, showToast);
   const [showFollowers, setShowFollowers] = useState(false);
   const [showFollowing, setShowFollowing] = useState(false);
   const [refreshKey, setRefreshKey] = useState(0);
@@ -291,14 +327,12 @@ export default function Portfolio() {
       getFollowers(data.user._id)
         .then(res => setFollowersCount(res.data?.followers?.length || 0))
         .catch(err => {
-          console.error('Error loading followers count:', err);
           setFollowersCount(data.user.followers?.length || 0);
         });
 
       getFollowing(data.user._id)
         .then(res => setFollowingCount(res.data?.following?.length || 0))
         .catch(err => {
-          console.error('Error loading following count:', err);
           setFollowingCount(data.user.following?.length || 0);
         });
     }
@@ -309,7 +343,7 @@ export default function Portfolio() {
     if (data?.user && !data.user.isOwnProfile && data.user._id) {
       checkRelationship(data.user._id)
         .then(res => setRelationship(res.data))
-        .catch(err => console.error('Error loading relationship:', err));
+        .catch(err => {});
     }
   }, [data, refreshKey]);
 
@@ -321,10 +355,9 @@ export default function Portfolio() {
     try {
       await API.delete(`/projects/${projectId}`);
       setProjects(prevProjects => prevProjects.filter(p => p._id !== projectId));
-      showToast('Proyecto eliminado correctamente', 'success');
+      showToast('✅ Proyecto eliminado correctamente', 'success');
     } catch (error) {
-      console.error('Error deleting project:', error);
-      showToast('Error al eliminar el proyecto', 'error');
+      showToast('❌ Error al eliminar el proyecto', 'error');
     }
   };
 

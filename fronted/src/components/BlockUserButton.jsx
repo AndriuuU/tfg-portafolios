@@ -13,7 +13,6 @@ export default function BlockUserButton({ userId, isBlocked, onUpdate }) {
             if (onUpdate) onUpdate();
             alert('Usuario bloqueado');
         } catch (err) {
-            console.error('Error blocking user:', err);
             alert(err.response?.data?.error || 'Error al bloquear usuario');
         } finally {
             setLoading(false);
@@ -28,7 +27,6 @@ export default function BlockUserButton({ userId, isBlocked, onUpdate }) {
             if (onUpdate) onUpdate();
             alert('Usuario desbloqueado');
         } catch (err) {
-            console.error('Error unblocking user:', err);
             alert(err.response?.data?.error || 'Error al desbloquear usuario');
         } finally {
             setLoading(false);

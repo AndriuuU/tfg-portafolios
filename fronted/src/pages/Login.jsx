@@ -33,8 +33,22 @@ export default function Login() {
         navigate("/dashboard");
       }, 1000);
     } catch (err) {
+      const errorData = err.response?.data;
+      let errorMessage = "❌ Error al iniciar sesión";
+
+      // Mensajes específicos para cuentas bloqueadas
+      if (errorData?.type === 'ACCOUNT_DELETED') {
+        errorMessage = `🚫 ${errorData.error}${errorData.reason ? `: ${errorData.reason}` : ''}`;
+      } else if (errorData?.type === 'ACCOUNT_BANNED') {
+        errorMessage = `🚫 ${errorData.error}${errorData.reason ? `: ${errorData.reason}` : ''}`;
+      } else if (errorData?.type === 'ACCOUNT_SUSPENDED') {
+        errorMessage = `⏸️ ${errorData.error}${errorData.reason ? `: ${errorData.reason}` : ''}`;
+      } else if (errorData?.error) {
+        errorMessage = `❌ ${errorData.error}`;
+      }
+
       setMsg({ 
-        text: err.response?.data?.error || "❌ Error al iniciar sesión", 
+        text: errorMessage, 
         type: "error" 
       });
     } finally {

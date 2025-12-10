@@ -90,6 +90,7 @@ export const getUserProjects = () => API.get('/projects'); // Obtener proyectos 
 export const searchProjects = (params) => API.get('/search/projects', { params });
 // Ejemplo de params: { q: 'react', tags: 'frontend,react', owner: 'username', sort: 'recent', page: 1, limit: 10 }
 
+export const searchUsers = (params) => API.get('/search/users', { params });
 // ==================== LIKES ====================
 export const likeProject = (projectId) => API.post(`/projects/${projectId}/like`);
 export const unlikeProject = (projectId) => API.delete(`/projects/${projectId}/like`);

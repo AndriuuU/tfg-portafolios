@@ -34,7 +34,6 @@ export default function EditProject() {
         setLiveUrl(p.liveUrl || "");
         setRepoUrl(p.repoUrl || "");
       } catch (err) {
-        console.error(err);
         setMsg("No se pudo cargar el proyecto");
       }
     };
@@ -80,7 +79,6 @@ export default function EditProject() {
       setMsg("✅ Proyecto actualizado con éxito");
       setTimeout(() => navigate("/dashboard"), 1200);
     } catch (err) {
-      console.error(err);
       setMsg(err.response?.data?.error || "❌ Error al actualizar proyecto");
     } finally {
       setLoading(false);

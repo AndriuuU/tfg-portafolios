@@ -21,7 +21,6 @@ export default function FollowingList({ userId, isOwnProfile, onClose }) {
       const res = await getFollowing(userId);
       setFollowing(res.data?.following || []);
     } catch (err) {
-      console.error('Error loading following:', err);
       setError(err.response?.data?.error || 'Error al cargar seguidos');
       setFollowing([]);
     } finally {
@@ -37,7 +36,6 @@ export default function FollowingList({ userId, isOwnProfile, onClose }) {
       await unfollowUser(userId);
       await loadFollowing();
     } catch (err) {
-      console.error('Error unfollowing:', err);
       alert(err.response?.data?.error || 'Error al dejar de seguir');
     }
   };

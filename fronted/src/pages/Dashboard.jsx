@@ -2,6 +2,7 @@ import { useState } from "react";
 import { deleteProject } from "../api/api";
 import { Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import { useToast } from "../context/ToastContext";
 import { useMyProjects, useSavedProjects } from "../hooks";
 import ProjectPost from "../components/ProjectPost";
 import CollaborativeProjects from "../components/CollaborativeProjects";
@@ -9,6 +10,7 @@ import "../styles/Dashboard.scss";
 
 export default function Dashboard() {
   const { user } = useAuth();
+  const { showToast } = useToast();
   const [activeTab, setActiveTab] = useState('my-projects');
   
   const { data: myProjectsData, loading: myProjectsLoading, refetch: refetchMyProjects } = useMyProjects();
@@ -24,9 +26,10 @@ export default function Dashboard() {
     if (confirm("¿Seguro que quieres eliminar este proyecto?")) {
       try {
         await deleteProject(id);
+        showToast('✅ Proyecto eliminado correctamente', 'success');
         refetchMyProjects();
       } catch (err) {
-        alert(err.response?.data?.error || 'Error al eliminar el proyecto');
+        showToast(err.response?.data?.error || '❌ Error al eliminar el proyecto', 'error');
       }
     }
   };

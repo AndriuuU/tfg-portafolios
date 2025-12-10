@@ -48,7 +48,6 @@ export const downloadPortfolioPDF = async (portfolioHTML) => {
       message: 'Portfolio exportado correctamente',
     };
   } catch (error) {
-    console.error('Error downloading portfolio PDF:', error);
     return {
       success: false,
       message: 'Error al descargar el PDF',
@@ -104,7 +103,6 @@ export const downloadProjectPDF = async (projectHTML) => {
       message: 'Proyecto exportado correctamente',
     };
   } catch (error) {
-    console.error('Error downloading project PDF:', error);
     return {
       success: false,
       message: 'Error al descargar el PDF',

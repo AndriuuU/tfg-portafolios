@@ -52,7 +52,6 @@ const Ranking = () => {
       }
     } catch (err) {
       setError(err.message);
-      console.error('Error fetching ranking:', err);
     } finally {
       setLoading(false);
     }
@@ -70,7 +69,6 @@ const Ranking = () => {
       const response = await getUserRankingPosition();
       setUserPosition(response.data);
     } catch (err) {
-      console.error('Error fetching user position:', err);
     }
   };
 

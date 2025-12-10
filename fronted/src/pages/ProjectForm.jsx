@@ -61,7 +61,6 @@ export default function ProjectForm({ project }) {
       setMsg("✅ Proyecto guardado con éxito");
       setTimeout(() => navigate("/dashboard"), 1200);
     } catch (err) {
-      console.error(err);
       setMsg(err.response?.data?.error || "❌ Error al guardar proyecto");
     } finally {
       setLoading(false);

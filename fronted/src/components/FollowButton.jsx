@@ -15,7 +15,6 @@ export default function FollowButton({ userId, onUpdate }) {
             const res = await checkRelationship(userId);
             setRelationship(res.data);
         } catch (err) {
-            console.error('Error loading relationship:', err);
             setError('Error al cargar la relación');
         }
     };
@@ -33,7 +32,6 @@ export default function FollowButton({ userId, onUpdate }) {
                 alert('Solicitud enviada');
             }
         } catch (err) {
-            console.error('Error following:', err);
             setError(err.response?.data?.error || 'Error al seguir');
         } finally {
             setLoading(false);
@@ -49,7 +47,6 @@ export default function FollowButton({ userId, onUpdate }) {
             await loadRelationship();
             if (onUpdate) onUpdate();
         } catch (err) {
-            console.error('Error unfollowing:', err);
             setError(err.response?.data?.error || 'Error al dejar de seguir');
         } finally {
             setLoading(false);
