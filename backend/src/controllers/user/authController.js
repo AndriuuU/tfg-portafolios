@@ -46,7 +46,32 @@ exports.login = async (req, res, next) => {
     // Delegar autenticación al servicio
     const user = await authService.loginUser({ email, username, password });
     
-    // Generar token
+    // Verificar estado de la cuenta ANTES de generar el token
+    if (user.isDeleted) {
+      return res.status(403).json({ 
+        error: 'Tu cuenta ha sido eliminada',
+        reason: user.deletedReason || 'Violación de las políticas de la comunidad',
+        type: 'ACCOUNT_DELETED'
+      });
+    }
+
+    if (user.isBanned) {
+      return res.status(403).json({ 
+        error: 'Tu cuenta ha sido baneada permanentemente',
+        reason: user.banReason || 'Violación grave de las políticas',
+        type: 'ACCOUNT_BANNED'
+      });
+    }
+
+    if (user.isSuspended) {
+      return res.status(403).json({ 
+        error: 'Tu cuenta ha sido suspendida temporalmente',
+        reason: user.suspensionReason || 'Actividad sospechosa o violación de políticas',
+        type: 'ACCOUNT_SUSPENDED'
+      });
+    }
+    
+    // Generar token solo si la cuenta está activa
     const token = authService.generateToken(user);
 
     res.json({

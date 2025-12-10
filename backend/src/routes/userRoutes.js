@@ -80,6 +80,28 @@ router.get("/:username", (req, res, next) => {
     const user = await User.findOne({ username: req.params.username }).select("-password");
     if (!user) return res.status(404).json({ error: "Usuario no encontrado" });
 
+    // Verificar el estado de la cuenta antes de mostrar el perfil
+    if (user.isDeleted) {
+      return res.status(403).json({ 
+        error: "Esta cuenta ha sido eliminada",
+        type: "ACCOUNT_DELETED"
+      });
+    }
+
+    if (user.isBanned) {
+      return res.status(403).json({ 
+        error: "Esta cuenta ha sido baneada",
+        type: "ACCOUNT_BANNED"
+      });
+    }
+
+    if (user.isSuspended) {
+      return res.status(403).json({ 
+        error: "Esta cuenta ha sido suspendida temporalmente",
+        type: "ACCOUNT_SUSPENDED"
+      });
+    }
+
     // Obtener el ID del usuario actual si está autenticado
     const currentUserId = req.user?.id;
     const isOwnProfile = currentUserId === user._id.toString();

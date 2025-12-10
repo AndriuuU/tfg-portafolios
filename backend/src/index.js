@@ -48,6 +48,7 @@ const notificationRoutes = require('./routes/notificationRoutes');
 const analyticsRoutes = require('./routes/analyticsRoutes');
 const rankingRoutes = require('./routes/rankingRoutes');
 const exportRoutes = require('./routes/exportRoutes');
+const adminRoutes = require('./routes/adminRoutes');
 
 app.use('/api/users', userRoutes);
 app.use('/api/auth', authRoutes);
@@ -59,6 +60,7 @@ app.use('/api/notifications', notificationRoutes);
 app.use('/api/analytics', analyticsRoutes);
 app.use('/api/ranking', rankingRoutes);
 app.use('/api/export', exportRoutes);
+app.use('/api/admin', adminRoutes);
 
 const { errorHandler } = require('./middleware/errorHandler');
 app.use(errorHandler);

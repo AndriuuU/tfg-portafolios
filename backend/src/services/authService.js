@@ -107,6 +107,7 @@ class AuthService {
       email: user.email,
       avatarUrl: user.avatarUrl,
       privacy: user.privacy,
+      isAdmin: user.isAdmin || false,
     };
   }
 }

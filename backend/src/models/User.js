@@ -70,6 +70,61 @@ const UserSchema = new mongoose.Schema({
     ref: 'Project'
   }],
   
+  // Sistema de administrador
+  isAdmin: { 
+    type: Boolean, 
+    default: false 
+  },
+  
+  // Estados especiales
+  isSuspended: {
+    type: Boolean,
+    default: false
+  },
+  
+  suspensionReason: {
+    type: String
+  },
+  
+  suspensionDate: {
+    type: Date
+  },
+  
+  isBanned: {
+    type: Boolean,
+    default: false
+  },
+  
+  banReason: {
+    type: String
+  },
+  
+  banDate: {
+    type: Date
+  },
+  
+  // Soft delete
+  isDeleted: {
+    type: Boolean,
+    default: false
+  },
+  
+  deletedAt: {
+    type: Date
+  },
+  
+  deletedReason: {
+    type: String
+  },
+  
+  // Historial de advertencias
+  warnings: [{
+    reason: String,
+    adminNote: String,
+    date: { type: Date, default: Date.now },
+    adminId: { type: mongoose.Schema.Types.ObjectId, ref: 'User' }
+  }],
+  
 }, { timestamps: true });
 
 module.exports = mongoose.model('User', UserSchema);
