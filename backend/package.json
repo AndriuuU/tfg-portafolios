@@ -5,24 +5,26 @@
   "scripts": {
     "start": "node src/index.js",
     "dev": "nodemon src/index.js",
-    "test": "cross-env NODE_ENV=test jest --setupFilesAfterEnv=./src/tests/setup.js",
-    "test:watch": "cross-env NODE_ENV=test jest --watch --setupFilesAfterEnv=./src/tests/setup.js",
-    "test:coverage": "cross-env NODE_ENV=test jest --coverage --setupFilesAfterEnv=./src/tests/setup.js"
+    "test": "cross-env NODE_ENV=test jest",
+    "test:watch": "cross-env NODE_ENV=test jest --watch",
+    "test:coverage": "cross-env NODE_ENV=test jest --coverage"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "description": "",
   "dependencies": {
+    "@sendgrid/mail": "^8.1.0",
     "bcryptjs": "^3.0.2",
     "cloudinary": "^2.7.0",
     "cors": "^2.8.5",
     "dotenv": "^17.2.2",
     "express": "^5.1.0",
+    "html-to-text": "^9.0.5",
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.18.3",
     "multer": "^2.0.2",
-    "nodemailer": "^7.0.10"
+    "pdfkit": "^0.17.2"
   },
   "devDependencies": {
     "@types/jest": "^29.5.11",

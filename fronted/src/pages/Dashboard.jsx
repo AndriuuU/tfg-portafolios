@@ -1,52 +1,41 @@
-import { useEffect, useState } from "react";
-import { getUserProjects, getSavedProjects, deleteProject } from "../api/api";
+import { useState } from "react";
+import { deleteProject } from "../api/api";
 import { Link } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
+import { useToast } from "../context/ToastContext";
+import { useMyProjects, useSavedProjects } from "../hooks";
 import ProjectPost from "../components/ProjectPost";
-import CollaboratorInvitations from "../components/CollaboratorInvitations";
 import CollaborativeProjects from "../components/CollaborativeProjects";
 import "../styles/Dashboard.scss";
 
 export default function Dashboard() {
-  const [activeTab, setActiveTab] = useState('my-projects'); // 'my-projects', 'saved', 'collaborative', 'invitations'
-  const [myProjects, setMyProjects] = useState([]);
-  const [savedProjects, setSavedProjects] = useState([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    loadData();
-  }, [activeTab]);
-
-  const loadData = async () => {
-    setLoading(true);
-    try {
-      if (activeTab === 'my-projects') {
-        const res = await getUserProjects();
-        setMyProjects(Array.isArray(res.data) ? res.data : res.data.projects || []);
-      } else if (activeTab === 'saved') {
-        const res = await getSavedProjects();
-        setSavedProjects(Array.isArray(res.data) ? res.data : res.data.projects || []);
-      }
-    } catch (err) {
-      console.error('Error loading data:', err);
-    } finally {
-      setLoading(false);
-    }
-  };
+  const { user } = useAuth();
+  const { showToast } = useToast();
+  const [activeTab, setActiveTab] = useState('my-projects');
+  
+  const { data: myProjectsData, loading: myProjectsLoading, refetch: refetchMyProjects } = useMyProjects();
+  const { data: savedProjectsData, loading: savedProjectsLoading, refetch: refetchSavedProjects } = useSavedProjects();
+  
+  const myProjects = Array.isArray(myProjectsData) ? myProjectsData : myProjectsData?.projects || [];
+  const savedProjects = Array.isArray(savedProjectsData) ? savedProjectsData : savedProjectsData?.projects || [];
+  
+  const loading = (activeTab === 'my-projects' && myProjectsLoading) || 
+                  (activeTab === 'saved' && savedProjectsLoading);
 
   const handleDelete = async (id) => {
     if (confirm("¿Seguro que quieres eliminar este proyecto?")) {
       try {
         await deleteProject(id);
-        setMyProjects(myProjects.filter(p => p._id !== id));
+        showToast('✅ Proyecto eliminado correctamente', 'success');
+        refetchMyProjects();
       } catch (err) {
-        alert(err.response?.data?.error || 'Error al eliminar el proyecto');
+        showToast(err.response?.data?.error || '❌ Error al eliminar el proyecto', 'error');
       }
     }
   };
 
   const handleUnsave = () => {
-    // Recargar la lista de guardados después de desguardar
-    loadData();
+    refetchSavedProjects();
   };
 
   return (
@@ -54,17 +43,11 @@ export default function Dashboard() {
       <div className="dashboard-container">
         <div className="dashboard-header">
           <h1>Dashboard</h1>
-          {(() => {
-            const user = JSON.parse(localStorage.getItem("user") || "{}");
-            return user.username ? (
-              <Link
-                to={`/u/${user.username}`}
-                className="btn-secondary"
-              >
-                👁️ Ver mi portfolio público
-              </Link>
-            ) : null;
-          })()}
+          {user?.username && (
+            <Link to={`/u/${user.username}`} className="btn-secondary">
+              👁️ Ver mi portfolio público
+            </Link>
+          )}
         </div>
 
         {/* Tabs */}

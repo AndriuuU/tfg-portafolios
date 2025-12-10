@@ -1,26 +1,22 @@
 import { useState, useEffect } from 'react';
 import { resetPassword } from '../api/api';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import '../styles/Dashboard.scss';
 
 function ResetPassword() {
-  const [searchParams] = useSearchParams();
+  const { token } = useParams();
+  const navigate = useNavigate();
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
-  const [token, setToken] = useState('');
-  const navigate = useNavigate();
 
   useEffect(() => {
-    const tokenFromUrl = searchParams.get('token');
-    if (!tokenFromUrl) {
+    if (!token) {
       setError('Token de recuperación no válido o expirado');
-    } else {
-      setToken(tokenFromUrl);
     }
-  }, [searchParams]);
+  }, [token]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -55,7 +51,13 @@ function ResetPassword() {
         navigate('/login');
       }, 2000);
     } catch (err) {
-      setError(err.response?.data?.error || 'Error al restablecer la contraseña');
+      const errorMessage = err.response?.data?.error || 'Error al restablecer la contraseña';
+      
+      if (err.response?.status === 400) {
+        setError('El enlace de recuperación ha expirado o no es válido. Por favor, solicita uno nuevo.');
+      } else {
+        setError(errorMessage);
+      }
     } finally {
       setLoading(false);
     }

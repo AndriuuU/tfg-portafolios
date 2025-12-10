@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import API from '../api/api';
 
@@ -10,9 +10,14 @@ export default function VerifyEmail() {
   const [resendEmail, setResendEmail] = useState('');
   const [resending, setResending] = useState(false);
   const [resendMessage, setResendMessage] = useState('');
+  const hasVerifiedRef = useRef(false);
 
   useEffect(() => {
-    verifyEmail();
+    // Usar ref para prevenir ejecución múltiple
+    if (!hasVerifiedRef.current && token) {
+      hasVerifiedRef.current = true;
+      verifyEmail();
+    }
   }, [token]);
 
   const verifyEmail = async () => {

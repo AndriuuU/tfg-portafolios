@@ -28,7 +28,6 @@ const CollaborativeProjects = () => {
       setInvitations(pending);
       setAcceptedProjects(accepted);
     } catch (err) {
-      console.error('Error loading invitations:', err);
       showToast('Error al cargar invitaciones', 'error');
     } finally {
       setLoading(false);
@@ -48,7 +47,6 @@ const CollaborativeProjects = () => {
       
       showToast('¡Invitación aceptada! 👍', 'success');
     } catch (err) {
-      console.error('Error accepting invitation:', err);
       showToast('Error al aceptar invitación', 'error');
     }
   };
@@ -59,7 +57,6 @@ const CollaborativeProjects = () => {
       setInvitations(prev => prev.filter(inv => inv.project._id !== projectId));
       showToast('Invitación rechazada', 'info');
     } catch (err) {
-      console.error('Error rejecting invitation:', err);
       showToast('Error al rechazar invitación', 'error');
     }
   };

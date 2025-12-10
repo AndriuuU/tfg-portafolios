@@ -1,15 +1,21 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 import API from "../api/api";
+import "../styles/Auth.scss";
 
-export default function Login({ setUser }) {
+export default function Login() {
   const navigate = useNavigate();
+  const { login } = useAuth();
   const [form, setForm] = useState({ email: "", password: "" });
   const [msg, setMsg] = useState({ text: "", type: "" });
   const [loading, setLoading] = useState(false);
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
+    if (msg.type === "error") {
+      setMsg({ text: "", type: "" });
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -19,9 +25,7 @@ export default function Login({ setUser }) {
 
     try {
       const res = await API.post("/auth/login", form);
-      localStorage.setItem("token", res.data.token);
-      localStorage.setItem("user", JSON.stringify(res.data.user));
-      setUser(res.data.user);
+      login(res.data.user, res.data.token);
       
       setMsg({ text: "✅ Login exitoso. Redirigiendo...", type: "success" });
       
@@ -29,8 +33,22 @@ export default function Login({ setUser }) {
         navigate("/dashboard");
       }, 1000);
     } catch (err) {
+      const errorData = err.response?.data;
+      let errorMessage = "❌ Error al iniciar sesión";
+
+      // Mensajes específicos para cuentas bloqueadas
+      if (errorData?.type === 'ACCOUNT_DELETED') {
+        errorMessage = `🚫 ${errorData.error}${errorData.reason ? `: ${errorData.reason}` : ''}`;
+      } else if (errorData?.type === 'ACCOUNT_BANNED') {
+        errorMessage = `🚫 ${errorData.error}${errorData.reason ? `: ${errorData.reason}` : ''}`;
+      } else if (errorData?.type === 'ACCOUNT_SUSPENDED') {
+        errorMessage = `⏸️ ${errorData.error}${errorData.reason ? `: ${errorData.reason}` : ''}`;
+      } else if (errorData?.error) {
+        errorMessage = `❌ ${errorData.error}`;
+      }
+
       setMsg({ 
-        text: err.response?.data?.error || "❌ Error al iniciar sesión", 
+        text: errorMessage, 
         type: "error" 
       });
     } finally {
@@ -39,82 +57,67 @@ export default function Login({ setUser }) {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center py-12 px-4">
-      <div className="max-w-md w-full bg-white rounded-lg shadow-lg p-8">
-        <div className="text-center mb-6">
-          <h2 className="text-3xl font-bold text-gray-800">🔐 Iniciar sesión</h2>
-          <p className="text-gray-600 mt-2">Ingresa tus credenciales para continuar</p>
+    <div className="auth-page">
+      <div className="auth-container">
+        <div className="auth-header">
+          <h1>Iniciar sesión</h1>
+          <p>Ingresa tus credenciales para continuar</p>
         </div>
 
-        {/* Mensaje de feedback */}
         {msg.text && (
-          <div
-            className={`mb-4 p-3 rounded-lg text-sm ${
-              msg.type === "success"
-                ? "bg-green-100 text-green-800 border border-green-200"
-                : "bg-red-100 text-red-800 border border-red-200"
-            }`}
-          >
+          <div className={`auth-message ${msg.type}`}>
             {msg.text}
           </div>
         )}
 
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Email
-            </label>
+        <form onSubmit={handleSubmit} className="auth-form">
+          <div className="form-group">
+            <label htmlFor="email">Email</label>
             <input
+              id="email"
               type="email"
               name="email"
               value={form.email}
               onChange={handleChange}
               placeholder="tu@email.com"
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               required
+              autoComplete="email"
             />
           </div>
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Contraseña
-            </label>
+          <div className="form-group">
+            <label htmlFor="password">Contraseña</label>
             <input
+              id="password"
               type="password"
               name="password"
               value={form.password}
               onChange={handleChange}
               placeholder="••••••••"
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               required
+              autoComplete="current-password"
             />
           </div>
 
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-blue-400 disabled:cursor-not-allowed transition font-medium"
-          >
-            {loading ? "Iniciando sesión..." : "Entrar"}
-          </button>
+          <div className="form-submit">
+            <button type="submit" disabled={loading}>
+              {loading ? "Iniciando sesión..." : "Entrar"}
+            </button>
+          </div>
         </form>
 
-        <div className="mt-4 text-center">
-          <Link 
-            to="/forgot-password" 
-            className="text-sm text-blue-600 hover:text-blue-800"
-          >
+        <div className="auth-links">
+          <Link to="/forgot-password" className="forgot-password">
             ¿Olvidaste tu contraseña?
           </Link>
-        </div>
 
-        <div className="mt-6 text-center">
-          <p className="text-sm text-gray-600">
-            ¿No tienes cuenta?{" "}
-            <Link to="/register" className="text-blue-600 hover:text-blue-800 font-medium">
-              Regístrate aquí
-            </Link>
-          </p>
+          <div className="divider">
+            <span>o</span>
+          </div>
+
+          <div className="switch-auth">
+            ¿No tienes cuenta? <Link to="/register">Regístrate aquí</Link>
+          </div>
         </div>
       </div>
     </div>

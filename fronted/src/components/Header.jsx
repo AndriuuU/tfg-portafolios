@@ -1,20 +1,20 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
+import { useAuth } from "../context/AuthContext";
 import { getFollowRequests } from "../api/followApi";
 import SearchBar from "./SearchBar";
 import NotificationBell from "./NotificationBell";
 import "../styles/components/_header.scss";
 
-const Header = ({ user, setUser }) => {
+const Header = () => {
   const navigate = useNavigate();
+  const { user, logout } = useAuth();
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [pendingRequests, setPendingRequests] = useState(0);
   const [darkMode, setDarkMode] = useState(() => {
-    // Cargar preferencia del localStorage
     return localStorage.getItem('darkMode') === 'true';
   });
 
-  // Aplicar clase al body cuando cambia el modo
   useEffect(() => {
     if (darkMode) {
       document.body.classList.add('dark-mode');
@@ -24,11 +24,9 @@ const Header = ({ user, setUser }) => {
     localStorage.setItem('darkMode', darkMode);
   }, [darkMode]);
 
-  // Cargar solicitudes pendientes
   useEffect(() => {
     if (user) {
       loadPendingRequests();
-      // Actualizar cada 20 segundos
       const interval = setInterval(loadPendingRequests, 20000);
       return () => clearInterval(interval);
     }
@@ -39,15 +37,12 @@ const Header = ({ user, setUser }) => {
       const res = await getFollowRequests();
       setPendingRequests(res.data?.requests?.length || 0);
     } catch (err) {
-      console.error('Error loading requests:', err);
       setPendingRequests(0);
     }
   };
 
   const handleLogout = () => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("user");
-    setUser(null);
+    logout();
     navigate("/login");
   };
 
@@ -60,7 +55,8 @@ const Header = ({ user, setUser }) => {
       <div className="header__container">
         {/* Logo */}
         <Link to="/" className="header__logo">
-          PortafoliosHub
+          <img src="/logoPH.png" alt="PortafoliosHub Logo" className="logo-img" />
+          <span className="logo-text">PortafoliosHub</span>
         </Link>
 
         {/* Barra de búsqueda */}
@@ -73,8 +69,10 @@ const Header = ({ user, setUser }) => {
             <>
               <Link to="/dashboard" className="header__link">Dashboard</Link>
               <Link to={`/u/${user.username}`} className="header__link">Mi Portfolio</Link>
+              <Link to="/analytics" className="header__link">Analytics</Link>
             </>
           )}
+           <Link to="/ranking" className="header__link">Ranking</Link>
         </nav>
 
         {/* Usuario */}
@@ -117,6 +115,13 @@ const Header = ({ user, setUser }) => {
                         <span className="user-menu__badge">{pendingRequests}</span>
                       )}
                     </Link>
+                    
+                    {user?.isAdmin && (
+                      <Link to="/admin" onClick={() => setDropdownOpen(false)} className="user-menu__item user-menu__item--admin">
+                        <span>👮</span>
+                        <span>Panel Admin</span>
+                      </Link>
+                    )}
                     
                     <button onClick={toggleDarkMode} className="user-menu__item">
                       <span>{darkMode ? '☀️' : '🌙'}</span>

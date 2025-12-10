@@ -1,5 +1,6 @@
 const Project = require('../../models/Project');
 const { cloudinary } = require('../../utils/cloudinary');
+const { logProjectView, logActivity } = require('../../utils/analyticsHelper');
 
 // Crear proyecto
 exports.createProject = async (req, res) => {
@@ -41,7 +42,10 @@ exports.createProject = async (req, res) => {
 exports.getUserProjects = async (req, res) => {
   try {
     const projects = await Project.find({ owner: req.user.id })
-      .populate("comments.user", "username email");
+      .populate("owner", "name username email avatarUrl")
+      .populate("comments.user", "username email")
+      .populate("collaborators.user", "name username email avatarUrl")
+      .populate("collaborators.addedBy", "name username");
 
     res.json(projects);
   } catch (error) {
@@ -60,8 +64,18 @@ exports.getFollowingProjects = async (req, res) => {
       return res.status(404).json({ error: 'Usuario no encontrado' });
     }
 
+    // Filtrar usuarios que NO estén bloqueados
+    const activeFollowing = await User.find({
+      _id: { $in: currentUser.following },
+      isDeleted: { $ne: true },
+      isBanned: { $ne: true },
+      isSuspended: { $ne: true }
+    }).select('_id');
+
+    const activeFollowingIds = activeFollowing.map(u => u._id);
+
     const projects = await Project.find({
-      owner: { $in: currentUser.following }
+      owner: { $in: activeFollowingIds }
     })
       .populate('owner', 'username name email avatarUrl')
       .populate('comments.user', 'username email avatarUrl')
@@ -79,10 +93,45 @@ exports.getFollowingProjects = async (req, res) => {
 exports.getProjectById = async (req, res) => {
   try {
     const project = await Project.findById(req.params.id)
-      .populate("comments.user", "username email");
+      .populate("owner", "name username email avatarUrl isDeleted isBanned isSuspended")
+      .populate("comments.user", "username email")
+      .populate("collaborators.user", "name username email avatarUrl")
+      .populate("collaborators.addedBy", "name username")
+      .populate("pendingInvitations.user", "name username email avatarUrl")
+      .populate("pendingInvitations.invitedBy", "name username");
     
     if (!project) {
       return res.status(404).json({ error: 'Proyecto no encontrado' });
+    }
+
+    // Verificar si el propietario del proyecto está bloqueado
+    if (project.owner.isDeleted) {
+      return res.status(403).json({ 
+        error: 'Este proyecto pertenece a una cuenta eliminada',
+        type: 'ACCOUNT_DELETED'
+      });
+    }
+
+    if (project.owner.isBanned) {
+      return res.status(403).json({ 
+        error: 'Este proyecto pertenece a una cuenta baneada',
+        type: 'ACCOUNT_BANNED'
+      });
+    }
+
+    if (project.owner.isSuspended) {
+      return res.status(403).json({ 
+        error: 'Este proyecto pertenece a una cuenta suspendida',
+        type: 'ACCOUNT_SUSPENDED'
+      });
+    }
+
+    // Logging de vista - si está autenticado, registrar el usuario
+    if (req.user) {
+      await logProjectView(project._id, req.user.id, req);
+    } else {
+      // Vista anónima
+      await logProjectView(project._id, null, req);
     }
     
     res.json(project);

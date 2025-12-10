@@ -12,17 +12,34 @@ const {
  */
 exports.verifyEmail = async (req, res) => {
   try {
-    const { token } = req.params;
+    let { token } = req.params;
 
+    // Normalizar el token
+    token = token.toLowerCase().trim();
+    token = token.replace(/\s+/g, '');
+    token = decodeURIComponent(token);
+
+    // Buscar el usuario
     const user = await User.findOne({
-      emailVerificationToken: token,
-      emailVerificationExpires: { $gt: Date.now() }
+      emailVerificationToken: token
     });
 
     if (!user) {
       return res.status(400).json({ error: 'Token inválido o expirado' });
     }
 
+    // Verificar si ya fue verificado
+    if (user.isEmailVerified) {
+      return res.json({ message: 'Email ya estaba verificado' });
+    }
+
+    // Verificar si el token ha expirado
+    const now = new Date();
+    if (user.emailVerificationExpires && user.emailVerificationExpires < now) {
+      return res.status(400).json({ error: 'Token expirado' });
+    }
+
+    // Verificar el email
     user.isEmailVerified = true;
     user.emailVerificationToken = undefined;
     user.emailVerificationExpires = undefined;
@@ -30,7 +47,7 @@ exports.verifyEmail = async (req, res) => {
 
     res.json({ message: 'Email verificado exitosamente' });
   } catch (error) {
-    console.error('Error verifyEmail:', error);
+    console.error('❌ Error verifyEmail:', error);
     res.status(500).json({ error: error.message });
   }
 };

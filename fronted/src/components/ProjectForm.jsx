@@ -1,6 +1,7 @@
 import { useState } from "react";
 import API from "../api/api";
 import { useNavigate } from "react-router-dom";
+import "../styles/ProjectForm.scss";
 
 export default function ProjectForm({ project }) {
   const navigate = useNavigate();
@@ -14,6 +15,7 @@ export default function ProjectForm({ project }) {
   });
 
   const [image, setImage] = useState(null);
+  const [fileName, setFileName] = useState("");
   const [loading, setLoading] = useState(false);
   const [msg, setMsg] = useState("");
 
@@ -22,7 +24,9 @@ export default function ProjectForm({ project }) {
   };
 
   const handleImageChange = (e) => {
-    setImage(e.target.files[0]);
+    const file = e.target.files[0];
+    setImage(file);
+    setFileName(file ? file.name : "");
   };
 
   const handleSubmit = async (e) => {
@@ -68,7 +72,6 @@ export default function ProjectForm({ project }) {
       setMsg("✅ Proyecto guardado con éxito");
       setTimeout(() => navigate("/dashboard"), 1200);
     } catch (err) {
-      console.error(err);
       setMsg(err.response?.data?.error || "❌ Error al guardar proyecto");
     } finally {
       setLoading(false);
@@ -76,72 +79,116 @@ export default function ProjectForm({ project }) {
   };
 
   return (
-    <div className="p-4 max-w-lg mx-auto border rounded-lg shadow-md">
-      <h2 className="text-xl font-bold mb-4">
-        {project ? "Editar proyecto" : "Nuevo proyecto"}
-      </h2>
-      <form onSubmit={handleSubmit} className="space-y-3">
-        <input
-          name="title"
-          placeholder="Título del proyecto"
-          value={form.title}
-          onChange={handleChange}
-          className="w-full p-2 border rounded"
-          required
-        />
-        <textarea
-          name="description"
-          placeholder="Descripción del proyecto"
-          value={form.description}
-          onChange={handleChange}
-          className="w-full p-2 border rounded"
-          rows="4"
-        />
-        <input
-          name="tags"
-          placeholder="Etiquetas (React, Node.js, MongoDB...)"
-          value={form.tags}
-          onChange={handleChange}
-          className="w-full p-2 border rounded"
-        />
-        <input
-          name="liveUrl"
-          placeholder="URL del proyecto en vivo (opcional)"
-          value={form.liveUrl}
-          onChange={handleChange}
-          className="w-full p-2 border rounded"
-          type="url"
-        />
-        <input
-          name="repoUrl"
-          placeholder="URL del repositorio (opcional)"
-          value={form.repoUrl}
-          onChange={handleChange}
-          className="w-full p-2 border rounded"
-          type="url"
-        />
-        <div>
-          <label className="block mb-2 text-sm font-medium">Imagen del proyecto</label>
-          <input
-            type="file"
-            accept="image/*"
-            onChange={handleImageChange}
-            className="w-full"
-          />
+    <div className="project-form-page">
+      <div className="project-form-container">
+        <div className="form-header">
+          <h2>{project ? "✏️ Editar Proyecto" : " Crear Nuevo Proyecto"}</h2>
+          <p>{project ? "Actualiza la información de tu proyecto" : "Comparte tu trabajo con la comunidad"}</p>
         </div>
-        <button
-          type="submit"
-          disabled={loading}
-          className="w-full p-2 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:bg-gray-400"
-        >
-          {loading ? "Guardando..." : project ? "Actualizar proyecto" : "Crear proyecto"}
-        </button>
-      </form>
-      {msg && (
-        <p className={`mt-3 text-center p-2 rounded ${msg.includes('❌') ? 'bg-red-100 text-red-700' : 'bg-green-100 text-green-700'}`}>
-          {msg}
-        </p>
-      )}
+
+        <form onSubmit={handleSubmit} className="project-form">
+          <div className="form-group">
+            <label>
+              Título del proyecto <span className="required">*</span>
+            </label>
+            <input
+              name="title"
+              placeholder="Ej: Aplicación de gestión de tareas"
+              value={form.title}
+              onChange={handleChange}
+              required
+            />
+          </div>
+
+          <div className="form-group">
+            <label>Descripción</label>
+            <textarea
+              name="description"
+              placeholder="Describe tu proyecto, sus características y objetivos..."
+              value={form.description}
+              onChange={handleChange}
+              rows="6"
+            />
+          </div>
+
+          <div className="form-group">
+            <label>Tecnologías</label>
+            <input
+              name="tags"
+              placeholder="React, Node.js, MongoDB, Express..."
+              value={form.tags}
+              onChange={handleChange}
+            />
+            <span className="input-hint">Separa las tecnologías con comas</span>
+          </div>
+
+          <div className="form-group">
+            <label>URL del Demo</label>
+            <input
+              name="liveUrl"
+              placeholder="https://mi-proyecto.vercel.app"
+              value={form.liveUrl}
+              onChange={handleChange}
+              type="url"
+            />
+          </div>
+
+          <div className="form-group">
+            <label>URL del Repositorio</label>
+            <input
+              name="repoUrl"
+              placeholder="https://github.com/usuario/proyecto"
+              value={form.repoUrl}
+              onChange={handleChange}
+              type="url"
+            />
+          </div>
+
+          <div className="form-group">
+            <label>Imagen del proyecto</label>
+            <div className="file-input-wrapper">
+              <input
+                type="file"
+                accept="image/*"
+                onChange={handleImageChange}
+              />
+              <div className="file-input-label">
+                <span className="file-icon">🖼️</span>
+                <div className="file-text">
+                  {fileName ? (
+                    <>Archivo seleccionado: <span className="file-name">{fileName}</span></>
+                  ) : (
+                    "Haz clic para seleccionar una imagen"
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="form-actions">
+            <button
+              type="button"
+              onClick={() => navigate(-1)}
+              className="btn-cancel"
+            >
+              ❌ Cancelar
+            </button>
+            <button
+              type="submit"
+              disabled={loading}
+              className="btn-submit"
+            >
+              {loading ? "⏳ Guardando..." : project ? "💾 Actualizar Proyecto" : "✨ Crear Proyecto"}
+            </button>
+          </div>
+
+          {msg && (
+            <div className={`message ${msg.includes('❌') ? 'error' : 'success'}`}>
+              {msg}
+            </div>
+          )}
+        </form>
+      </div>
     </div>
   );
 }

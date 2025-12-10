@@ -41,7 +41,11 @@ exports.searchProjects = async (req, res) => {
                 $or: [
                     { username: owner },
                     { _id: owner.match(/^[0-9a-fA-F]{24}$/) ? owner : null } // Validar que sea un ObjectId válido
-                ]
+                ],
+                // Excluir usuarios bloqueados
+                isDeleted: { $ne: true },
+                isBanned: { $ne: true },
+                isSuspended: { $ne: true }
             });
 
             if (user) {
@@ -173,7 +177,11 @@ exports.searchUsers = async (req, res) => {
                 { username: { $regex: q, $options: 'i' } },
                 { name: { $regex: q, $options: 'i' } },
                 { email: { $regex: q, $options: 'i' } }
-            ]
+            ],
+            // Excluir usuarios bloqueados de los resultados
+            isDeleted: { $ne: true },
+            isBanned: { $ne: true },
+            isSuspended: { $ne: true }
         };
 
         const pageNum = Math.max(1, parseInt(page));

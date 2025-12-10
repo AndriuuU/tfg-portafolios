@@ -12,7 +12,14 @@ exports.getNotifications = async (req, res) => {
 
     const notifications = await Notification.find(filter)
       .populate('sender', 'username avatarUrl')
-      .populate('project', 'title')
+      .populate({
+        path: 'project',
+        select: 'title images description owner likes comments',
+        populate: {
+          path: 'owner',
+          select: 'username avatar avatarUrl name'
+        }
+      })
       .sort({ createdAt: -1 })
       .limit(50);
 
