@@ -21,6 +21,7 @@ export default function NotificationBell() {
       setNotifications(response.data.notifications || []);
       setUnreadCount(response.data.unreadCount || 0);
     } catch (error) {
+      // Error silencioso - las notificaciones se recargan automáticamente
     }
   };
 
@@ -34,6 +35,7 @@ export default function NotificationBell() {
       );
       setUnreadCount(prev => Math.max(0, prev - 1));
     } catch (error) {
+      // Error silencioso
     }
   };
 
@@ -45,6 +47,7 @@ export default function NotificationBell() {
       );
       setUnreadCount(0);
     } catch (error) {
+      // Error silencioso
     }
   };
 
@@ -57,6 +60,7 @@ export default function NotificationBell() {
         setUnreadCount(prev => Math.max(0, prev - 1));
       }
     } catch (error) {
+      // Error silencioso
     }
   };
 

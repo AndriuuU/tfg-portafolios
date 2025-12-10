@@ -37,7 +37,6 @@ const Header = () => {
       const res = await getFollowRequests();
       setPendingRequests(res.data?.requests?.length || 0);
     } catch (err) {
-      console.error('Error loading requests:', err);
       setPendingRequests(0);
     }
   };
@@ -115,6 +114,13 @@ const Header = () => {
                         <span className="user-menu__badge">{pendingRequests}</span>
                       )}
                     </Link>
+                    
+                    {user?.isAdmin && (
+                      <Link to="/admin" onClick={() => setDropdownOpen(false)} className="user-menu__item user-menu__item--admin">
+                        <span>👮</span>
+                        <span>Panel Admin</span>
+                      </Link>
+                    )}
                     
                     <button onClick={toggleDarkMode} className="user-menu__item">
                       <span>{darkMode ? '☀️' : '🌙'}</span>
