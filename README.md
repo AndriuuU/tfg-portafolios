@@ -69,11 +69,32 @@ Esta plataforma permite a creativos, diseñadores, desarrolladores y profesional
 - Marca como leído/no leído
 - Diferentes tipos de notificaciones
 
+### 👨‍💼 Panel Administrador
+- Dashboard administrativo completo
+- Gestión de usuarios bloqueados
+- Sistema de reportes de usuarios
+- Moderación de contenido
+- Estadísticas globales de la plataforma
+
+### 🔍 Búsqueda de Usuarios
+- Búsqueda avanzada de usuarios
+- Filtrado por nombre, username o email
+- Perfiles públicos de usuarios
+- Paginación de resultados
+- Visitas a perfiles de otros usuarios
+
+### 📥 Exportación de Portafolios
+- Exportar portafolio como PDF
+- Incluye todos los proyectos
+- Diseño profesional en el PDF
+- Descarga directa
+
 ### 🌙 Diseño Responsive
 - Mobile-first design
-- Modo oscuro y claro
-- Totalmente responsive
+- Modo oscuro y claro con CSS variables
+- Totalmente responsive (mobile, tablet, desktop)
 - Optimizado para todos los dispositivos
+- Contraste de colores accesible
 
 ---
 
@@ -94,15 +115,19 @@ Esta plataforma permite a creativos, diseñadores, desarrolladores y profesional
 - **JWT** - Autenticación
 - **Bcrypt** - Hash de contraseñas
 - **Multer** - Manejo de archivos
-- **Nodemailer** - Envío de emails
+- **SendGrid** - Servicio de envío de emails (SMTP)
 - **Jest** - Testing
+- **html2pdf.js** - Generación de PDFs
 
-### Infraestructura
+### Infraestructura y Despliegue
 - **Node.js** - Runtime JavaScript
 - **npm** - Gestor de dependencias
 - **Git** - Control de versiones
-- **Cloudinary** - Almacenamiento de imágenes
-- **Mailtrap** - Servicio de email
+- **Cloudinary** - Almacenamiento de imágenes en la nube
+- **SendGrid** - API para envío de emails transaccionales
+- **MongoDB Atlas** - Base de datos en la nube
+- **Railway** - Hosting del backend Node.js
+- **Netlify** - Hosting del frontend React
 
 ---
 
@@ -110,14 +135,15 @@ Esta plataforma permite a creativos, diseñadores, desarrolladores y profesional
 
 Antes de comenzar, asegúrate de tener instalado:
 
-- **Node.js** (versión 16.x o superior)
-- **npm** (versión 8.x o superior)
+- **Node.js** (versión 18.x o superior)
+- **npm** (versión 9.x o superior)
 - **MongoDB** (local o MongoDB Atlas)
 - **Git**
 
 Cuentas externas requeridas:
 - **Cloudinary** (para almacenamiento de imágenes)
-- **Mailtrap** o similar (para envío de emails)
+- **SendGrid** (para envío de emails transaccionales)
+- **MongoDB Atlas** (base de datos en la nube, opcional si usas MongoDB local)
 
 ---
 
@@ -140,15 +166,22 @@ npm install
 
 # Crear archivo .env
 cat > .env << EOF
+# Base de datos
 MONGODB_URI=mongodb+srv://user:password@cluster.mongodb.net/tfg-portafolios
+
+# Autenticación
 JWT_SECRET=tu_clave_secreta_muy_larga_aqui
+
+# Cloudinary (imágenes)
 CLOUDINARY_NAME=tu_cloud_name
 CLOUDINARY_API_KEY=tu_api_key
 CLOUDINARY_API_SECRET=tu_api_secret
-EMAIL_HOST=smtp.mailtrap.io
-EMAIL_PORT=2525
-EMAIL_USER=tu_usuario
-EMAIL_PASSWORD=tu_password
+
+# SendGrid (emails)
+SENDGRID_API_KEY=tu_sendgrid_api_key
+SENDGRID_FROM_EMAIL=noreply@tudominio.com
+
+# Servidor
 PORT=5000
 NODE_ENV=development
 FRONTEND_URL=http://localhost:5173
@@ -529,12 +562,50 @@ R: En login, haz clic en "¿Olvidaste tu contraseña?" y sigue el email.
 
 ---
 
+## 🚀 Despliegue en Producción
+
+### Desplegar Backend en Railway
+
+1. **Crear cuenta en Railway**
+   - Ve a [railway.app](https://railway.app)
+   - Crea una cuenta y conecta tu repositorio GitHub
+
+2. **Configurar variables de entorno**
+   - En Railway, añade las siguientes variables:
+   - `MONGODB_URI`: URI de MongoDB Atlas
+   - `JWT_SECRET`: Tu clave secreta
+   - `CLOUDINARY_*`: Credenciales de Cloudinary
+   - `SENDGRID_API_KEY`: API key de SendGrid
+   - `SENDGRID_FROM_EMAIL`: Email para SendGrid
+
+3. **Deploy automático**
+   - Railway auto-despliega cuando haces push a la rama principal
+
+### Desplegar Frontend en Netlify
+
+1. **Crear cuenta en Netlify**
+   - Ve a [netlify.com](https://netlify.com)
+   - Conecta tu repositorio GitHub
+
+2. **Configurar build**
+   - Base directory: `fronted`
+   - Build command: `npm run build`
+   - Publish directory: `fronted/dist`
+
+3. **Variables de entorno**
+   - `VITE_API_URL`: URL del backend en Railway
+   - `API_URL`: URL del backend (para detectar ambiente)
+
+4. **Deploy automático**
+   - Netlify auto-despliega cuando haces push
+
+---
+
 ## 🎯 Roadmap
 
 ### v1.1 (Próximo)
 - [ ] Chat en tiempo real
 - [ ] Sistema de badges
-- [ ] Exportar portafolio como PDF
 
 ### v1.2
 - [ ] API pública para desarrolladores
@@ -573,13 +644,22 @@ Este proyecto ha sido posible gracias a:
 ✅ Sistema de rankings
 ✅ Notificaciones
 ✅ Búsqueda avanzada
-✅ Modo oscuro
+✅ Búsqueda de usuarios
+✅ Modo oscuro y claro
 ✅ Tests automatizados
 ✅ Documentación completa
+✅ Panel administrador
+✅ Sistema de reportes
+✅ Exportar portafolio como PDF
+✅ Despliegue en Railway (backend)
+✅ Despliegue en Netlify (frontend)
+✅ SendGrid para emails transaccionales
+✅ Gestión de usuarios bloqueados
+✅ Historial de actividad
 ```
 
 ---
 
-**Última actualización**: Noviembre 2025
+**Última actualización**: Diciembre 2025
 **Versión**: 1.0.0  
 **Status**: ✅ Producción

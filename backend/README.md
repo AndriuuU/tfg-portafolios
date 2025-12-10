@@ -11,8 +11,12 @@ Este backend proporciona:
 - 📊 Analytics y estadísticas en tiempo real
 - 🏆 Sistema de rankings global
 - 🔔 Notificaciones en tiempo real
-- 📧 Envío de correos electrónicos
+- 📧 Envío de correos electrónicos con SendGrid
 - 📁 Gestión de archivos (Cloudinary)
+- 👨‍💼 Panel administrador con gestión de usuarios
+- 🚩 Sistema de reportes y moderación
+- 📄 Exportación de portafolios a PDF
+- 🔍 Búsqueda avanzada de usuarios
 
 ---
 
@@ -21,11 +25,11 @@ Este backend proporciona:
 ### Requisitos Previos
 
 Antes de comenzar, asegúrate de tener:
-- **Node.js** (versión 16.x o superior)
-- **npm** (versión 8.x o superior)
+- **Node.js** (versión 18.x o superior)
+- **npm** (versión 9.x o superior)
 - **MongoDB** (local o Atlas)
 - **Cloudinary** (cuenta para almacenamiento de imágenes)
-- **Mailtrap** o servicio similar (para emails)
+- **SendGrid** (para envío de emails transaccionales)
 
 ### Instalación
 
@@ -56,12 +60,9 @@ Antes de comenzar, asegúrate de tener:
    CLOUDINARY_API_KEY=tu_api_key
    CLOUDINARY_API_SECRET=tu_api_secret
    
-   # Email
-   EMAIL_HOST=smtp.mailtrap.io
-   EMAIL_PORT=2525
-   EMAIL_USER=tu_usuario
-   EMAIL_PASSWORD=tu_password
-   EMAIL_FROM=noreply@tfgportafolios.com
+   # SendGrid (emails transaccionales)
+   SENDGRID_API_KEY=tu_sendgrid_api_key
+   SENDGRID_FROM_EMAIL=noreply@tudominio.com
    
    # Servidor
    PORT=5000
@@ -219,11 +220,31 @@ Endpoints:
 - `PUT /api/notifications/:id/read` - Marcar como leído
 - `DELETE /api/notifications/:id` - Eliminar notificación
 
-### 7. **Búsqueda**
+### 7. **Búsqueda Avanzada**
 Endpoints:
-- `GET /api/search/users` - Buscar usuarios
+- `GET /api/search/users` - Buscar usuarios por nombre, username o email
 - `GET /api/search/projects` - Buscar proyectos
 - `GET /api/search/tags` - Buscar etiquetas
+
+### 8. **Panel Administrador**
+Endpoints:
+- `GET /api/admin/users` - Listar todos los usuarios
+- `POST /api/admin/users/:id/promote` - Promocionar a admin
+- `POST /api/admin/users/:id/block` - Bloquear usuario
+- `GET /api/admin/blocked-accounts` - Ver cuentas bloqueadas
+- `POST /api/admin/users/:id/unblock` - Desbloquear usuario
+- `GET /api/admin/stats` - Estadísticas globales
+
+### 9. **Sistema de Reportes**
+Endpoints:
+- `POST /api/reports` - Crear reporte de usuario/proyecto
+- `GET /api/admin/reports` - Listar reportes (admin)
+- `PUT /api/admin/reports/:id` - Procesar reporte
+- `DELETE /api/admin/reports/:id` - Eliminar reporte
+
+### 10. **Exportación**
+Endpoints:
+- `POST /api/export/pdf` - Exportar portafolio como PDF
 
 ---
 
@@ -237,8 +258,9 @@ Endpoints:
 | **JWT** | Latest | Autenticación |
 | **Bcrypt** | Latest | Hash de contraseñas |
 | **Multer** | Latest | Manejo de archivos |
-| **Nodemailer** | Latest | Envío de emails |
+| **SendGrid** | Latest | Envío de emails transaccionales |
 | **Cloudinary** | Latest | Almacenamiento de imágenes |
+| **html2pdf.js** | Latest | Generación de PDFs |
 | **Jest** | Latest | Testing |
 | **Cors** | Latest | Control de CORS |
 | **Dotenv** | Latest | Variables de entorno |
@@ -300,6 +322,35 @@ Endpoints:
   viewerId: ObjectId,
   timestamp: Date,
   metadata: Object
+}
+```
+
+### ActivityLog
+```javascript
+{
+  _id: ObjectId,
+  userId: ObjectId,
+  action: String (create|update|delete|like|comment|follow),
+  targetId: ObjectId,
+  targetType: String (project|user),
+  metadata: Object,
+  createdAt: Date
+}
+```
+
+### Report
+```javascript
+{
+  _id: ObjectId,
+  reporterId: ObjectId,
+  targetId: ObjectId,
+  targetType: String (user|project),
+  reason: String,
+  description: String,
+  status: String (pending|reviewed|resolved),
+  resolution: String,
+  createdAt: Date,
+  updatedAt: Date
 }
 ```
 

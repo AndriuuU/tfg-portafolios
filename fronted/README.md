@@ -11,6 +11,10 @@ Con esta aplicación puedes:
 - 💬 Interactuar mediante likes y comentarios
 - 📊 Analizar el rendimiento de tus proyectos
 - 🏆 Competir en el ranking global de usuarios
+- 🔍 Buscar y descubrir usuarios y proyectos
+- 📥 Exportar tu portafolio como PDF
+- 👨‍💼 Panel administrador para moderadores
+- 🌙 Modo oscuro y claro
 
 ---
 
@@ -19,8 +23,8 @@ Con esta aplicación puedes:
 ### Requisitos Previos
 
 Antes de comenzar, asegúrate de tener instalado:
-- **Node.js** (versión 16.x o superior)
-- **npm** (versión 8.x o superior)
+- **Node.js** (versión 18.x o superior)
+- **npm** (versión 9.x o superior)
 - Git para clonar el repositorio
 
 ### Instalación
@@ -149,12 +153,14 @@ fronted/
 - Recuperación de contraseña por email
 - Tokens JWT para seguridad
 - Roles de usuario y permisos
+- Verificación de email
 
 ### 2. **Gestión de Portafolios**
 - Crear, editar y eliminar proyectos
 - Subida de imágenes a Cloudinary
 - Categorización de proyectos
 - Descripción con etiquetas
+- Colaboradores en proyectos
 
 ### 3. **Interacción Social**
 - Sistema de likes en proyectos
@@ -169,6 +175,7 @@ fronted/
 - Estadísticas de engagement
 - Análisis por proyecto
 - Exportación de datos
+- Historial de actividad
 
 ### 5. **Sistema de Rankings**
 - Ranking global de usuarios
@@ -183,17 +190,33 @@ fronted/
 - Historial de notificaciones
 - Marca como leído
 
-### 7. **Búsqueda y Filtros**
-- Búsqueda de usuarios
+### 7. **Búsqueda Avanzada**
+- Búsqueda de usuarios por nombre, username o email
 - Búsqueda de proyectos
 - Búsqueda de etiquetas
 - Filtros avanzados
+- Paginación de resultados
 
-### 8. **Responsive Design**
+### 8. **Panel Administrador**
+- Gestión de usuarios
+- Vista de cuentas bloqueadas
+- Sistema de reportes de usuarios
+- Estadísticas globales
+- Herramientas de moderación
+
+### 9. **Exportación de Portafolios**
+- Exportar portafolio como PDF
+- Incluye todos los proyectos
+- Diseño profesional
+
+### 10. **Responsive Design**
 - Diseño mobile-first
 - Soporta todos los tamaños de pantalla
 - Modo oscuro (dark mode)
 - Tema claro (light mode)
+- CSS variables para temas
+- Logo personalizado
+- Favicon personalizado
 
 ---
 
@@ -201,14 +224,15 @@ fronted/
 
 | Tecnología | Versión | Uso |
 |------------|---------|-----|
-| **React** | 18.x | Framework UI |
-| **Vite** | 5.x | Bundler y servidor de desarrollo |
-| **Axios** | Latest | Cliente HTTP |
-| **React Router** | Latest | Enrutamiento |
-| **SCSS** | Latest | Preprocesador CSS |
+| **React** | 19.1.1 | Framework UI |
+| **Vite** | 7.1.2 | Bundler y servidor de desarrollo |
+| **Axios** | 1.12.2 | Cliente HTTP |
+| **React Router** | 7.9.1 | Enrutamiento |
+| **SCSS** | 1.93.2 | Preprocesador CSS |
+| **html2pdf.js** | 0.12.1 | Generación de PDFs |
 | **Cloudinary** | Latest | Almacenamiento de imágenes |
 | **JWT** | Latest | Autenticación |
-| **ESLint** | Latest | Linting |
+| **ESLint** | 9.33.0 | Linting |
 
 ---
 
@@ -291,6 +315,37 @@ Tabla interactiva con rankings globales:
 ```jsx
 <Ranking />
 ```
+
+---
+
+## 🎯 Componentes Principales
+
+### Pages (Páginas)
+- **Home.jsx** - Página de inicio pública
+- **Login.jsx** - Formulario de login
+- **Register.jsx** - Formulario de registro
+- **Dashboard.jsx** - Panel principal del usuario
+- **Portfolio.jsx** - Perfil de usuario con proyectos
+- **ProjectDetail.jsx** - Detalle completo de un proyecto
+- **EditProject.jsx** - Edición de proyectos
+- **AnalyticsPage.jsx** - Dashboard de estadísticas
+- **RankingPage.jsx** - Página de rankings
+- **Search.jsx** - Búsqueda de proyectos
+- **UserSearch.jsx** - Búsqueda y exploración de usuarios
+- **AdminPanel.jsx** - Panel de administración
+- **Settings.jsx** - Configuración de usuario
+
+### Components (Componentes Reutilizables)
+- **Header.jsx** - Barra de navegación con logo
+- **SearchBar.jsx** - Barra de búsqueda unificada
+- **ProjectForm.jsx** - Formulario para crear/editar proyectos
+- **ProjectCard.jsx** - Tarjeta de proyecto
+- **Comments.jsx** - Sistema de comentarios
+- **NotificationBell.jsx** - Campana de notificaciones
+- **FollowButton.jsx** - Botón de seguimiento
+- **BlockUserButton.jsx** - Botón para bloquear usuarios
+- **Analytics.jsx** - Gráficos de estadísticas
+- **Ranking.jsx** - Tabla de rankings
 
 ---
 
@@ -390,9 +445,44 @@ npm run build
 
 Esto genera una carpeta `dist/` lista para desplegar.
 
-### Opciones de Despliegue
+### Desplegar en Netlify (Recomendado)
+
+1. **Conectar repositorio**
+   - Ve a [netlify.com](https://netlify.com)
+   - Conecta tu repositorio de GitHub
+
+2. **Configurar build**
+   - **Base directory**: `fronted`
+   - **Build command**: `npm run build`
+   - **Publish directory**: `fronted/dist`
+
+3. **Variables de entorno**
+   ```
+   VITE_API_URL=https://tu-backend-railway.railway.app/api
+   API_URL=https://tu-backend-railway.railway.app/api
+   ```
+
+4. **Deploy automático**
+   - Netlify auto-despliega cuando haces push a main
+
+### Otras Opciones de Despliegue
 
 **Vercel**
+```bash
+vercel
+```
+
+**GitHub Pages**
+```bash
+npm run build
+# Commit y push a rama gh-pages
+```
+
+**Servidor Manual**
+```bash
+# Subir contenido de 'dist/' a tu servidor web
+# Configurar servidor para servir index.html en rutas no encontradas
+```
 ```bash
 vercel
 ```
@@ -442,12 +532,14 @@ if (import.meta.env.DEV) {
 - ✅ Compresión de imágenes
 - ✅ Caché de API
 - ✅ Minimización de CSS/JS
+- ✅ Modo oscuro optimizado
+- ✅ Responsive design eficiente
 
 ### Métricas
 - **Lighthouse Score**: 90+
 - **First Contentful Paint**: < 1.5s
 - **Time to Interactive**: < 3s
-- **Bundle Size**: ~150KB (gzipped)
+- **Bundle Size**: ~180KB (gzipped)
 
 ---
 
