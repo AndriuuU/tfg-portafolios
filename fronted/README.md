@@ -20,6 +20,16 @@ Con esta aplicación puedes:
 
 ## 🚀 Empezando
 
+### 🌐 URL de Producción
+```
+https://portafolioshub.netlify.app/
+```
+
+### 🏠 URL Local
+```
+http://localhost:5173
+```
+
 ### Requisitos Previos
 
 Antes de comenzar, asegúrate de tener instalado:

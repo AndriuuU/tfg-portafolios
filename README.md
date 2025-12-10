@@ -131,6 +131,21 @@ Esta plataforma permite a creativos, diseñadores, desarrolladores y profesional
 
 ---
 
+## 🚀 Acceso a la Plataforma
+
+### 🌐 Frontend (Aplicación Web)
+```
+https://portafolioshub.netlify.app/
+```
+
+### 🔌 Backend (API REST)
+```
+https://tfg-portafolios-production.up.railway.app
+API Endpoint: https://tfg-portafolios-production.up.railway.app/api
+```
+
+---
+
 ## 📋 Requisitos Previos
 
 Antes de comenzar, asegúrate de tener instalado:

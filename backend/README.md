@@ -22,7 +22,21 @@ Este backend proporciona:
 
 ## 🚀 Empezando
 
-### Requisitos Previos
+### 🔌 URL de Producción
+```
+https://tfg-portafolios-production.up.railway.app
+API: https://tfg-portafolios-production.up.railway.app/api
+```
+
+### 🏠 URL Local
+```
+http://localhost:5000
+API: http://localhost:5000/api
+```
+
+---
+
+## 🚀 Instalación Local
 
 Antes de comenzar, asegúrate de tener:
 - **Node.js** (versión 18.x o superior)
@@ -96,16 +110,58 @@ npm start
 ```
 
 ### `npm test`
-Ejecuta todos los tests.
+Ejecuta todos los tests automatizados.
 ```bash
 npm test
 ```
+
+Tests incluidos:
+- ✅ Autenticación (registro, login, JWT)
+- ✅ Usuarios (búsqueda, seguimiento, bloqueo)
+- ✅ Proyectos (CRUD, likes, comentarios)
+- ✅ Rankings (cálculo de puntuación)
+- ✅ Analytics (métricas y estadísticas)
+- ✅ Admin (bloqueo de usuarios, reportes)
+- ✅ Notificaciones (creación y lectura)
 
 ### `npm run test:watch`
 Ejecuta los tests en modo observador (se reinician al cambiar archivos).
 ```bash
 npm run test:watch
 ```
+
+### `npm run test:coverage`
+Ejecuta los tests y genera reporte de cobertura de código.
+```bash
+npm run test:coverage
+```
+
+---
+
+## 🧪 Pruebas Automatizadas
+
+El backend incluye suite completa de tests con Jest. Para ejecutar:
+
+```bash
+# Ejecutar todos los tests
+npm test
+
+# Ejecutar tests de un archivo específico
+npm test -- auth.test.js
+
+# Ver cobertura de código
+npm run test:coverage
+
+# Tests en modo watch (desarrollo)
+npm run test:watch
+```
+
+**Archivos de test disponibles:**
+- `src/tests/auth.test.js` - Tests de autenticación
+- `src/tests/models.test.js` - Tests de modelos
+- `src/tests/search.test.js` - Tests de búsqueda
+- `src/tests/analytics.test.js` - Tests de analytics
+- `src/tests/ranking.test.js` - Tests de rankings
 
 ---
 

@@ -1,0 +1,644 @@
+{
+  "info": {
+    "name": "TFG Portafolios API",
+    "description": "Colección completa de endpoints para probar el API de TFG Portafolios",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Autenticación",
+      "item": [
+        {
+          "name": "Register",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"test@example.com\",\n  \"password\": \"Password123!\",\n  \"username\": \"testuser\",\n  \"name\": \"Test User\"\n}"
+            },
+            "url": {
+              "raw": "https://tfg-portafolios-production.up.railway.app/api/auth/register",
+              "protocol": "https",
+              "host": ["tfg-portafolios-production", "up", "railway", "app"],
+              "path": ["api", "auth", "register"]
+            }
+          }
+        },
+        {
+          "name": "Login",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"juan@test.com\",\n  \"password\": \"Test123456!\"\n}"
+            },
+            "url": {
+              "raw": "https://tfg-portafolios-production.up.railway.app/api/auth/login",
+              "protocol": "https",
+              "host": ["tfg-portafolios-production", "up", "railway", "app"],
+              "path": ["api", "auth", "login"]
+            }
+          }
+        },
+        {
+          "name": "Forgot Password",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"juan@test.com\"\n}"
+            },
+            "url": {
+              "raw": "https://tfg-portafolios-production.up.railway.app/api/auth/forgot-password",
+              "protocol": "https",
+              "host": ["tfg-portafolios-production", "up", "railway", "app"],
+              "path": ["api", "auth", "forgot-password"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Usuarios",
+      "item": [
+        {
+          "name": "Obtener Perfil",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "https://tfg-portafolios-production.up.railway.app/api/users/{{userId}}",
+              "protocol": "https",
+              "host": ["tfg-portafolios-production", "up", "railway", "app"],
+              "path": ["api", "users", "{{userId}}"]
+            }
+          }
+        },
+        {
+          "name": "Actualizar Perfil",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Juan García Actualizado\",\n  \"bio\": \"Diseñador gráfico apasionado\",\n  \"privacy\": \"public\"\n}"
+            },
+            "url": {
+              "raw": "https://tfg-portafolios-production.up.railway.app/api/users/{{userId}}",
+              "protocol": "https",
+              "host": ["tfg-portafolios-production", "up", "railway", "app"],
+              "path": ["api", "users", "{{userId}}"]
+            }
+          }
+        },
+        {
+          "name": "Buscar Usuarios",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "https://tfg-portafolios-production.up.railway.app/api/search/users?q=maria&page=1&limit=10",
+              "protocol": "https",
+              "host": ["tfg-portafolios-production", "up", "railway", "app"],
+              "path": ["api", "search", "users"],
+              "query": [
+                {
+                  "key": "q",
+                  "value": "maria"
+                },
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Seguir Usuario",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "https://tfg-portafolios-production.up.railway.app/api/users/{{targetUserId}}/follow",
+              "protocol": "https",
+              "host": ["tfg-portafolios-production", "up", "railway", "app"],
+              "path": ["api", "users", "{{targetUserId}}", "follow"]
+            }
+          }
+        },
+        {
+          "name": "Bloquear Usuario",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "https://tfg-portafolios-production.up.railway.app/api/users/{{targetUserId}}/block",
+              "protocol": "https",
+              "host": ["tfg-portafolios-production", "up", "railway", "app"],
+              "path": ["api", "users", "{{targetUserId}}", "block"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Proyectos",
+      "item": [
+        {
+          "name": "Listar Proyectos",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "https://tfg-portafolios-production.up.railway.app/api/projects?page=1&limit=10",
+              "protocol": "https",
+              "host": ["tfg-portafolios-production", "up", "railway", "app"],
+              "path": ["api", "projects"],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Obtener Proyecto",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "https://tfg-portafolios-production.up.railway.app/api/projects/{{projectId}}",
+              "protocol": "https",
+              "host": ["tfg-portafolios-production", "up", "railway", "app"],
+              "path": ["api", "projects", "{{projectId}}"]
+            }
+          }
+        },
+        {
+          "name": "Crear Proyecto",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Mi Nuevo Proyecto\",\n  \"description\": \"Descripción detallada del proyecto\",\n  \"images\": [\"https://url-de-imagen.com/image.jpg\"],\n  \"tags\": [\"diseño\", \"web\", \"react\"],\n  \"category\": \"diseño\",\n  \"link\": \"https://proyecto.com\"\n}"
+            },
+            "url": {
+              "raw": "https://tfg-portafolios-production.up.railway.app/api/projects",
+              "protocol": "https",
+              "host": ["tfg-portafolios-production", "up", "railway", "app"],
+              "path": ["api", "projects"]
+            }
+          }
+        },
+        {
+          "name": "Actualizar Proyecto",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Título Actualizado\",\n  \"description\": \"Nueva descripción\",\n  \"tags\": [\"diseño\", \"web\"]\n}"
+            },
+            "url": {
+              "raw": "https://tfg-portafolios-production.up.railway.app/api/projects/{{projectId}}",
+              "protocol": "https",
+              "host": ["tfg-portafolios-production", "up", "railway", "app"],
+              "path": ["api", "projects", "{{projectId}}"]
+            }
+          }
+        },
+        {
+          "name": "Eliminar Proyecto",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "https://tfg-portafolios-production.up.railway.app/api/projects/{{projectId}}",
+              "protocol": "https",
+              "host": ["tfg-portafolios-production", "up", "railway", "app"],
+              "path": ["api", "projects", "{{projectId}}"]
+            }
+          }
+        },
+        {
+          "name": "Like Proyecto",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "https://tfg-portafolios-production.up.railway.app/api/projects/{{projectId}}/like",
+              "protocol": "https",
+              "host": ["tfg-portafolios-production", "up", "railway", "app"],
+              "path": ["api", "projects", "{{projectId}}", "like"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Comentarios",
+      "item": [
+        {
+          "name": "Crear Comentario",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"text\": \"Muy buen proyecto! Me encanta el diseño.\"\n}"
+            },
+            "url": {
+              "raw": "https://tfg-portafolios-production.up.railway.app/api/projects/{{projectId}}/comments",
+              "protocol": "https",
+              "host": ["tfg-portafolios-production", "up", "railway", "app"],
+              "path": ["api", "projects", "{{projectId}}", "comments"]
+            }
+          }
+        },
+        {
+          "name": "Obtener Comentarios",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "https://tfg-portafolios-production.up.railway.app/api/projects/{{projectId}}/comments",
+              "protocol": "https",
+              "host": ["tfg-portafolios-production", "up", "railway", "app"],
+              "path": ["api", "projects", "{{projectId}}", "comments"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Rankings",
+      "item": [
+        {
+          "name": "Ranking Global",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "https://tfg-portafolios-production.up.railway.app/api/ranking/global",
+              "protocol": "https",
+              "host": ["tfg-portafolios-production", "up", "railway", "app"],
+              "path": ["api", "ranking", "global"]
+            }
+          }
+        },
+        {
+          "name": "Ranking Proyectos",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "https://tfg-portafolios-production.up.railway.app/api/ranking/projects",
+              "protocol": "https",
+              "host": ["tfg-portafolios-production", "up", "railway", "app"],
+              "path": ["api", "ranking", "projects"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Analytics",
+      "item": [
+        {
+          "name": "Dashboard Analytics",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "https://tfg-portafolios-production.up.railway.app/api/analytics/dashboard",
+              "protocol": "https",
+              "host": ["tfg-portafolios-production", "up", "railway", "app"],
+              "path": ["api", "analytics", "dashboard"]
+            }
+          }
+        },
+        {
+          "name": "Analytics Proyecto",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "https://tfg-portafolios-production.up.railway.app/api/analytics/project/{{projectId}}",
+              "protocol": "https",
+              "host": ["tfg-portafolios-production", "up", "railway", "app"],
+              "path": ["api", "analytics", "project", "{{projectId}}"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Admin",
+      "item": [
+        {
+          "name": "Listar Usuarios (Admin)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "https://tfg-portafolios-production.up.railway.app/api/admin/users",
+              "protocol": "https",
+              "host": ["tfg-portafolios-production", "up", "railway", "app"],
+              "path": ["api", "admin", "users"]
+            }
+          }
+        },
+        {
+          "name": "Ver Cuentas Bloqueadas",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "https://tfg-portafolios-production.up.railway.app/api/admin/blocked-accounts",
+              "protocol": "https",
+              "host": ["tfg-portafolios-production", "up", "railway", "app"],
+              "path": ["api", "admin", "blocked-accounts"]
+            }
+          }
+        },
+        {
+          "name": "Bloquear Usuario (Admin)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"reason\": \"Violación de términos de servicio\"\n}"
+            },
+            "url": {
+              "raw": "https://tfg-portafolios-production.up.railway.app/api/admin/users/{{userId}}/block",
+              "protocol": "https",
+              "host": ["tfg-portafolios-production", "up", "railway", "app"],
+              "path": ["api", "admin", "users", "{{userId}}", "block"]
+            }
+          }
+        },
+        {
+          "name": "Desbloquear Usuario (Admin)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "https://tfg-portafolios-production.up.railway.app/api/admin/users/{{userId}}/unblock",
+              "protocol": "https",
+              "host": ["tfg-portafolios-production", "up", "railway", "app"],
+              "path": ["api", "admin", "users", "{{userId}}", "unblock"]
+            }
+          }
+        },
+        {
+          "name": "Listar Reportes (Admin)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "https://tfg-portafolios-production.up.railway.app/api/admin/reports",
+              "protocol": "https",
+              "host": ["tfg-portafolios-production", "up", "railway", "app"],
+              "path": ["api", "admin", "reports"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Notificaciones",
+      "item": [
+        {
+          "name": "Obtener Notificaciones",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "https://tfg-portafolios-production.up.railway.app/api/notifications",
+              "protocol": "https",
+              "host": ["tfg-portafolios-production", "up", "railway", "app"],
+              "path": ["api", "notifications"]
+            }
+          }
+        },
+        {
+          "name": "Marcar Notificación como Leída",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "https://tfg-portafolios-production.up.railway.app/api/notifications/{{notificationId}}/read",
+              "protocol": "https",
+              "host": ["tfg-portafolios-production", "up", "railway", "app"],
+              "path": ["api", "notifications", "{{notificationId}}", "read"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Exportación",
+      "item": [
+        {
+          "name": "Exportar PDF",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"format\": \"pdf\"\n}"
+            },
+            "url": {
+              "raw": "https://tfg-portafolios-production.up.railway.app/api/export/pdf",
+              "protocol": "https",
+              "host": ["tfg-portafolios-production", "up", "railway", "app"],
+              "path": ["api", "export", "pdf"]
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "https://tfg-portafolios-production.up.railway.app/api",
+      "type": "string"
+    },
+    {
+      "key": "token",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "userId",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "targetUserId",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "projectId",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "notificationId",
+      "value": "",
+      "type": "string"
+    }
+  ]
+}
