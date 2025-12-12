@@ -2,7 +2,7 @@ const nodemailer = require('nodemailer');
 
 // Configurar Nodemailer con Mailtrap
 const transporter = nodemailer.createTransport({
-  host: 'smtp.mailtrap.io',
+  host: 'sandbox.smtp.mailtrap.io',
   port: 2525,
   auth: {
     user: process.env.EMAIL_USER,
@@ -13,16 +13,21 @@ const transporter = nodemailer.createTransport({
 // Verificar configuración
 if (process.env.EMAIL_USER && process.env.EMAIL_PASSWORD) {
   console.log('✅ Email configurado correctamente con Mailtrap');
+  console.log('📧 Usuario:', process.env.EMAIL_USER);
+  console.log('🔑 Contraseña: ' + (process.env.EMAIL_PASSWORD ? process.env.EMAIL_PASSWORD.substring(0, 5) + '***' : 'no definida'));
+  
   // Verificar conexión
   transporter.verify((error, success) => {
     if (error) {
       console.error('❌ Error en configuración de email:', error.message);
+      console.error('Detalles:', error);
     } else {
       console.log('✅ Servidor de email (Mailtrap) listo para enviar');
     }
   });
 } else {
-  console.warn('⚠️ EMAIL_USER o EMAIL_PASSWORD no están definidas');
+  console.warn('⚠️ EMAIL_USER no está definido:', !!process.env.EMAIL_USER);
+  console.warn('⚠️ EMAIL_PASSWORD no está definido:', !!process.env.EMAIL_PASSWORD);
 }
 
 // Enviar email de verificación
