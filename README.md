@@ -457,6 +457,16 @@ docker-compose up
 - ✅ Variables sensibles en .env
 - ✅ Rate limiting
 - ✅ Headers de seguridad
+
+### Checklist de Seguridad
+- [ ] No subir `.env` a Git
+- [ ] Regenerar `JWT_SECRET` en producción
+- [ ] Usar HTTPS en producción
+- [ ] Configurar CORS correctamente
+- [ ] Validar todas las entradas
+- [ ] Sanitizar datos de usuario
+- [ ] Auditar dependencias regularmente
+
 ---
 
 ## 📊 Estadísticas del Proyecto
@@ -503,14 +513,36 @@ Solución: Verificar credenciales de Cloudinary en .env
 
 ---
 
+## 🤝 Contribuir
+
+¡Las contribuciones son bienvenidas! Por favor:
+
+1. Fork el repositorio
+2. Crea una rama para tu feature (`git checkout -b feature/AmazingFeature`)
+3. Commit tus cambios (`git commit -m 'feat: Add AmazingFeature'`)
+4. Push a la rama (`git push origin feature/AmazingFeature`)
+5. Abre un Pull Request
+
+### Pautas de Contribución
+- Sigue el código existente
+- Escribe tests para nuevas funciones
+- Actualiza la documentación
+- Usa convenciones de commit semantic
+
+---
+
 ## 📝 Licencia
 
 Este proyecto está bajo la Licencia MIT. Ver archivo `LICENSE` para más detalles.
 
 ```
+MIT License
 
-Copyright (c) 2026 Andrés Molina González
+Copyright (c) 2024 Andrés Rodríguez
 
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction...
 ```
 
 ---
@@ -518,8 +550,8 @@ Copyright (c) 2026 Andrés Molina González
 ## 📞 Contacto y Soporte
 
 ### Equipo de Desarrollo
-- **Desarrollador**: Andrés Rodríguez
-- **Email**: andriu@example.com
+- **Desarrollador**: Andrés Molina González
+- **Email**: andresmolinagonz@gmail.com
 - **GitHub**: [AndriuuU](https://github.com/AndriuuU)
 
 ### Reportar Issues
@@ -591,7 +623,6 @@ R: En login, haz clic en "¿Olvidaste tu contraseña?" y sigue el email.
 - [ ] Sistema de badges
 
 ### v1.2
-- [ ] API pública para desarrolladores
 - [ ] Integraciones con GitHub
 - [ ] Sistema de recomendaciones
 - [ ] Análisis predictivo
