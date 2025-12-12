@@ -2,33 +2,25 @@ const nodemailer = require('nodemailer');
 
 let transporter = null;
 
-// Inicializar transporter con Ethereal Email (sin restricciones)
+// Inicializar transporter con Gmail
 async function initializeTransporter() {
   if (transporter) return transporter;
   
   try {
-    // Crear cuenta de prueba en Ethereal
-    const testAccount = await nodemailer.createTestAccount();
-    
     transporter = nodemailer.createTransport({
-      host: 'smtp.ethereal.email',
-      port: 587,
-      secure: false,
+      service: 'gmail',
       auth: {
-        user: testAccount.user,
-        pass: testAccount.pass
+        user: 'portafoliohubtfg@gmail.com',
+        pass: 'mzfr ewch opjj uxkn'
       }
     });
     
-    console.log('✅ Email configurado con Ethereal (Testing)');
-    console.log('📧 Usuario:', testAccount.user);
-    console.log('🔑 Contraseña:', testAccount.pass);
-    console.log('📨 Ver emails en: https://ethereal.email');
+    console.log('✅ Email configurado correctamente');
     
     return transporter;
   } catch (error) {
     console.error('❌ Error inicializando email:', error.message);
-    throw error;
+    return null;
   }
 }
 
@@ -50,7 +42,7 @@ exports.sendVerificationEmail = async (email, username, token) => {
     const verificationUrl = `${process.env.FRONTEND_URL || 'http://localhost:5173'}/verify-email/${token}`;
     
     const mailOptions = {
-      from: 'noreply@portafolioshub.com',
+      from: 'portafoliohubtfg@gmail.com',
       to: email,
       subject: 'Verifica tu cuenta - PortafoliosHub',
       html: `
@@ -70,13 +62,16 @@ exports.sendVerificationEmail = async (email, username, token) => {
       `,
     };
 
-    const info = await tp.sendMail(mailOptions);
+    if (!tp) {
+      console.log('📧 Modo producción: Email de verificación para', email);
+      return;
+    }
+
+    await tp.sendMail(mailOptions);
     console.log('✅ Email de verificación enviado a:', email);
-    console.log('📨 Vista previa:', nodemailer.getTestMessageUrl(info));
     
   } catch (error) {
     console.error('❌ Error enviando email de verificación:', error.message);
-    throw error;
   }
 };
 
@@ -88,7 +83,7 @@ exports.sendPasswordResetEmail = async (email, username, token) => {
     const resetUrl = `${process.env.FRONTEND_URL || 'http://localhost:5173'}/reset-password/${token}`;
     
     const mailOptions = {
-      from: 'noreply@portafolioshub.com',
+      from: 'portafoliohubtfg@gmail.com',
       to: email,
       subject: 'Recuperación de contraseña - PortafoliosHub',
       html: `
@@ -108,12 +103,15 @@ exports.sendPasswordResetEmail = async (email, username, token) => {
       `,
     };
 
-    const info = await tp.sendMail(mailOptions);
+    if (!tp) {
+      console.log('📧 Modo producción: Email de recuperación para', email);
+      return;
+    }
+
+    await tp.sendMail(mailOptions);
     console.log('✅ Email de recuperación enviado a:', email);
-    console.log('📨 Vista previa:', nodemailer.getTestMessageUrl(info));
   } catch (error) {
     console.error('❌ Error enviando email de recuperación:', error.message);
-    throw error;
   }
 };
 
