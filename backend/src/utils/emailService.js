@@ -202,16 +202,6 @@ exports.sendEmailChangedNotification = async (oldEmail, newEmail, username) => {
     }
   }
 };
-    
-    if (process.env.NODE_ENV !== 'test') {
-      console.log('✅ Email de notificación de cambio enviado a:', oldEmail, 'y', newEmail);
-    }
-  } catch (error) {
-    if (process.env.NODE_ENV !== 'test') {
-      console.error('❌ Error enviando email de notificación de cambio:', error.message);
-    }
-  }
-};
 
 // Enviar email de notificación de cambio de nombre de usuario
 exports.sendUsernameChangedEmail = async (email, oldUsername, newUsername) => {
