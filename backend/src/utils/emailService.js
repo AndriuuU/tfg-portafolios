@@ -1,8 +1,9 @@
 const nodemailer = require('nodemailer');
 
-// Configurar Nodemailer con Gmail
+// Configurar Nodemailer con Mailtrap
 const transporter = nodemailer.createTransport({
-  service: 'gmail',
+  host: 'smtp.mailtrap.io',
+  port: 2525,
   auth: {
     user: process.env.EMAIL_USER,
     pass: process.env.EMAIL_PASSWORD
@@ -11,7 +12,15 @@ const transporter = nodemailer.createTransport({
 
 // Verificar configuración
 if (process.env.EMAIL_USER && process.env.EMAIL_PASSWORD) {
-  console.log('✅ Email configurado correctamente con Nodemailer');
+  console.log('✅ Email configurado correctamente con Mailtrap');
+  // Verificar conexión
+  transporter.verify((error, success) => {
+    if (error) {
+      console.error('❌ Error en configuración de email:', error.message);
+    } else {
+      console.log('✅ Servidor de email (Mailtrap) listo para enviar');
+    }
+  });
 } else {
   console.warn('⚠️ EMAIL_USER o EMAIL_PASSWORD no están definidas');
 }
