@@ -1,11 +1,19 @@
-const sgMail = require('@sendgrid/mail');
+const nodemailer = require('nodemailer');
 
-// Configurar SendGrid
-if (process.env.SENDGRID_API_KEY) {
-  sgMail.setApiKey(process.env.SENDGRID_API_KEY);
-  console.log('✅ SendGrid configurado correctamente');
+// Configurar Nodemailer con Gmail
+const transporter = nodemailer.createTransport({
+  service: 'gmail',
+  auth: {
+    user: process.env.EMAIL_USER,
+    pass: process.env.EMAIL_PASSWORD
+  }
+});
+
+// Verificar configuración
+if (process.env.EMAIL_USER && process.env.EMAIL_PASSWORD) {
+  console.log('✅ Email configurado correctamente con Nodemailer');
 } else {
-  console.warn('⚠️ SENDGRID_API_KEY no está definida');
+  console.warn('⚠️ EMAIL_USER o EMAIL_PASSWORD no están definidas');
 }
 
 // Enviar email de verificación
@@ -17,14 +25,14 @@ exports.sendVerificationEmail = async (email, username, token) => {
 
   const verificationUrl = `${process.env.FRONTEND_URL || 'http://localhost:5173'}/verify-email/${token}`;
   
-  const msg = {
+  const mailOptions = {
+    from: process.env.EMAIL_USER,
     to: email,
-    from: process.env.EMAIL_USER || 'noreply@portafolioshub.com',
-    subject: 'Verifica tu cuenta - TFG Portafolios',
+    subject: 'Verifica tu cuenta - PortafoliosHub',
     html: `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
         <h2>Hola ${username},</h2>
-        <p>Gracias por registrarte en ${process.env.APP_NAME || 'TFG Portafolios'}!</p>
+        <p>Gracias por registrarte en PortafoliosHub!</p>
         <p>Para activar tu cuenta, por favor haz click en el siguiente enlace:</p>
         <a href="${verificationUrl}" style="display: inline-block; padding: 10px 20px; background-color: #007bff; color: white; text-decoration: none; border-radius: 5px; margin: 20px 0;">
           Verificar Email
@@ -39,7 +47,7 @@ exports.sendVerificationEmail = async (email, username, token) => {
   };
 
   try {
-    await sgMail.send(msg);
+    await transporter.sendMail(mailOptions);
     console.log('✅ Email de verificación enviado a:', email);
   } catch (error) {
     console.error('❌ Error enviando email de verificación:', error.message);
@@ -51,10 +59,10 @@ exports.sendVerificationEmail = async (email, username, token) => {
 exports.sendPasswordResetEmail = async (email, username, token) => {
   const resetUrl = `${process.env.FRONTEND_URL || 'http://localhost:5173'}/reset-password/${token}`;
   
-  const msg = {
-    to: email,
+  const mailOptions = {
     from: process.env.EMAIL_USER,
-    subject: 'Recuperación de contraseña',
+    to: email,
+    subject: 'Recuperación de contraseña - PortafoliosHub',
     html: `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
         <h2>Hola ${username},</h2>
@@ -64,7 +72,7 @@ exports.sendPasswordResetEmail = async (email, username, token) => {
           Restablecer Contraseña
         </a>
         <p>O copia y pega este enlace en tu navegador:</p>
-        <p style="color: #666;">${resetUrl}</p>
+        <p style="color: #666; word-break: break-all;">${resetUrl}</p>
         <p>Este enlace expirará en 1 hora.</p>
         <hr style="margin: 30px 0;">
         <p style="color: #999; font-size: 12px;">Si no solicitaste este cambio, puedes ignorar este email. Tu contraseña permanecerá sin cambios.</p>
@@ -73,24 +81,20 @@ exports.sendPasswordResetEmail = async (email, username, token) => {
   };
 
   try {
-    await sgMail.send(msg);
-    if (process.env.NODE_ENV !== 'test') {
-      console.log('✅ Email de recuperación enviado a:', email);
-    }
+    await transporter.sendMail(mailOptions);
+    console.log('✅ Email de recuperación enviado a:', email);
   } catch (error) {
-    if (process.env.NODE_ENV !== 'test') {
-      console.error('❌ Error enviando email de recuperación:', error.message);
-    }
+    console.error('❌ Error enviando email de recuperación:', error.message);
     throw error;
   }
 };
 
 // Enviar email de confirmación de cambio de contraseña
 exports.sendPasswordChangedEmail = async (email, username) => {
-  const msg = {
-    to: email,
+  const mailOptions = {
     from: process.env.EMAIL_USER,
-    subject: 'Contraseña cambiada exitosamente',
+    to: email,
+    subject: 'Contraseña cambiada exitosamente - PortafoliosHub',
     html: `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
         <h2>Hola ${username},</h2>
@@ -103,7 +107,7 @@ exports.sendPasswordChangedEmail = async (email, username) => {
   };
 
   try {
-    await sgMail.send(msg);
+    await transporter.sendMail(mailOptions);
     if (process.env.NODE_ENV !== 'test') {
       console.log('✅ Email de confirmación enviado a:', email);
     }
@@ -116,10 +120,10 @@ exports.sendPasswordChangedEmail = async (email, username) => {
 
 // Enviar email de notificación de cambio de email
 exports.sendEmailChangedNotification = async (oldEmail, newEmail, username) => {
-  const msg = {
-    to: oldEmail,
+  const mailOptions = {
     from: process.env.EMAIL_USER,
-    subject: 'Tu email ha sido cambiado',
+    to: oldEmail,
+    subject: 'Tu email ha sido cambiado - PortafoliosHub',
     html: `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
         <h2>Hola ${username},</h2>
@@ -134,13 +138,13 @@ exports.sendEmailChangedNotification = async (oldEmail, newEmail, username) => {
 
   try {
     // Enviar al email antiguo
-    await sgMail.send(msg);
+    await transporter.sendMail(mailOptions);
     
     // También enviar al nuevo email
-    const newMsg = {
-      to: newEmail,
+    const newMailOptions = {
       from: process.env.EMAIL_USER,
-      subject: 'Email actualizado correctamente',
+      to: newEmail,
+      subject: 'Email actualizado correctamente - PortafoliosHub',
       html: `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
           <h2>Hola ${username},</h2>
@@ -152,7 +156,7 @@ exports.sendEmailChangedNotification = async (oldEmail, newEmail, username) => {
         </div>
       `,
     };
-    await sgMail.send(newMsg);
+    await transporter.sendMail(newMailOptions);
     
     if (process.env.NODE_ENV !== 'test') {
       console.log('✅ Email de notificación de cambio enviado a:', oldEmail, 'y', newEmail);
@@ -166,10 +170,10 @@ exports.sendEmailChangedNotification = async (oldEmail, newEmail, username) => {
 
 // Enviar email de notificación de cambio de nombre de usuario
 exports.sendUsernameChangedEmail = async (email, oldUsername, newUsername) => {
-  const msg = {
-    to: email,
+  const mailOptions = {
     from: process.env.EMAIL_USER,
-    subject: 'Nombre de usuario cambiado',
+    to: email,
+    subject: 'Nombre de usuario cambiado - PortafoliosHub',
     html: `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
         <h2>Hola ${newUsername},</h2>
@@ -184,7 +188,7 @@ exports.sendUsernameChangedEmail = async (email, oldUsername, newUsername) => {
   };
 
   try {
-    await sgMail.send(msg);
+    await transporter.sendMail(mailOptions);
     if (process.env.NODE_ENV !== 'test') {
       console.log('✅ Email de cambio de username enviado a:', email);
     }
@@ -210,10 +214,10 @@ exports.sendProfileUpdateEmail = async (email, username, changes) => {
     })
     .join('');
 
-  const msg = {
-    to: email,
+  const mailOptions = {
     from: process.env.EMAIL_USER,
-    subject: 'Tu perfil ha sido actualizado',
+    to: email,
+    subject: 'Tu perfil ha sido actualizado - PortafoliosHub',
     html: `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
         <h2>Hola ${username},</h2>
@@ -229,7 +233,7 @@ exports.sendProfileUpdateEmail = async (email, username, changes) => {
   };
 
   try {
-    await sgMail.send(msg);
+    await transporter.sendMail(mailOptions);
     if (process.env.NODE_ENV !== 'test') {
       console.log('✅ Email de actualización de perfil enviado a:', email);
     }
