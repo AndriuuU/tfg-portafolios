@@ -3,7 +3,8 @@ const nodemailer = require('nodemailer');
 // Configurar Nodemailer con Mailtrap
 const transporter = nodemailer.createTransport({
   host: 'sandbox.smtp.mailtrap.io',
-  port: 2525,
+  port: 465,
+  secure: true, // SSL en lugar de TLS
   auth: {
     user: process.env.EMAIL_USER,
     pass: process.env.EMAIL_PASSWORD
@@ -40,7 +41,7 @@ exports.sendVerificationEmail = async (email, username, token) => {
   const verificationUrl = `${process.env.FRONTEND_URL || 'http://localhost:5173'}/verify-email/${token}`;
   
   const mailOptions = {
-    from: process.env.EMAIL_USER,
+    from: 'noreply@portafolioshub.com',
     to: email,
     subject: 'Verifica tu cuenta - PortafoliosHub',
     html: `
@@ -74,7 +75,7 @@ exports.sendPasswordResetEmail = async (email, username, token) => {
   const resetUrl = `${process.env.FRONTEND_URL || 'http://localhost:5173'}/reset-password/${token}`;
   
   const mailOptions = {
-    from: process.env.EMAIL_USER,
+    from: 'noreply@portafolioshub.com',
     to: email,
     subject: 'Recuperación de contraseña - PortafoliosHub',
     html: `
@@ -106,7 +107,7 @@ exports.sendPasswordResetEmail = async (email, username, token) => {
 // Enviar email de confirmación de cambio de contraseña
 exports.sendPasswordChangedEmail = async (email, username) => {
   const mailOptions = {
-    from: process.env.EMAIL_USER,
+    from: 'noreply@portafolioshub.com',
     to: email,
     subject: 'Contraseña cambiada exitosamente - PortafoliosHub',
     html: `
@@ -135,7 +136,7 @@ exports.sendPasswordChangedEmail = async (email, username) => {
 // Enviar email de notificación de cambio de email
 exports.sendEmailChangedNotification = async (oldEmail, newEmail, username) => {
   const mailOptions = {
-    from: process.env.EMAIL_USER,
+    from: 'noreply@portafolioshub.com',
     to: oldEmail,
     subject: 'Tu email ha sido cambiado - PortafoliosHub',
     html: `
@@ -156,7 +157,7 @@ exports.sendEmailChangedNotification = async (oldEmail, newEmail, username) => {
     
     // También enviar al nuevo email
     const newMailOptions = {
-      from: process.env.EMAIL_USER,
+      from: 'noreply@portafolioshub.com',
       to: newEmail,
       subject: 'Email actualizado correctamente - PortafoliosHub',
       html: `
@@ -185,7 +186,7 @@ exports.sendEmailChangedNotification = async (oldEmail, newEmail, username) => {
 // Enviar email de notificación de cambio de nombre de usuario
 exports.sendUsernameChangedEmail = async (email, oldUsername, newUsername) => {
   const mailOptions = {
-    from: process.env.EMAIL_USER,
+    from: 'noreply@portafolioshub.com',
     to: email,
     subject: 'Nombre de usuario cambiado - PortafoliosHub',
     html: `
@@ -229,7 +230,7 @@ exports.sendProfileUpdateEmail = async (email, username, changes) => {
     .join('');
 
   const mailOptions = {
-    from: process.env.EMAIL_USER,
+    from: 'noreply@portafolioshub.com',
     to: email,
     subject: 'Tu perfil ha sido actualizado - PortafoliosHub',
     html: `
