@@ -302,8 +302,6 @@ export default function ProjectDetail() {
         </div>
 
         {/* Comments */}
-        <div className="comments-section">
-          <h2>Comentarios</h2>
           <Comments projectId={id} token={localStorage.getItem("token")} />
         </div>
 
@@ -317,6 +315,5 @@ export default function ProjectDetail() {
           />
         )}
       </div>
-    </div>
   );
 }

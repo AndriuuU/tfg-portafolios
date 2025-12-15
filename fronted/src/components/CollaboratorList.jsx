@@ -1,6 +1,9 @@
 import { useState, useEffect } from 'react';
 import { getCollaborators, removeCollaborator, updateCollaboratorRole, leaveProject } from '../api/api';
 import { Link } from 'react-router-dom';
+import { useConfirmModal, useAlertModal } from '../hooks/useModals';
+import ConfirmModal from './ConfirmModal';
+import AlertModal from './AlertModal';
 import '../styles/Collaborators.scss';
 
 function CollaboratorList({ projectId, isOwner, onUpdate }) {
@@ -8,6 +11,8 @@ function CollaboratorList({ projectId, isOwner, onUpdate }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [actionLoading, setActionLoading] = useState({});
+  const confirmModal = useConfirmModal();
+  const alertModal = useAlertModal();
 
   useEffect(() => {
     loadCollaborators();
@@ -27,9 +32,17 @@ function CollaboratorList({ projectId, isOwner, onUpdate }) {
   };
 
   const handleRemove = async (userId) => {
-    if (!confirm('¿Estás seguro de que quieres eliminar este colaborador?')) {
-      return;
-    }
+    const confirmed = await confirmModal.confirm(
+      '¿Estás seguro de que quieres eliminar este colaborador?',
+      {
+        title: 'Eliminar Colaborador',
+        confirmText: 'Eliminar',
+        cancelText: 'Cancelar',
+        isDangerous: true
+      }
+    );
+
+    if (!confirmed) return;
 
     setActionLoading({ ...actionLoading, [`remove-${userId}`]: true });
     try {
@@ -37,7 +50,10 @@ function CollaboratorList({ projectId, isOwner, onUpdate }) {
       setCollaborators(collaborators.filter(c => c.user._id !== userId));
       if (onUpdate) onUpdate();
     } catch (err) {
-      alert(err.response?.data?.error || 'Error al eliminar colaborador');
+      await alertModal.alert(
+        err.response?.data?.error || 'Error al eliminar colaborador',
+        { title: 'Error', type: 'error' }
+      );
     } finally {
       setActionLoading({ ...actionLoading, [`remove-${userId}`]: false });
     }
@@ -52,23 +68,37 @@ function CollaboratorList({ projectId, isOwner, onUpdate }) {
       ));
       if (onUpdate) onUpdate();
     } catch (err) {
-      alert(err.response?.data?.error || 'Error al cambiar el rol');
+      await alertModal.alert(
+        err.response?.data?.error || 'Error al cambiar el rol',
+        { title: 'Error', type: 'error' }
+      );
     } finally {
       setActionLoading({ ...actionLoading, [`role-${userId}`]: false });
     }
   };
 
   const handleLeave = async () => {
-    if (!confirm('¿Estás seguro de que quieres dejar de colaborar en este proyecto?')) {
-      return;
-    }
+    const confirmed = await confirmModal.confirm(
+      '¿Estás seguro de que quieres dejar de colaborar en este proyecto?',
+      {
+        title: 'Abandonar Proyecto',
+        confirmText: 'Dejar',
+        cancelText: 'Cancelar',
+        isDangerous: true
+      }
+    );
+
+    if (!confirmed) return;
 
     setActionLoading({ leave: true });
     try {
       await leaveProject(projectId);
       window.location.href = '/dashboard'; // Redirigir al dashboard
     } catch (err) {
-      alert(err.response?.data?.error || 'Error al abandonar el proyecto');
+      await alertModal.alert(
+        err.response?.data?.error || 'Error al abandonar el proyecto',
+        { title: 'Error', type: 'error' }
+      );
       setActionLoading({ leave: false });
     }
   };
@@ -82,8 +112,9 @@ function CollaboratorList({ projectId, isOwner, onUpdate }) {
   }
 
   return (
-    <div className="collaborator-list">
-      <h3>({collaborators.length})</h3>
+    <>
+      <div className="collaborator-list">
+        <h3>({collaborators.length})</h3>
       
       {collaborators.length === 0 ? (
         <p className="no-collaborators">Este proyecto no tiene colaboradores</p>
@@ -160,6 +191,15 @@ function CollaboratorList({ projectId, isOwner, onUpdate }) {
         </button>
       )}
     </div>
+    <ConfirmModal {...confirmModal} />
+    <AlertModal 
+      isOpen={alertModal.isOpen}
+      title={alertModal.title}
+      message={alertModal.message}
+      type={alertModal.type}
+      onClose={alertModal.close}
+    />
+    </>
   );
 }
 

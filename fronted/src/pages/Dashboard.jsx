@@ -3,15 +3,19 @@ import { deleteProject } from "../api/api";
 import { Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { useToast } from "../context/ToastContext";
+import { useConfirmModal } from "../hooks/useModals";
 import { useMyProjects, useSavedProjects } from "../hooks";
 import ProjectPost from "../components/ProjectPost";
+import ConfirmModal from "../components/ConfirmModal";
 import CollaborativeProjects from "../components/CollaborativeProjects";
 import "../styles/Dashboard.scss";
 
 export default function Dashboard() {
   const { user } = useAuth();
   const { showToast } = useToast();
+  const confirmModal = useConfirmModal();
   const [activeTab, setActiveTab] = useState('my-projects');
+  const [deleteId, setDeleteId] = useState(null);
   
   const { data: myProjectsData, loading: myProjectsLoading, refetch: refetchMyProjects } = useMyProjects();
   const { data: savedProjectsData, loading: savedProjectsLoading, refetch: refetchSavedProjects } = useSavedProjects();
@@ -23,7 +27,18 @@ export default function Dashboard() {
                   (activeTab === 'saved' && savedProjectsLoading);
 
   const handleDelete = async (id) => {
-    if (confirm("¿Seguro que quieres eliminar este proyecto?")) {
+    setDeleteId(id);
+    const confirmed = await confirmModal.confirm(
+      '¿Estás seguro de que quieres eliminar este proyecto?',
+      { 
+        title: 'Eliminar Proyecto',
+        confirmText: 'Eliminar',
+        cancelText: 'Cancelar',
+        isDangerous: true
+      }
+    );
+    
+    if (confirmed) {
       try {
         await deleteProject(id);
         showToast('✅ Proyecto eliminado correctamente', 'success');
@@ -32,6 +47,7 @@ export default function Dashboard() {
         showToast(err.response?.data?.error || '❌ Error al eliminar el proyecto', 'error');
       }
     }
+    setDeleteId(null);
   };
 
   const handleUnsave = () => {
@@ -39,7 +55,8 @@ export default function Dashboard() {
   };
 
   return (
-    <div className="dashboard-page">
+    <>
+      <div className="dashboard-page">
       <div className="dashboard-container">
         <div className="dashboard-header">
           <h1>Dashboard</h1>
@@ -165,5 +182,16 @@ export default function Dashboard() {
         </div>
       </div>
     </div>
+    <ConfirmModal 
+      isOpen={confirmModal.isOpen}
+      title={confirmModal.title}
+      message={confirmModal.message}
+      confirmText={confirmModal.confirmText}
+      cancelText={confirmModal.cancelText}
+      isDangerous={confirmModal.isDangerous}
+      onConfirm={confirmModal.onConfirm}
+      onCancel={confirmModal.onCancel}
+    />
+    </>
   );
 }

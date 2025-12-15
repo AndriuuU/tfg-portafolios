@@ -1,12 +1,15 @@
 import { useState, useEffect } from 'react';
 import { getFollowRequests, acceptFollowRequest, rejectFollowRequest } from '../api/followApi';
 import { useNavigate } from 'react-router-dom';
+import { useAlertModal } from '../hooks/useModals';
+import AlertModal from './AlertModal';
 
 export default function FollowRequests() {
     const [requests, setRequests] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const navigate = useNavigate();
+    const alertModal = useAlertModal();
 
     useEffect(() => {
         loadRequests();
@@ -33,7 +36,10 @@ export default function FollowRequests() {
             await acceptFollowRequest(userId);
             await loadRequests();
         } catch (err) {
-            alert(err.response?.data?.error || 'Error al aceptar solicitud');
+            await alertModal.alert(
+                err.response?.data?.error || 'Error al aceptar solicitud',
+                { title: 'Error', type: 'error' }
+            );
         }
     };
 
@@ -43,7 +49,10 @@ export default function FollowRequests() {
             await rejectFollowRequest(userId);
             await loadRequests();
         } catch (err) {
-            alert(err.response?.data?.error || 'Error al rechazar solicitud');
+            await alertModal.alert(
+                err.response?.data?.error || 'Error al rechazar solicitud',
+                { title: 'Error', type: 'error' }
+            );
         }
     };
 
@@ -55,8 +64,9 @@ export default function FollowRequests() {
     if (error) return <p>{error}</p>;
 
     return (
-        <div className="user-list">
-            <h3>Solicitudes pendientes ({requests.length})</h3>
+        <>
+            <div className="user-list">
+                <h3>Solicitudes pendientes ({requests.length})</h3>
             {requests.length === 0 ? (
                 <div className="empty-state">
                     <p>No hay solicitudes pendientes</p>
@@ -99,6 +109,14 @@ export default function FollowRequests() {
                     ))}
                 </ul>
             )}
-        </div>
+            </div>
+            <AlertModal 
+                isOpen={alertModal.isOpen}
+                title={alertModal.title}
+                message={alertModal.message}
+                type={alertModal.type}
+                onClose={alertModal.close}
+            />
+        </>
     );
 }

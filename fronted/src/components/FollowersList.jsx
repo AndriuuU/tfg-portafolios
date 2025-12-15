@@ -1,6 +1,9 @@
 import { useState, useEffect } from 'react';
 import { getFollowers, removeFollower } from '../api/followApi';
 import { useNavigate } from 'react-router-dom';
+import { useConfirmModal, useAlertModal } from '../hooks/useModals';
+import ConfirmModal from './ConfirmModal';
+import AlertModal from './AlertModal';
 import '../styles/components/Modal.scss';
 
 export default function FollowersList({ userId, isOwnProfile, onClose }) {
@@ -8,6 +11,8 @@ export default function FollowersList({ userId, isOwnProfile, onClose }) {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const navigate = useNavigate();
+    const confirmModal = useConfirmModal();
+    const alertModal = useAlertModal();
 
     useEffect(() => {
         loadFollowers();
@@ -30,13 +35,26 @@ export default function FollowersList({ userId, isOwnProfile, onClose }) {
 
     // Eliminar seguidor
     const handleRemove = async (followerId) => {
-        if (!confirm('¿Estás seguro de eliminar este seguidor?')) return;
+        const confirmed = await confirmModal.confirm(
+            '¿Estás seguro de eliminar este seguidor?',
+            { 
+                title: 'Eliminar Seguidor',
+                confirmText: 'Eliminar',
+                cancelText: 'Cancelar',
+                isDangerous: true
+            }
+        );
 
-        try {
-            await removeFollower(followerId);
-            await loadFollowers();
-        } catch (err) {
-            alert(err.response?.data?.error || 'Error al eliminar seguidor');
+        if (confirmed) {
+            try {
+                await removeFollower(followerId);
+                await loadFollowers();
+            } catch (err) {
+                await alertModal.alert(
+                    err.response?.data?.error || 'Error al eliminar seguidor',
+                    { title: 'Error', type: 'error' }
+                );
+            }
         }
     };
 
@@ -46,35 +64,56 @@ export default function FollowersList({ userId, isOwnProfile, onClose }) {
     };
 
     if (loading) return (
-        <div className="modal-overlay" onClick={onClose}>
-            <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-                <div className="modal-header">
-                    <h3>Seguidores</h3>
-                    <button className="modal-close" onClick={onClose}>×</button>
-                </div>
-                <div className="modal-body">
-                    <p className="loading-text">Cargando seguidores...</p>
+        <>
+            <div className="modal-overlay" onClick={onClose}>
+                <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+                    <div className="modal-header">
+                        <h3>Seguidores</h3>
+                        <button className="modal-close" onClick={onClose}>×</button>
+                    </div>
+                    <div className="modal-body">
+                        <p className="loading-text">Cargando seguidores...</p>
+                    </div>
                 </div>
             </div>
-        </div>
+            <ConfirmModal {...confirmModal} />
+            <AlertModal 
+                isOpen={alertModal.isOpen}
+                title={alertModal.title}
+                message={alertModal.message}
+                type={alertModal.type}
+                onClose={alertModal.close}
+            />
+        </>
     );
     
     if (error) return (
-        <div className="modal-overlay" onClick={onClose}>
-            <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-                <div className="modal-header">
-                    <h3>Seguidores</h3>
-                    <button className="modal-close" onClick={onClose}>×</button>
-                </div>
-                <div className="modal-body">
-                    <p className="error-text">{error}</p>
+        <>
+            <div className="modal-overlay" onClick={onClose}>
+                <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+                    <div className="modal-header">
+                        <h3>Seguidores</h3>
+                        <button className="modal-close" onClick={onClose}>×</button>
+                    </div>
+                    <div className="modal-body">
+                        <p className="error-text">{error}</p>
+                    </div>
                 </div>
             </div>
-        </div>
+            <ConfirmModal {...confirmModal} />
+            <AlertModal 
+                isOpen={alertModal.isOpen}
+                title={alertModal.title}
+                message={alertModal.message}
+                type={alertModal.type}
+                onClose={alertModal.close}
+            />
+        </>
     );
 
     return (
-        <div className="modal-overlay" onClick={onClose}>
+        <>
+            <div className="modal-overlay" onClick={onClose}>
             <div className="modal-content" onClick={(e) => e.stopPropagation()}>
                 <div className="modal-header">
                     <h3>Seguidores ({followers.length})</h3>
@@ -117,5 +156,14 @@ export default function FollowersList({ userId, isOwnProfile, onClose }) {
                 </div>
             </div>
         </div>
+        <ConfirmModal {...confirmModal} />
+        <AlertModal 
+            isOpen={alertModal.isOpen}
+            title={alertModal.title}
+            message={alertModal.message}
+            type={alertModal.type}
+            onClose={alertModal.close}
+        />
+        </>
     );
 }

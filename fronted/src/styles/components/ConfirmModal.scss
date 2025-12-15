@@ -1,0 +1,113 @@
+@use '../abstracts/mixins';
+
+.confirm-modal {
+  max-width: 450px;
+  animation: scaleIn 0.3s ease;
+
+  .modal-header {
+    background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
+  }
+
+  .modal-actions {
+    display: flex;
+    gap: 1rem;
+    padding: clamp(1.25rem, 3vw, 1.5rem);
+    border-top: 1px solid var(--border-color);
+    justify-content: flex-end;
+    background: var(--card-bg);
+
+    @include mixins.mobile {
+      flex-direction: column-reverse;
+      gap: 0.75rem;
+      padding: 1rem;
+    }
+
+    .btn-cancel,
+    .btn-confirm {
+      padding: clamp(0.65rem, 1.5vw, 0.8rem) clamp(1.75rem, 3vw, 2.25rem);
+      border: none;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: clamp(0.9rem, 1.5vw, 0.95rem);
+      cursor: pointer;
+      transition: all 0.3s ease;
+      min-height: 44px;
+      letter-spacing: 0.3px;
+
+      @include mixins.mobile {
+        width: 100%;
+      }
+    }
+
+    .btn-cancel {
+      background: var(--bg-tertiary);
+      color: var(--text-primary);
+      border: 1.5px solid var(--border-color);
+
+      &:hover {
+        background: var(--border-color);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      }
+
+      &:active {
+        transform: translateY(0);
+      }
+
+      @include mixins.dark-mode {
+        background: #374151;
+        border-color: #4b5563;
+        color: #f3f4f6;
+
+        &:hover {
+          background: #4b5563;
+          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+      }
+    }
+
+    .btn-confirm {
+      background: linear-gradient(135deg, #4f46e5 0%, #6366f1 100%);
+      color: white;
+      box-shadow: 0 4px 15px rgba(79, 70, 229, 0.35);
+
+      &:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 24px rgba(79, 70, 229, 0.45);
+      }
+
+      &:active {
+        transform: translateY(0);
+      }
+
+      &.btn-danger {
+        background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+        box-shadow: 0 4px 15px rgba(239, 68, 68, 0.35);
+
+        &:hover {
+          box-shadow: 0 8px 24px rgba(239, 68, 68, 0.45);
+        }
+      }
+
+      @include mixins.dark-mode {
+        box-shadow: 0 4px 15px rgba(79, 70, 229, 0.45);
+
+        &:hover {
+          box-shadow: 0 8px 24px rgba(79, 70, 229, 0.55);
+        }
+      }
+    }
+  }
+
+  .modal-body {
+    padding: clamp(1.75rem, 3vw, 2.25rem);
+
+    p {
+      margin: 0;
+      color: var(--text-primary);
+      font-size: clamp(0.95rem, 1.5vw, 1.05rem);
+      line-height: 1.65;
+      letter-spacing: 0.2px;
+    }
+  }
+}

@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
 import { getMyInvitations, acceptInvitation, rejectInvitation } from '../api/api';
 import { Link } from 'react-router-dom';
+import { useAlertModal } from '../hooks/useModals';
+import AlertModal from './AlertModal';
 import '../styles/Collaborators.scss';
 
 function CollaboratorInvitations() {
@@ -8,6 +10,7 @@ function CollaboratorInvitations() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [actionLoading, setActionLoading] = useState({});
+  const alertModal = useAlertModal();
 
   useEffect(() => {
     loadInvitations();
@@ -32,7 +35,10 @@ function CollaboratorInvitations() {
       await acceptInvitation(projectId);
       setInvitations(invitations.filter(inv => inv._id !== invitationId));
     } catch (err) {
-      alert(err.response?.data?.error || 'Error al aceptar invitación');
+      await alertModal.alert(
+        err.response?.data?.error || 'Error al aceptar invitación',
+        { title: 'Error', type: 'error' }
+      );
     } finally {
       setActionLoading({ ...actionLoading, [invitationId]: null });
     }
@@ -44,7 +50,10 @@ function CollaboratorInvitations() {
       await rejectInvitation(projectId);
       setInvitations(invitations.filter(inv => inv._id !== invitationId));
     } catch (err) {
-      alert(err.response?.data?.error || 'Error al rechazar invitación');
+      await alertModal.alert(
+        err.response?.data?.error || 'Error al rechazar invitación',
+        { title: 'Error', type: 'error' }
+      );
     } finally {
       setActionLoading({ ...actionLoading, [invitationId]: null });
     }
@@ -67,8 +76,9 @@ function CollaboratorInvitations() {
   }
 
   return (
-    <div className="collaborator-invitations">
-      <h3>Invitaciones de Colaboración ({invitations.length})</h3>
+    <>
+      <div className="collaborator-invitations">
+        <h3>Invitaciones de Colaboración ({invitations.length})</h3>
       
       <div className="invitations-list">
         {invitations.map((invitation) => (
@@ -127,6 +137,14 @@ function CollaboratorInvitations() {
         ))}
       </div>
     </div>
+    <AlertModal 
+      isOpen={alertModal.isOpen}
+      title={alertModal.title}
+      message={alertModal.message}
+      type={alertModal.type}
+      onClose={alertModal.close}
+    />
+    </>
   );
 }
 

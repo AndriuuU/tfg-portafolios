@@ -1,11 +1,16 @@
 import { useState, useEffect } from 'react';
 import { getReports, getReportStats, updateReportStatus, processReportAction, getSuspendedUsers, reactivateUser } from '../api/api';
 import { useToast } from '../context/ToastContext';
+import { useConfirmModal, useAlertModal } from '../hooks/useModals';
+import ConfirmModal from '../components/ConfirmModal';
+import AlertModal from '../components/AlertModal';
 import API_URL from '../api/config';
 import '../styles/AdminPanel.scss';
 
 export default function AdminPanel() {
   const { showToast } = useToast();
+  const confirmModal = useConfirmModal();
+  const alertModal = useAlertModal();
   const currentUser = JSON.parse(localStorage.getItem('user') || '{}');
   const currentUserId = currentUser._id || currentUser.id;
   
@@ -82,7 +87,14 @@ export default function AdminPanel() {
         ? '¿Estás seguro de que quieres eliminar este contenido? Esta acción no se puede deshacer.'
         : '¿Estás seguro de que quieres banear esta cuenta? Esta acción es permanente.';
       
-      if (!window.confirm(confirmMsg)) {
+      const confirmed = await confirmModal.confirm(confirmMsg, {
+        title: actionData.action === 'content_removed' ? 'Eliminar Contenido' : 'Banear Cuenta',
+        confirmText: 'Confirmar',
+        cancelText: 'Cancelar',
+        isDangerous: true
+      });
+      
+      if (!confirmed) {
         return;
       }
     }
@@ -124,7 +136,16 @@ export default function AdminPanel() {
     }
 
     const action = currentStatus ? 'revocar' : 'otorgar';
-    if (window.confirm(`¿Estás seguro de que quieres ${action} permisos de administrador?`)) {
+    const confirmed = await confirmModal.confirm(
+      `¿Estás seguro de que quieres ${action} permisos de administrador?`,
+      {
+        title: action === 'revocar' ? 'Revocar Admin' : 'Otorgar Admin',
+        confirmText: 'Confirmar',
+        cancelText: 'Cancelar'
+      }
+    );
+
+    if (confirmed) {
       try {
         const res = await fetch(`${API_URL}/api/admin/users/${userId}/admin`, {
           method: 'PUT',
@@ -162,7 +183,16 @@ export default function AdminPanel() {
   };
 
   const handleReactivateUser = async (userId) => {
-    if (window.confirm('¿Estás seguro de que quieres reactivar este usuario?')) {
+    const confirmed = await confirmModal.confirm(
+      '¿Estás seguro de que quieres reactivar este usuario?',
+      {
+        title: 'Reactivar Usuario',
+        confirmText: 'Reactivar',
+        cancelText: 'Cancelar'
+      }
+    );
+
+    if (confirmed) {
       try {
         await reactivateUser({ userId });
         showToast('✅ Usuario reactivado correctamente', 'success');
@@ -180,7 +210,16 @@ export default function AdminPanel() {
       return;
     }
 
-    if (window.confirm(`¿Estás seguro de que quieres reactivar ${selectedUsers.length} usuario(s)?`)) {
+    const confirmed = await confirmModal.confirm(
+      `¿Estás seguro de que quieres reactivar ${selectedUsers.length} usuario(s)?`,
+      {
+        title: 'Reactivar Múltiples Usuarios',
+        confirmText: 'Reactivar',
+        cancelText: 'Cancelar'
+      }
+    );
+
+    if (confirmed) {
       try {
         const promises = selectedUsers.map(userId => 
           reactivateUser({ userId })
@@ -305,7 +344,17 @@ export default function AdminPanel() {
     const reason = prompt('Razón de la eliminación del proyecto:');
     if (!reason) return;
 
-    if (window.confirm('¿Estás seguro de que quieres eliminar este proyecto?')) {
+    const confirmed = await confirmModal.confirm(
+      '¿Estás seguro de que quieres eliminar este proyecto?',
+      {
+        title: 'Eliminar Proyecto',
+        confirmText: 'Eliminar',
+        cancelText: 'Cancelar',
+        isDangerous: true
+      }
+    );
+
+    if (confirmed) {
       try {
         const token = localStorage.getItem('token');
         await fetch(`${API_URL}/api/admin/projects/${projectId}`, {
@@ -361,8 +410,51 @@ export default function AdminPanel() {
     return `<span class="badge ${badge.class}">${badge.label}</span>`;
   };
 
+  const handleBanUserClick = async (userId, isAdmin) => {
+    if (userId === currentUserId || isAdmin) return;
+    
+    const reason = prompt('Razón del baneo permanente:');
+    if (!reason) return;
+
+    const confirmed = await confirmModal.confirm(
+      '¿Estás seguro de banear permanentemente a este usuario?',
+      {
+        title: 'Banear Usuario',
+        confirmText: 'Banear',
+        cancelText: 'Cancelar',
+        isDangerous: true
+      }
+    );
+
+    if (confirmed) {
+      handleBanUser(userId, reason, isAdmin);
+    }
+  };
+
+  const handleDeleteUserAccountClick = async (userId, isAdmin) => {
+    if (userId === currentUserId || isAdmin) return;
+
+    const reason = prompt('Razón de la eliminación:');
+    if (!reason) return;
+
+    const confirmed = await confirmModal.confirm(
+      '¿Estás seguro de eliminar esta cuenta?',
+      {
+        title: 'Eliminar Cuenta',
+        confirmText: 'Eliminar',
+        cancelText: 'Cancelar',
+        isDangerous: true
+      }
+    );
+
+    if (confirmed) {
+      handleDeleteUserAccount(userId, reason, isAdmin);
+    }
+  };
+
   return (
-    <div className="admin-panel">
+    <>
+      <div className="admin-panel">
       <div className="admin-header">
         <h1>🛡️ Panel de Administración</h1>
         <p>Gestión de reportes y usuarios</p>
@@ -792,12 +884,7 @@ export default function AdminPanel() {
                           </button>
                           <button 
                             className="btn-ban"
-                            onClick={() => {
-                              const reason = prompt('Razón del baneo permanente:');
-                              if (reason && confirm('¿Estás seguro de banear permanentemente a este usuario?')) {
-                                handleBanUser(user._id, reason, user.isAdmin);
-                              }
-                            }}
+                            onClick={() => handleBanUserClick(user._id, user.isAdmin)}
                             disabled={user._id === currentUserId || user.isAdmin}
                             title={user._id === currentUserId ? 'No puedes banearte a ti mismo' : user.isAdmin ? 'Revoca primero los permisos de admin' : ''}
                           >
@@ -805,12 +892,7 @@ export default function AdminPanel() {
                           </button>
                           <button 
                             className="btn-delete"
-                            onClick={() => {
-                              const reason = prompt('Razón de la eliminación:');
-                              if (reason && confirm('¿Estás seguro de eliminar esta cuenta?')) {
-                                handleDeleteUserAccount(user._id, reason, user.isAdmin);
-                              }
-                            }}
+                            onClick={() => handleDeleteUserAccountClick(user._id, user.isAdmin)}
                             disabled={user._id === currentUserId || user.isAdmin}
                             title={user._id === currentUserId ? 'No puedes eliminar tu propia cuenta' : user.isAdmin ? 'Revoca primero los permisos de admin' : ''}
                           >
@@ -886,5 +968,14 @@ export default function AdminPanel() {
         </div>
       )}
     </div>
+    <ConfirmModal {...confirmModal} />
+    <AlertModal 
+      isOpen={alertModal.isOpen}
+      title={alertModal.title}
+      message={alertModal.message}
+      type={alertModal.type}
+      onClose={alertModal.close}
+    />
+    </>
   );
 }

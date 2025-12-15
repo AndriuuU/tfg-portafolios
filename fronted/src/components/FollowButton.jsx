@@ -1,10 +1,13 @@
 import { useState, useEffect } from 'react';
 import { followUser, unfollowUser, checkRelationship } from '../api/followApi';
+import { useAlertModal } from '../hooks/useModals';
+import AlertModal from './AlertModal';
 
 export default function FollowButton({ userId, onUpdate }) {
     const [relationship, setRelationship] = useState(null);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
+    const alertModal = useAlertModal();
 
     useEffect(() => {
         loadRelationship();
@@ -29,7 +32,7 @@ export default function FollowButton({ userId, onUpdate }) {
             if (onUpdate) onUpdate();
 
             if (res.data.status === 'pending') {
-                alert('Solicitud enviada');
+                await alertModal.alert('Solicitud enviada', { title: 'Solicitud de Seguimiento', type: 'info' });
             }
         } catch (err) {
             setError(err.response?.data?.error || 'Error al seguir');
@@ -58,22 +61,31 @@ export default function FollowButton({ userId, onUpdate }) {
     if (relationship.isBlockedBy) return <p>No puedes seguir a este usuario</p>;
 
     return (
-        <div>
-            {error && <p>{error}</p>}
+        <>
+            <div>
+                {error && <p>{error}</p>}
 
-            {relationship.isBlocked ? (
-                <p>Usuario bloqueado</p>
-            ) : relationship.hasPendingRequest ? (
-                <button className="btn btn-follow" disabled>Solicitud enviada</button>
-            ) : relationship.isFollowing ? (
-                <button className="btn btn-follow following" onClick={handleUnfollow} disabled={loading}>
-                    {loading ? 'Procesando...' : 'Dejar de seguir'}
-                </button>
-            ) : (
-                <button className="btn btn-follow" onClick={handleFollow} disabled={loading}>
-                    {loading ? 'Procesando...' : 'Seguir'}
-                </button>
-            )}
-        </div>
+                {relationship.isBlocked ? (
+                    <p>Usuario bloqueado</p>
+                ) : relationship.hasPendingRequest ? (
+                    <button className="btn btn-follow" disabled>Solicitud enviada</button>
+                ) : relationship.isFollowing ? (
+                    <button className="btn btn-follow following" onClick={handleUnfollow} disabled={loading}>
+                        {loading ? 'Procesando...' : 'Dejar de seguir'}
+                    </button>
+                ) : (
+                    <button className="btn btn-follow" onClick={handleFollow} disabled={loading}>
+                        {loading ? 'Procesando...' : 'Seguir'}
+                    </button>
+                )}
+            </div>
+            <AlertModal 
+                isOpen={alertModal.isOpen}
+                title={alertModal.title}
+                message={alertModal.message}
+                type={alertModal.type}
+                onClose={alertModal.close}
+            />
+        </>
     );
 }

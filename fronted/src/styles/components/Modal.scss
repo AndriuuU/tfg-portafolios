@@ -7,18 +7,17 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 1);
-  display: flex;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex !important;
   align-items: center;
   justify-content: center;
-  z-index: 1000;
+  z-index: 9999 !important;
   padding: clamp(1rem, 3vw, 1.5rem);
   animation: fadeIn 0.2s ease;
-  backdrop-filter: blur(2px);
-
-  @include mixins.dark-mode {
-    background: rgba(0, 0, 0, 1);
-  }
+  backdrop-filter: blur(3px);
+  pointer-events: auto;
+  visibility: visible !important;
+  opacity: 1 !important;
 }
 
 // Modal Content
@@ -30,9 +29,12 @@
   width: 100%;
   max-width: 500px;
   max-height: 80vh;
-  display: flex;
+  display: flex !important;
   flex-direction: column;
   animation: slideUp 0.3s ease;
+  z-index: 10000 !important;
+  position: relative;
+  pointer-events: auto;
 
   @include mixins.dark-mode {
     box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6);
@@ -98,8 +100,10 @@
   padding: clamp(1rem, 3vw, 1.5rem);
   overflow-y: auto;
   flex: 1;
-  background: var(--card-bg);
-  color: var(--text-primary);
+  background: var(--card-bg) !important;
+  color: var(--text-primary) !important;
+  visibility: visible !important;
+  opacity: 1 !important;
 
   @include mixins.extra-small {
     padding: 1rem;
@@ -309,6 +313,26 @@
     transform: translateY(100%);
   }
   to {
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
     transform: translateY(0);
   }
 }
