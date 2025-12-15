@@ -98,6 +98,8 @@
   padding: clamp(1rem, 3vw, 1.5rem);
   overflow-y: auto;
   flex: 1;
+  background: var(--card-bg);
+  color: var(--text-primary);
 
   @include mixins.extra-small {
     padding: 1rem;

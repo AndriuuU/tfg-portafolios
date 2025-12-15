@@ -83,7 +83,7 @@ function CollaboratorList({ projectId, isOwner, onUpdate }) {
 
   return (
     <div className="collaborator-list">
-      <h3>Colaboradores ({collaborators.length})</h3>
+      <h3>({collaborators.length})</h3>
       
       {collaborators.length === 0 ? (
         <p className="no-collaborators">Este proyecto no tiene colaboradores</p>

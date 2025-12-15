@@ -162,7 +162,7 @@ export default function Comments({ projectId, token }) {
 
   return (
     <div className="comments-section">
-      <h3 className="comments-title">Comentarios ({comments.length})</h3>
+      <h3 className="comments-title">({comments.length})</h3>
 
       {errorMsg && <p className="error-message">{errorMsg}</p>}
 

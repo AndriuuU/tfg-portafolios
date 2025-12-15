@@ -102,7 +102,7 @@ export default function EditProject() {
     <div className="project-form-page">
       <div className="project-form-container">
         <div className="form-header">
-          <h2>✏️ Editar Proyecto</h2>
+          <h2>Editar proyecto</h2>
           <p>Actualiza la información de tu proyecto</p>
         </div>
 
