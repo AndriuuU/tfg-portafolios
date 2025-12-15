@@ -7,16 +7,17 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0.6);
+  background: rgba(0, 0, 0, 1);
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 1000;
   padding: clamp(1rem, 3vw, 1.5rem);
   animation: fadeIn 0.2s ease;
+  backdrop-filter: blur(2px);
 
   @include mixins.dark-mode {
-    background: rgba(0, 0, 0, 0.8);
+    background: rgba(0, 0, 0, 1);
   }
 }
 

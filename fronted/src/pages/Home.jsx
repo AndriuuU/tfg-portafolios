@@ -33,17 +33,66 @@ export default function Home() {
 
   if (!user) {
     return (
-      <div className="home-page">
+      <div className="home-page home-unauthenticated">
         <div className="home-container">
+          {/* Hero Section */}
           <div className="home-hero">
-            <h1>¡Bienvenido a TFG Portafolios!</h1>
-            <p>Descubre portfolios increíbles y comparte tus proyectos</p>
+            <h1>Muestra tu talento al mundo</h1>
+            <p>La plataforma de portafolios para creativos y desarrolladores</p>
             <div className="hero-actions">
               <button className="btn-primary" onClick={() => navigate('/register')}>
-                Crear cuenta
+                Crear cuenta gratis
               </button>
               <button className="btn-secondary" onClick={() => navigate('/login')}>
                 Iniciar sesión
+              </button>
+            </div>
+          </div>
+
+          {/* Features Section */}
+          <div className="features-section">
+            <h2>¿Por qué PortafoliosHub?</h2>
+            <div className="features-grid">
+              <div className="feature-card">
+                <div className="feature-icon">📂</div>
+                <h3>Portafolio profesional</h3>
+                <p>Crea un portafolio personalizado para mostrar tus mejores proyectos</p>
+              </div>
+              <div className="feature-card">
+                <div className="feature-icon">📊</div>
+                <h3>Analytics en tiempo real</h3>
+                <p>Observa el impacto de tus proyectos con métricas detalladas</p>
+              </div>
+              <div className="feature-card">
+                <div className="feature-icon">🏆</div>
+                <h3>Ranking global</h3>
+                <p>Compite y destaca en los rankings de tu categoría</p>
+              </div>
+              <div className="feature-card">
+                <div className="feature-icon">👥</div>
+                <h3>Conecta con talento</h3>
+                <p>Sigue a otros creativos y crea una comunidad alrededor de tu trabajo</p>
+              </div>
+              <div className="feature-card">
+                <div className="feature-icon">💬</div>
+                <h3>Interacción social</h3>
+                <p>Recibe comentarios y feedback de otros miembros de la comunidad</p>
+              </div>
+              <div className="feature-card">
+                <div className="feature-icon">📥</div>
+                <h3>Exporta a PDF</h3>
+                <p>Descarga tu portafolio como PDF para compartir con reclutadores</p>
+              </div>
+            </div>
+          </div>
+
+          {/* CTA Section */}
+          <div className="cta-section">
+            <div className="cta-content">
+              <h2>Comienza tu viaje profesional hoy</h2>
+              <p>Únete a cientos de creativos y desarrolladores que ya confían en PortafoliosHub</p>
+              <button className="btn-primary btn-large" onClick={() => navigate('/register')}>
+                Crear cuenta
               </button>
             </div>
           </div>
